@@ -1,0 +1,251 @@
+<template>
+  <q-layout view="hHh lpR fFf">
+    <q-header>
+      <q-toolbar>
+        <q-toolbar-title>
+          <router-link to="/" class="logo">FMCAR</router-link>
+        </q-toolbar-title>
+
+        <template v-if="$q.screen.gt.sm">
+          <template v-for="link in activeLinks">
+            <q-btn
+              v-if="link.type == 'link'"
+              :key="link.to"
+              :to="link.to"
+              :class="{ 'active-btn': $route.path == link.to }"
+              flat
+            >
+              {{ link.text }}
+            </q-btn>
+            <q-btn-dropdown
+              v-else
+              :key="link.to"
+              :label="link.text"
+              :class="{ 'active-btn': subIsActive(link.to) }"
+              flat
+            >
+              <q-list>
+                <q-item
+                  v-for="item in link.menu"
+                  :key="item.to"
+                  @click="$router.push(item.to)"
+                  clickable
+                >
+                  <q-item-section>
+                    <q-item-label>
+                      {{ item.text }}
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+              </q-list>
+            </q-btn-dropdown>
+          </template>
+        </template>
+
+        <q-btn
+          v-else
+          flat
+          dense
+          round
+          @click="leftDrawerOpen = !leftDrawerOpen"
+          aria-label="Menu"
+        >
+          <q-icon name="menu" />
+        </q-btn>
+      </q-toolbar>
+    </q-header>
+
+    <q-drawer
+      v-if="$q.screen.lt.md"
+      v-model="leftDrawerOpen"
+      side="left"
+      bordered
+      content-class="bg-grey-2"
+    >
+      <q-list>
+        <template v-for="link in links">
+
+          <q-item
+            v-if="link.type == 'link'"
+            :key="link.to"
+            :to="link.to"
+            active-class="active-list"
+            exact
+            clickable
+          >
+            <q-item-section>
+              <q-item-label>{{link.text}}</q-item-label>
+            </q-item-section>
+          </q-item>
+
+          <q-expansion-item
+            v-else
+            :key="link.to"
+            :value="$route.path.includes(link.to)"
+            group="menu"
+          >
+            <template v-slot:header>
+
+              <q-item-section>
+                {{link.text}}
+              </q-item-section>
+
+            </template>
+
+            <q-list>
+              <q-item
+                v-for="item in link.menu"
+                :key="item.to"
+                :to="item.to"
+                active-class="active-list"
+                exact
+                clickable
+              >
+                <q-item-section>
+                  <q-item-label class="menu-item">{{item.text}}</q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-expansion-item>
+        </template>
+      </q-list>
+    </q-drawer>
+
+    <q-page-container>
+      <router-view />
+    </q-page-container>
+
+  </q-layout>
+</template>
+
+<script>
+import { openURL } from 'quasar';
+
+export default {
+  name: 'MyLayout',
+  expanded: [],
+  data() {
+    return {
+      leftDrawerOpen: false,
+      links: [
+        {
+          to: '/',
+          text: 'Home',
+          auth: 0,
+          type: 'link',
+        },
+        {
+          to: '/series',
+          text: 'Series',
+          auth: 0,
+          type: 'link',
+        },
+        {
+          to: '/results',
+          text: 'Results',
+          auth: 0,
+          type: 'link',
+        },
+        {
+          to: '/calendar',
+          text: 'Calendar',
+          auth: 0,
+          type: 'link',
+        },
+        {
+          to: '/discord',
+          text: 'Discord',
+          auth: 0,
+          type: 'link',
+        },
+        {
+          to: '/facebook',
+          text: 'Facebook',
+          auth: 0,
+          type: 'link',
+        },
+        {
+          text: 'Admin',
+          to: '/admin',
+          auth: 2,
+          loggedIn: true,
+          type: 'menu',
+          menu: [
+            {
+              to: '/admin/test1',
+              text: 'Admin Test 1',
+            },
+            {
+              to: '/admin/test2',
+              text: 'Admin Test 2',
+            },
+            {
+              to: '/admin/test3',
+              text: 'Admin Test 3',
+            },
+          ],
+        },
+        {
+          to: '/logout',
+          text: 'Logout',
+          auth: 0,
+          loggedIn: true,
+          type: 'link',
+        },
+        {
+          to: '/login',
+          text: 'Login / Register',
+          auth: 0,
+          loggedIn: false,
+          type: 'link',
+        },
+      ],
+    };
+  },
+  methods: {
+    openURL,
+    subIsActive(input) {
+      const paths = Array.isArray(input) ? input : [input];
+      return paths.some(path => this.$route.path.indexOf(path) === 0);
+    },
+  },
+  computed: {
+    activeLinks() {
+      const auth = { access: 2 };
+      if (auth) {
+        console.log(this.links.filter(link => auth.access >= link.auth && link.loggedIn !== false));
+        return this.links.filter(link => auth.access >= link.auth && link.loggedIn !== false);
+      }
+      return this.links.filter(link => !link.loggedIn);
+    },
+  },
+  watch: {
+    $route() {
+      this.show = false;
+    },
+  },
+};
+</script>
+
+<style>
+h3 {
+  margin-block-start: 0.5em;
+  margin-block-end: 0.5em;
+}
+.logo {
+  color: white;
+  text-decoration: none;
+}
+.active-btn {
+  font-weight: bold;
+  background-color: rgba(255,255,255,0.15);
+}
+.active-list {
+  font-weight: bold;
+  background-color: rgba(0,0,0,0.15);
+}
+.menu-item {
+  font-size: 0.9em;
+  margin-left: 10px;
+}
+</style>
