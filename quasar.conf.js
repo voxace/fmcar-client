@@ -1,3 +1,4 @@
+const env = require('quasar-dotenv').config();
 /* eslint-disable func-names */
 // Configuration for your app
 
@@ -23,7 +24,7 @@ module.exports = function (ctx) {
     ],
 
     framework: {
-      // all: true, // --- includes everything; for dev only!
+      all: true, // --- includes everything; for dev only!
 
       components: [
         'QLayout',
@@ -42,6 +43,11 @@ module.exports = function (ctx) {
         'QBtnDropdown',
         'QSeparator',
         'QExpansionItem',
+        'QAutocomplete',
+        'QTable',
+        'QTh',
+        'QTr',
+        'QTd',
       ],
 
       directives: [
@@ -61,6 +67,7 @@ module.exports = function (ctx) {
     supportIE: true,
 
     build: {
+      env,
       scopeHoisting: true,
       vueRouterMode: 'history',
       // vueCompiler: true,
