@@ -229,7 +229,7 @@ export default {
 
 <style>
 h3 {
-  margin-block-start: 0.5em;
+  margin-block-start: 0.2em;
   margin-block-end: 0.5em;
 }
 .logo {

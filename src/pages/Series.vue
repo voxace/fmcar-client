@@ -1,10 +1,13 @@
 <template>
-  <q-page>
-    <div class="row q-px-lg">
+  <q-page padding>
+    <div class="row">
+
+      <!-- HEADING -->
       <div class="col-xs-12">
         <h3>Series</h3>
       </div>
 
+      <!-- SERIES SELECTION -->
       <div class="col-xs-3 q-pr-sm">
         <q-select outlined v-model="selectedYear" :options="years" label="Year" />
       </div>
@@ -16,6 +19,7 @@
         <q-select outlined v-model="selectedSeason" :options="seasons" label="Season" />
       </div>
 
+      <!-- SERIES TABLE -->
       <div v-if="info != null" class="col-xs-12 q-py-md">
         <q-markup-table seperator="cell" flat bordered>
           <thead>
@@ -44,6 +48,95 @@
         </q-markup-table>
       </div>
     </div>
+
+    <!-- FLOATING BUTTON -->
+    <q-page-sticky position="bottom-right" :offset="[18, 18]">
+      <q-fab
+        icon="add"
+        direction="up"
+        color="positive"
+      >
+        <q-fab-action @click="addSeriesDialog = true" color="primary" icon="event_note" >
+          <q-tooltip anchor="center left" self="center right" >
+            Add Series
+          </q-tooltip>
+        </q-fab-action>
+        <q-fab-action
+          v-if="selectedSeries && selectedSeason"
+          @click="addRaceDialog = true"
+          color="primary" icon="directions_car"
+        >
+          <q-tooltip anchor="center left" self="center right" >
+            Add Race
+          </q-tooltip>
+        </q-fab-action>
+      </q-fab>
+    </q-page-sticky>
+
+    <!-- ADD RACE DIALOG -->
+    <q-dialog
+      v-model="addRaceDialog" persistent
+       style="width: 700px; max-width: 80vw;"
+    >
+      <q-card style="min-width: 400px">
+        <q-card-section>
+          <div class="text-h6">
+            Add Race
+          </div>
+          <div class="text-subtitle2">
+            Series: {{selectedSeries}}
+          </div>
+          <div class="text-subtitle2">
+            Season: {{selectedSeason}}
+          </div>
+        </q-card-section>
+
+        <q-card-section>
+          <div class="row">
+            <div class="col q-pr-sm">
+              <q-input outlined v-model="address" autofocus type="number" label="Round" />
+            </div>
+            <div class="col q-pl-sm">
+              <q-input outlined v-model="address" type="number" label="Race" />
+            </div>
+          </div>
+        </q-card-section>
+
+        <q-card-section>
+          <q-select outlined v-model="model" :options="options" label="Track" />
+        </q-card-section>
+
+        <q-card-section>
+          <q-select outlined v-model="model" :options="options" label="Points Table" />
+        </q-card-section>
+
+        <q-card-section>
+          <q-input outlined v-model="address" label="Type"/>
+        </q-card-section>
+
+        <q-card-section>
+          <q-input outlined v-model="address" label="Configuration"/>
+        </q-card-section>
+
+        <q-card-section>
+          <q-input outlined v-model="date" label="Date" mask="date" :rules="['date']">
+            <template v-slot:append>
+              <q-icon name="event" class="cursor-pointer">
+                <q-popup-proxy>
+                  <q-date v-model="date" />
+                </q-popup-proxy>
+              </q-icon>
+            </template>
+          </q-input>
+        </q-card-section>
+
+        <q-card-actions align="right" class="text-primary">
+          <q-btn flat label="Cancel" v-close-popup />
+          <q-btn flat label="Add Race" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
   </q-page>
 </template>
 
@@ -71,6 +164,17 @@ export default {
       years: ['2019'],
       loadedSeries: [],
       seasons: [],
+      addRaceDialog: false,
+      addSeriesDialog: false,
+      addRaceModel: {
+        series: null,
+        pointsTable: null,
+        track: null,
+        round: null,
+        number: null,
+        configuraton: null,
+        date: null,
+      },
     };
   },
   mounted() {
