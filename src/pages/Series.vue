@@ -73,6 +73,45 @@
       </q-fab>
     </q-page-sticky>
 
+    <!-- ADD SERIES DIALOG -->
+    <q-dialog
+      v-model="addSeriesDialog" persistent
+       style="width: 700px; max-width: 80vw;"
+    >
+      <q-card style="min-width: 400px">
+        <q-card-section>
+          <div class="text-h6">
+            Add Series
+          </div>
+        </q-card-section>
+
+        <q-card-section>
+          <q-input outlined v-model="addSeriesModel.name" label="Name" autofocus />
+        </q-card-section>
+
+        <q-card-section>
+          <div class="row">
+            <div class="col q-pr-sm">
+              <q-input outlined v-model="addSeriesModel.year" type="number" label="Year" />
+            </div>
+            <div class="col q-pl-sm">
+              <q-input outlined v-model="addSeriesModel.season" type="number" label="Season" />
+            </div>
+          </div>
+        </q-card-section>
+
+        <q-card-section>
+          <q-select outlined v-model="addSeriesModel.game" :options="loadedGames"
+            option-value="_id" option-label="name" label="Game" />
+        </q-card-section>
+
+        <q-card-actions align="right" class="text-primary">
+          <q-btn flat label="Cancel" v-close-popup />
+          <q-btn flat label="Add Series" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
     <!-- ADD RACE DIALOG -->
     <q-dialog
       v-model="addRaceDialog" persistent
@@ -94,32 +133,36 @@
         <q-card-section>
           <div class="row">
             <div class="col q-pr-sm">
-              <q-input outlined v-model="address" autofocus type="number" label="Round" />
+              <q-input
+                outlined v-model="addRaceModel.round"
+                autofocus type="number" label="Round" />
             </div>
             <div class="col q-pl-sm">
-              <q-input outlined v-model="address" type="number" label="Race" />
+              <q-input outlined v-model="addRaceModel.race" type="number" label="Race" />
             </div>
           </div>
         </q-card-section>
 
         <q-card-section>
-          <q-select outlined v-model="model" :options="options" label="Track" />
+          <q-select outlined v-model="addRaceModel.track" :options="options" label="Track" />
         </q-card-section>
 
         <q-card-section>
-          <q-select outlined v-model="model" :options="options" label="Points Table" />
+          <q-select
+            outlined v-model="addRaceModel.pointsTable"
+            :options="options" label="Points Table" />
         </q-card-section>
 
         <q-card-section>
-          <q-input outlined v-model="address" label="Type"/>
+          <q-input outlined v-model="addRaceModel.type" label="Type"/>
         </q-card-section>
 
         <q-card-section>
-          <q-input outlined v-model="address" label="Configuration"/>
+          <q-input outlined v-model="addRaceModel.configuration" label="Configuration"/>
         </q-card-section>
 
         <q-card-section>
-          <q-input outlined v-model="date" label="Date" mask="date" :rules="['date']">
+          <q-input outlined v-model="addRaceModel.date" label="Date" mask="date" :rules="['date']">
             <template v-slot:append>
               <q-icon name="event" class="cursor-pointer">
                 <q-popup-proxy>
@@ -163,6 +206,9 @@ export default {
       selectedSeason: null,
       years: ['2019'],
       loadedSeries: [],
+      loadedGames: [],
+      loadedTracks: [],
+      loadedPointsTables: [],
       seasons: [],
       addRaceDialog: false,
       addSeriesDialog: false,
@@ -175,10 +221,16 @@ export default {
         configuraton: null,
         date: null,
       },
+      addSeriesModel: {
+        name: null,
+        game: null,
+        season: null,
+        year: null,
+      },
     };
   },
   mounted() {
-
+    this.loadGamesList();
   },
   methods: {
     async loadSeriesList() {
@@ -201,6 +253,36 @@ export default {
           console.log(`Error: ${error}`);
         });
       console.log(this.info);
+    },
+    async loadGamesList() {
+      await this.$axios
+        .get('/game')
+        .then((response) => {
+          this.loadedGames = response.data;
+        })
+        .catch((error) => {
+          console.log(`Error: ${error}`);
+        });
+    },
+    async loadTrackList() {
+      await this.$axios
+        .get('/track')
+        .then((response) => {
+          this.loadedTracks = response.data;
+        })
+        .catch((error) => {
+          console.log(`Error: ${error}`);
+        });
+    },
+    async loadPointsTablesList() {
+      await this.$axios
+        .get('/points')
+        .then((response) => {
+          this.loadedPointsTables = response.data;
+        })
+        .catch((error) => {
+          console.log(`Error: ${error}`);
+        });
     },
   },
   computed: {
