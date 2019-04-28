@@ -87,6 +87,7 @@ export default {
         });
     },
     async addSeries() {
+      console.log(this.addSeriesModel);
       await this.$axios
         .post('/series', {
           name: this.addSeriesModel.name,

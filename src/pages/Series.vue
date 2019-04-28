@@ -124,6 +124,7 @@
 
 <script>
 /* eslint-disable no-underscore-dangle */
+/* eslint-disable prefer-destructuring */
 
 export default {
   name: 'Series',
@@ -174,10 +175,11 @@ export default {
       this.$forceUpdate();
     },
     seriesAdded(series) {
+      console.log(series);
       this.loadedSeriesList.push(series);
       this.selectedYear = series.year;
       this.selectedSeries = series;
-      this.selectedSeason = series.seasons[0].season;
+      this.selectedSeason = series.seasons[0];
     },
   },
   computed: {
