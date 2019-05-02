@@ -203,7 +203,6 @@ export default {
   },
   computed: {
     addRaceValidation() {
-      console.log(this.addRaceModel);
       return this.addRaceModel.pointsTable != null && this.addRaceModel.pointsTable.length > 0
           && this.addRaceModel.track != null && this.addRaceModel.track.length > 0
           && this.addRaceModel.round != null && this.addRaceModel.round.length > 0
@@ -215,7 +214,6 @@ export default {
   },
   watch: {
     rawDate(val) {
-      console.log(val);
       this.addRaceModel.date = date.formatDate(new Date(val), 'DD-MM-YYYY');
     },
   },

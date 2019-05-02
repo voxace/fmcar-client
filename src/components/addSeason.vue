@@ -65,11 +65,11 @@ export default {
   methods: {
     async addSeason() {
       await this.$axios
-        .post('/series/season', {
+        .post('/season', {
           series: this.series._id,
-          copyRaces: this.copyRaces,
+          season: this.series.seasons.length + 1,
         })
-        .then(() => {
+        .then((response) => {
           this.$q.notify({
             color: 'green-4',
             textColor: 'white',
@@ -77,7 +77,7 @@ export default {
             message: 'Season added successfully!',
           });
           this.close();
-          this.$emit('seasonAdded');
+          this.$emit('seasonAdded', response.data);
         })
         .catch((error) => {
           console.log(`Error: ${error}`);

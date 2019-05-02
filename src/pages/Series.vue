@@ -25,7 +25,7 @@
       </div>
 
       <!-- SEASON TABLE -->
-      <div v-if="selectedSeason != null" class="col-xs-12 q-py-md">
+      <div v-if="loadedSeason != null" class="col-xs-12 q-py-md">
         <q-markup-table seperator="cell" flat bordered>
           <thead>
             <tr>
@@ -37,9 +37,9 @@
               <th class="text-center" width="120">Date</th>
             </tr>
           </thead>
-          <tbody v-if="selectedSeason.races != null && selectedSeason.races.length > 0">
+          <tbody v-if="loadedSeason.races != null && loadedSeason.races.length > 0">
             <tr
-              v-for="race in selectedSeason.races"
+              v-for="race in loadedSeason.races"
               :key="race._id"
             >
               <td class="text-center">{{race.round}}</td>
@@ -166,25 +166,41 @@ export default {
           console.log(`Error: ${error}`);
         });
     },
-    raceAdded(race) {
-      this.selectedSeason.races.push(race);
-      this.$forceUpdate();
+    async loadSeasonData() {
+      await this.$axios
+        .get(`/season/id/${this.selectedSeason._id}/populate`)
+        .then((response) => {
+          this.loadedSeason = response.data;
+        })
+        .catch((error) => {
+          console.log(`Error: ${error}`);
+        });
+    },
+    raceAdded() {
+      this.loadSeasonData();
     },
     seasonAdded(season) {
       this.selectedSeries.seasons.push(season);
+      this.selectedSeason = this.selectedSeries.seasons[this.selectedSeries.seasons.length - 1];
       this.$forceUpdate();
+      this.loadSeasonData();
     },
     seriesAdded(series) {
-      console.log(series);
+      console.log(`Seasons: ${series.seasons}`);
       this.loadedSeriesList.push(series);
       this.selectedYear = series.year;
       this.selectedSeries = series;
-      this.selectedSeason = series.seasons[0];
+      setTimeout(() => {
+        this.selectedSeries.seasons[0] = {
+          _id: series.seasons[0],
+          season: 1,
+        };
+        this.selectedSeason = this.selectedSeries.seasons[0];
+      }, 200);
     },
   },
   computed: {
     seasonList() {
-      console.log(this.selectedSeason);
       if (this.selectedSeries != null && this.selectedSeries.seasons.length > 0) {
         return this.selectedSeries.seasons;
       }
@@ -194,6 +210,12 @@ export default {
   watch: {
     selectedYear() {
       this.loadSeriesList();
+    },
+    selectedSeries() {
+      this.selectedSeason = null;
+    },
+    selectedSeason() {
+      this.loadSeasonData();
     },
   },
 };
