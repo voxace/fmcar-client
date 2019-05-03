@@ -64,24 +64,46 @@ export default {
   },
   methods: {
     async addSeason() {
-      await this.$axios
-        .post('/season', {
-          series: this.series._id,
-          season: this.series.seasons.length + 1,
-        })
-        .then((response) => {
-          this.$q.notify({
-            color: 'green-4',
-            textColor: 'white',
-            icon: 'fas fa-check-circle',
-            message: 'Season added successfully!',
+      if (this.copyRaces !== true) {
+        await this.$axios
+          .post('/season', {
+            series: this.series._id,
+            season: this.series.seasons.length + 1,
+          })
+          .then((response) => {
+            this.$q.notify({
+              color: 'green-4',
+              textColor: 'white',
+              icon: 'fas fa-check-circle',
+              message: 'Season added successfully!',
+            });
+            this.close();
+            this.$emit('seasonAdded', response.data);
+          })
+          .catch((error) => {
+            console.log(`Error: ${error}`);
           });
-          this.close();
-          this.$emit('seasonAdded', response.data);
-        })
-        .catch((error) => {
-          console.log(`Error: ${error}`);
-        });
+      } else {
+        await this.$axios
+          .post('/season/copy', {
+            series: this.series._id,
+            season: this.series.seasons.length + 1,
+            oldSeason: this.seasonToCopy,
+          })
+          .then((response) => {
+            this.$q.notify({
+              color: 'green-4',
+              textColor: 'white',
+              icon: 'fas fa-check-circle',
+              message: 'Season duplicated successfully!',
+            });
+            this.close();
+            this.$emit('seasonAdded', response.data);
+          })
+          .catch((error) => {
+            console.log(`Error: ${error}`);
+          });
+      }
     },
     close() {
       this.$emit('close');
@@ -93,6 +115,12 @@ export default {
         return this.series.seasons.length + 1;
       }
       return 1;
+    },
+  },
+  watch: {
+    copyRaces(val) {
+      // eslint-disable-next-line no-alert
+      alert(val);
     },
   },
 };
