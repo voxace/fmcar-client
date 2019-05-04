@@ -117,11 +117,5 @@ export default {
       return 1;
     },
   },
-  watch: {
-    copyRaces(val) {
-      // eslint-disable-next-line no-alert
-      alert(val);
-    },
-  },
 };
 </script>

@@ -23,39 +23,68 @@
           option-label="season" option-value="_id" label="Season" map-options
         />
       </div>
+    </div>
 
-      <!-- SEASON TABLE -->
-      <div v-if="loadedSeason != null" class="col-xs-12 q-py-md">
-        <q-markup-table seperator="cell" flat bordered>
-          <thead>
-            <tr>
-              <th class="text-center" width="70">Round</th>
-              <th class="text-center" width="70">Race</th>
-              <th class="text-left">Track</th>
-              <th class="text-left">Type</th>
-              <th class="text-left">Configuration</th>
-              <th class="text-center" width="120">Date</th>
-            </tr>
-          </thead>
-          <tbody v-if="loadedSeason.races != null && loadedSeason.races.length > 0">
-            <tr
-              v-for="race in loadedSeason.races"
-              :key="race._id"
-            >
-              <td class="text-center">{{race.round}}</td>
-              <td class="text-center">{{race.number}}</td>
-              <td>{{race.track.name}}</td>
-              <td>{{race.type}}</td>
-              <td>{{race.configuration}}</td>
-              <td>{{race.date}}</td>
-            </tr>
-          </tbody>
-          <tbody v-else>
-            <tr>
-              <td colspan="6" class="text-center">No data found. Add a race...</td>
-            </tr>
-          </tbody>
-        </q-markup-table>
+    <!-- RACES/TEAMS TABS -->
+    <div class="row" v-if="loadedSeason != null">
+      <div class="col-xs-12 q-pt-md">
+          <q-tabs
+            v-model="tab"
+            dense
+            class="text-grey"
+            active-color="primary"
+            indicator-color="primary"
+            align="justify"
+          >
+            <q-tab name="Races" label="Races" />
+            <q-tab name="Teams" label="Teams" />
+          </q-tabs>
+          <q-separator />
+          <q-tab-panels v-model="tab" animated>
+
+            <!-- RACES TABLE -->
+            <q-tab-panel name="Races">
+              <div v-if="loadedSeason != null" class="col-xs-12 q-py-md">
+                <q-markup-table seperator="cell" flat bordered>
+                  <thead>
+                    <tr>
+                      <th class="text-center" width="70">Round</th>
+                      <th class="text-center" width="70">Race</th>
+                      <th class="text-left">Track</th>
+                      <th class="text-left">Type</th>
+                      <th class="text-left">Configuration</th>
+                      <th class="text-center" width="120">Date</th>
+                    </tr>
+                  </thead>
+                  <tbody v-if="loadedSeason.races != null && loadedSeason.races.length > 0">
+                    <tr
+                      v-for="race in loadedSeason.races"
+                      :key="race._id"
+                    >
+                      <td class="text-center">{{race.round}}</td>
+                      <td class="text-center">{{race.number}}</td>
+                      <td>{{race.track.name}}</td>
+                      <td>{{race.type}}</td>
+                      <td>{{race.configuration}}</td>
+                      <td>{{race.date}}</td>
+                    </tr>
+                  </tbody>
+                  <tbody v-else>
+                    <tr>
+                      <td colspan="6" class="text-center">No data found. Add a race...</td>
+                    </tr>
+                  </tbody>
+                </q-markup-table>
+              </div>
+            </q-tab-panel>
+
+            <!-- TEAMS TABLE -->
+            <q-tab-panel name="Teams">
+              <div class="text-h6">Teams</div>
+              No teams yet!
+            </q-tab-panel>
+
+          </q-tab-panels>
       </div>
     </div>
 
@@ -74,9 +103,9 @@
         </q-fab-action>
 
         <q-fab-action
-          v-if="selectedSeries && selectedSeason"
+          v-if="selectedSeries"
           @click="addSeasonDialog = true"
-          color="primary" icon="directions_car"
+          color="primary" icon="event"
         >
           <q-tooltip anchor="center left" self="center right" >
             Add Season
@@ -144,6 +173,7 @@ export default {
   },
   data() {
     return {
+      tab: 'Races',
       selectedYear: null,
       selectedSeries: null,
       selectedSeason: null,
