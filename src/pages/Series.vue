@@ -15,13 +15,31 @@
         <q-select
           outlined v-model="selectedSeries" :options="loadedSeriesList"
           option-label="name" option-value="_id" label="Series" map-options
-        />
+        >
+          <template v-slot:append v-if="seriesLoading">
+            <q-avatar>
+              <q-spinner
+                color="primary"
+                size="2em"
+              />
+            </q-avatar>
+          </template>
+        </q-select>
       </div>
       <div class="col-xs-3 q-pl-sm">
         <q-select
           outlined v-model="selectedSeason" :options="seasonList"
           option-label="season" option-value="_id" label="Season" map-options
-        />
+        >
+          <template v-slot:append v-if="seriesLoading">
+            <q-avatar>
+              <q-spinner
+                color="primary"
+                size="2em"
+              />
+            </q-avatar>
+          </template>
+        </q-select>
       </div>
     </div>
 
@@ -173,6 +191,7 @@ export default {
   },
   data() {
     return {
+      seriesLoading: false,
       tab: 'Races',
       selectedYear: null,
       selectedSeries: null,
@@ -187,6 +206,7 @@ export default {
   },
   methods: {
     async loadSeriesList() {
+      this.seriesLoading = true;
       await this.$axios
         .get(`/series/year/${this.selectedYear}`)
         .then((response) => {
@@ -195,8 +215,10 @@ export default {
         .catch((error) => {
           console.log(`Error: ${error}`);
         });
+      this.seriesLoading = false;
     },
     async loadSeasonData() {
+      this.$q.loading.show();
       await this.$axios
         .get(`/season/id/${this.selectedSeason._id}/populate`)
         .then((response) => {
@@ -205,6 +227,7 @@ export default {
         .catch((error) => {
           console.log(`Error: ${error}`);
         });
+      this.$q.loading.hide();
     },
     raceAdded() {
       this.loadSeasonData();
