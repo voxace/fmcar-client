@@ -86,7 +86,14 @@
           @click.stop="close"
         />
         <q-btn
+          v-if="editing"
+          flat label="Delete"
+          text-color="red"
+          @click="deleteRace"
+        />
+        <q-btn
           flat label="Save"
+          text-color="green"
           @click="addRace" :disabled="!addRaceValidation"
         />
       </q-card-actions>
@@ -180,7 +187,7 @@ export default {
             configuration: this.addRaceModel.configuration,
             date: this.addRaceModel.date,
           })
-          .then((result) => {
+          .then(() => {
             this.$q.notify({
               color: 'green-4',
               textColor: 'white',
@@ -188,7 +195,7 @@ export default {
               message: 'Race added successfully!',
             });
             this.close();
-            this.$emit('raceAdded', result.data);
+            this.$emit('raceAdded');
           })
           .catch((error) => {
             console.log(`Error: ${error}`);
@@ -206,7 +213,7 @@ export default {
             configuration: this.addRaceModel.configuration,
             date: this.addRaceModel.date,
           })
-          .then((result) => {
+          .then(() => {
             this.$q.notify({
               color: 'green-4',
               textColor: 'white',
@@ -214,12 +221,29 @@ export default {
               message: 'Race added successfully!',
             });
             this.close();
-            this.$emit('raceAdded', result.data);
+            this.$emit('raceAdded');
           })
           .catch((error) => {
             console.log(`Error: ${error}`);
           });
       }
+    },
+    async deleteRace() {
+      await this.$axios
+        .delete(`/race/${this.editingRace._id}`)
+        .then(() => {
+          this.$q.notify({
+            color: 'green-4',
+            textColor: 'white',
+            icon: 'fas fa-check-circle',
+            message: 'Race deleted successfully!',
+          });
+          this.close();
+          this.$emit('raceAdded');
+        })
+        .catch((error) => {
+          console.log(`Error: ${error}`);
+        });
     },
     getToday() {
       const timeStamp = Date.now();
