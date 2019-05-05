@@ -71,7 +71,8 @@
                       <th class="text-left">Track</th>
                       <th class="text-left">Type</th>
                       <th class="text-left">Configuration</th>
-                      <th class="text-center" width="120">Date</th>
+                      <th class="text-center" width="100">Date</th>
+                      <th class="text-center" width="50">Edit</th>
                     </tr>
                   </thead>
                   <tbody v-if="loadedSeason.races != null && loadedSeason.races.length > 0">
@@ -85,6 +86,12 @@
                       <td>{{race.type}}</td>
                       <td>{{race.configuration}}</td>
                       <td>{{race.date}}</td>
+                      <td>
+                        <q-btn
+                          round color="primary" icon="edit"
+                          size="xs" @click="editRace(race)"
+                        />
+                      </td>
                     </tr>
                   </tbody>
                   <tbody v-else>
@@ -132,7 +139,7 @@
 
         <q-fab-action
           v-if="selectedSeries && selectedSeason"
-          @click="addRaceDialog = true"
+          @click="addRace"
           color="primary" icon="directions_car"
         >
           <q-tooltip anchor="center left" self="center right" >
@@ -145,21 +152,22 @@
 
     <!-- ADD SERIES DIALOG -->
     <add-series-dialog
-      :visibility="addSeriesDialog"
+      :visibility="addSeriesDialog && addSeriesDialog" :editing="editing"
       @close="addSeriesDialog = false" @seriesAdded="seriesAdded"
     />
 
     <!-- ADD RACE DIALOG -->
     <add-race-dialog
-      v-if="selectedSeries && selectedSeason"
-      :series="selectedSeries" :season="selectedSeason" :visibility="addRaceDialog"
+      v-if="selectedSeries && selectedSeason && addRaceDialog" :editing="editing"
+      :series="selectedSeries" :season="selectedSeason"
+      :visibility="addRaceDialog" :editingRace="editingRace"
       @close="addRaceDialog = false" @raceAdded="raceAdded"
     />
 
     <!-- ADD SEASON DIALOG -->
     <add-season-dialog
-      v-if="selectedSeries"
-      :series="selectedSeries" :visibility="addSeasonDialog"
+      v-if="selectedSeries && addSeasonDialog"
+      :series="selectedSeries" :visibility="addSeasonDialog" :editing="editing"
       @close="addSeasonDialog = false" @seasonAdded="seasonAdded"
     />
 
@@ -191,6 +199,7 @@ export default {
   },
   data() {
     return {
+      editing: false,
       seriesLoading: false,
       tab: 'Races',
       selectedYear: null,
@@ -202,6 +211,15 @@ export default {
       addRaceDialog: false,
       addSeriesDialog: false,
       addSeasonDialog: false,
+      editingRace: {
+        pointsTable: null,
+        track: null,
+        round: null,
+        number: null,
+        type: null,
+        configuration: null,
+        date: null,
+      },
     };
   },
   methods: {
@@ -250,6 +268,15 @@ export default {
         };
         this.selectedSeason = this.selectedSeries.seasons[0];
       }, 200);
+    },
+    addRace() {
+      this.editing = false;
+      this.addRaceDialog = true;
+    },
+    editRace(race) {
+      this.editing = true;
+      this.addRaceDialog = true;
+      this.editingRace = race;
     },
   },
   computed: {

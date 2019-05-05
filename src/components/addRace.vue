@@ -7,7 +7,7 @@
 
       <q-card-section>
         <div class="text-h6">
-          Add Race
+          {{mode}} Race
         </div>
         <div class="text-subtitle2">
           Series: {{series.name}}
@@ -86,7 +86,7 @@
           @click.stop="close"
         />
         <q-btn
-          flat label="Add Race"
+          flat label="Save"
           @click="addRace" :disabled="!addRaceValidation"
         />
       </q-card-actions>
@@ -105,6 +105,8 @@ import { date } from 'quasar';
 export default {
   name: 'addRaceDialog',
   props: {
+    editing: Boolean,
+    editingRace: Object,
     series: Object,
     season: Object,
     visibility: Boolean,
@@ -132,6 +134,16 @@ export default {
     this.getToday();
     this.loadTrackList();
     this.loadPointsTablesList();
+    if (this.editing === true) {
+      this.addRaceModel.pointsTable = this.editingRace.pointsTable;
+      this.addRaceModel.track = this.editingRace.track;
+      this.addRaceModel.round = this.editingRace.round;
+      this.addRaceModel.number = this.editingRace.number;
+      this.addRaceModel.type = this.editingRace.type;
+      this.addRaceModel.configuration = this.editingRace.configuration;
+      this.addRaceModel.date = this.editingRace.date;
+      this.$forceUpdate();
+    }
   },
   methods: {
     async loadTrackList() {
@@ -155,31 +167,59 @@ export default {
         });
     },
     async addRace() {
-      await this.$axios
-        .post('/race', {
-          series: this.series._id,
-          season: this.season._id,
-          pointsTable: this.addRaceModel.pointsTable,
-          track: this.addRaceModel.track,
-          round: this.addRaceModel.round,
-          number: this.addRaceModel.number,
-          type: this.addRaceModel.type,
-          configuration: this.addRaceModel.configuration,
-          date: this.addRaceModel.date,
-        })
-        .then((result) => {
-          this.$q.notify({
-            color: 'green-4',
-            textColor: 'white',
-            icon: 'fas fa-check-circle',
-            message: 'Race added successfully!',
+      if (this.editing === true) {
+        await this.$axios
+          .patch(`/race/${this.editingRace._id}`, {
+            series: this.series._id,
+            season: this.season._id,
+            pointsTable: this.addRaceModel.pointsTable,
+            track: this.addRaceModel.track,
+            round: this.addRaceModel.round,
+            number: this.addRaceModel.number,
+            type: this.addRaceModel.type,
+            configuration: this.addRaceModel.configuration,
+            date: this.addRaceModel.date,
+          })
+          .then((result) => {
+            this.$q.notify({
+              color: 'green-4',
+              textColor: 'white',
+              icon: 'fas fa-check-circle',
+              message: 'Race added successfully!',
+            });
+            this.close();
+            this.$emit('raceAdded', result.data);
+          })
+          .catch((error) => {
+            console.log(`Error: ${error}`);
           });
-          this.close();
-          this.$emit('raceAdded', result.data);
-        })
-        .catch((error) => {
-          console.log(`Error: ${error}`);
-        });
+      } else {
+        await this.$axios
+          .post('/race', {
+            series: this.series._id,
+            season: this.season._id,
+            pointsTable: this.addRaceModel.pointsTable,
+            track: this.addRaceModel.track,
+            round: this.addRaceModel.round,
+            number: this.addRaceModel.number,
+            type: this.addRaceModel.type,
+            configuration: this.addRaceModel.configuration,
+            date: this.addRaceModel.date,
+          })
+          .then((result) => {
+            this.$q.notify({
+              color: 'green-4',
+              textColor: 'white',
+              icon: 'fas fa-check-circle',
+              message: 'Race added successfully!',
+            });
+            this.close();
+            this.$emit('raceAdded', result.data);
+          })
+          .catch((error) => {
+            console.log(`Error: ${error}`);
+          });
+      }
     },
     getToday() {
       const timeStamp = Date.now();
@@ -205,11 +245,16 @@ export default {
     addRaceValidation() {
       return this.addRaceModel.pointsTable != null && this.addRaceModel.pointsTable.length > 0
           && this.addRaceModel.track != null && this.addRaceModel.track.length > 0
-          && this.addRaceModel.round != null && this.addRaceModel.round.length > 0
-          && this.addRaceModel.number != null && this.addRaceModel.number.length > 0
+          && this.addRaceModel.round > 0 && this.addRaceModel.number > 0
           && this.addRaceModel.type != null && this.addRaceModel.type.length > 0
           && this.addRaceModel.configuration != null && this.addRaceModel.configuration.length > 0
           && this.addRaceModel.date != null && this.addRaceModel.date.length > 0;
+    },
+    mode() {
+      if (this.editing === true) {
+        return 'Edit';
+      }
+      return 'Add';
     },
   },
   watch: {
