@@ -7,7 +7,7 @@
     <q-card style="min-width: 400px">
       <q-card-section>
         <div class="text-h6">
-          Add Series
+          {{mode}} Series
         </div>
       </q-card-section>
 
@@ -33,7 +33,7 @@
         <q-select
           outlined v-model="addSeriesModel.game" :options="loadedGames"
           option-value="_id" option-label="name" label="Game" emit-value map-options
-          :rules="[ val => val && val.length > 0 || 'Please select a game']"
+          :rules="[ val => val.name && val.name.length > 0 || 'Please select a game']"
         />
       </q-card-section>
 
@@ -43,7 +43,13 @@
           @click.stop="close"
         />
         <q-btn
-          flat label="Add Series"
+          v-if="editing"
+          flat label="Delete"
+          text-color="red"
+          @click="deleteSeries"
+        />
+        <q-btn
+          flat label="Save"
           @click="addSeries" :disabled="!addSeriesValidation"
         />
       </q-card-actions>
@@ -60,7 +66,11 @@
 
 export default {
   name: 'Series',
-  props: ['visibility'],
+  props: {
+    editing: Boolean,
+    editingSeries: Object,
+    visibility: Boolean,
+  },
   data() {
     return {
       years: ['2019'],
@@ -74,6 +84,12 @@ export default {
   },
   mounted() {
     this.loadGamesList();
+    if (this.editing === true) {
+      this.addSeriesModel.name = this.editingSeries.name;
+      this.addSeriesModel.game = this.editingSeries.game;
+      this.addSeriesModel.year = this.editingSeries.year;
+      this.$forceUpdate();
+    }
   },
   methods: {
     async loadGamesList() {
@@ -87,25 +103,82 @@ export default {
         });
     },
     async addSeries() {
-      console.log(this.addSeriesModel);
+      if (this.editing === true) {
+        await this.$axios
+          .patch(`/series/${this.editingSeries._id}`, {
+            name: this.addSeriesModel.name,
+            year: this.addSeriesModel.year,
+            game: this.addSeriesModel.game,
+          })
+          .then((response) => {
+            this.$q.notify({
+              color: 'green-4',
+              textColor: 'white',
+              icon: 'fas fa-check-circle',
+              message: 'Series updated successfully!',
+            });
+            this.$emit('seriesEdited', response.data);
+            this.close();
+          })
+          .catch((error) => {
+            console.log(`Error: ${error}`);
+            this.$q.notify({
+              color: 'red-4',
+              textColor: 'white',
+              icon: 'fas fa-cross-circle',
+              message: 'Error updating series!',
+            });
+          });
+      } else {
+        await this.$axios
+          .post('/series', {
+            name: this.addSeriesModel.name,
+            year: this.addSeriesModel.year,
+            game: this.addSeriesModel.game,
+          })
+          .then((response) => {
+            this.$q.notify({
+              color: 'green-4',
+              textColor: 'white',
+              icon: 'fas fa-check-circle',
+              message: 'Series added successfully!',
+            });
+            console.log(response.data);
+            this.$emit('seriesAdded', response.data);
+            this.close();
+          })
+          .catch((error) => {
+            console.log(`Error: ${error}`);
+            this.$q.notify({
+              color: 'red-4',
+              textColor: 'white',
+              icon: 'fas fa-cross-circle',
+              message: 'Error adding series!',
+            });
+          });
+      }
+    },
+    async deleteSeries() {
       await this.$axios
-        .post('/series', {
-          name: this.addSeriesModel.name,
-          year: this.addSeriesModel.year,
-          game: this.addSeriesModel.game,
-        })
-        .then((response) => {
+        .delete(`/series/${this.editingSeries._id}`)
+        .then(() => {
           this.$q.notify({
             color: 'green-4',
             textColor: 'white',
             icon: 'fas fa-check-circle',
-            message: 'Series added successfully!',
+            message: 'Series deleted successfully!',
           });
-          this.$emit('seriesAdded', response.data);
           this.close();
+          this.$emit('seriesDeleted');
         })
         .catch((error) => {
           console.log(`Error: ${error}`);
+          this.$q.notify({
+            color: 'red-4',
+            textColor: 'white',
+            icon: 'fas fa-cross-circle',
+            message: 'Error deleting series!',
+          });
         });
     },
     close() {
@@ -115,8 +188,14 @@ export default {
   computed: {
     addSeriesValidation() {
       return this.addSeriesModel.name != null && this.addSeriesModel.name.length > 0
-          && this.addSeriesModel.year != null && this.addSeriesModel.year.length > 0
-          && this.addSeriesModel.game != null && this.addSeriesModel.game.length > 0;
+          && this.addSeriesModel.year > 2018 && this.addSeriesModel.year < 2100
+          && this.addSeriesModel.game != null && this.addSeriesModel.game.name.length > 0;
+    },
+    mode() {
+      if (this.editing === true) {
+        return 'Edit';
+      }
+      return 'Add';
     },
   },
 };

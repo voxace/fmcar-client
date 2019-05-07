@@ -192,13 +192,19 @@ export default {
               color: 'green-4',
               textColor: 'white',
               icon: 'fas fa-check-circle',
-              message: 'Race added successfully!',
+              message: 'Race updated successfully!',
             });
             this.close();
             this.$emit('raceAdded');
           })
           .catch((error) => {
             console.log(`Error: ${error}`);
+            this.$q.notify({
+              color: 'red-4',
+              textColor: 'white',
+              icon: 'fas fa-cross-circle',
+              message: 'Error updating race!',
+            });
           });
       } else {
         await this.$axios
@@ -225,6 +231,12 @@ export default {
           })
           .catch((error) => {
             console.log(`Error: ${error}`);
+            this.$q.notify({
+              color: 'red-4',
+              textColor: 'white',
+              icon: 'fas fa-cross-circle',
+              message: 'Error adding race!',
+            });
           });
       }
     },
@@ -243,6 +255,12 @@ export default {
         })
         .catch((error) => {
           console.log(`Error: ${error}`);
+          this.$q.notify({
+            color: 'red-4',
+            textColor: 'white',
+            icon: 'fas fa-cross-circle',
+            message: 'Error deleting race!',
+          });
         });
     },
     getToday() {

@@ -8,10 +8,10 @@
       </div>
 
       <!-- SERIES SELECTION -->
-      <div class="col-xs-3 q-pr-sm">
+      <div class="col-xs-12 col-sm-3 q-px-sm">
         <q-select outlined v-model="selectedYear" :options="years" label="Year" />
       </div>
-      <div class="col-xs-6 q-px-sm">
+      <div class="col-xs-12 col-sm-6 q-px-sm">
         <q-select
           outlined v-model="selectedSeries" :options="loadedSeriesList"
           option-label="name" option-value="_id" label="Series" map-options
@@ -24,9 +24,18 @@
               />
             </q-avatar>
           </template>
+          <template v-slot:after v-if="editingAllowed">
+            <q-avatar>
+              <q-btn
+                round color="primary" icon="edit"
+                :disabled="selectedSeries == null"
+                size="xs" @click="editSeries()"
+              />
+            </q-avatar>
+          </template>
         </q-select>
       </div>
-      <div class="col-xs-3 q-pl-sm">
+      <div class="col-xs-12 col-sm-3 q-px-sm">
         <q-select
           outlined v-model="selectedSeason" :options="seasonList"
           option-label="season" option-value="_id" label="Season" map-options
@@ -36,6 +45,15 @@
               <q-spinner
                 color="primary"
                 size="2em"
+              />
+            </q-avatar>
+          </template>
+          <template v-slot:after v-if="editingAllowed">
+            <q-avatar>
+              <q-btn
+                round color="primary" icon="edit"
+                :disabled="selectedSeason == null"
+                size="xs" @click="editSeason()"
               />
             </q-avatar>
           </template>
@@ -69,10 +87,10 @@
                       <th class="text-center" width="70">Round</th>
                       <th class="text-center" width="70">Race</th>
                       <th class="text-left">Track</th>
-                      <th class="text-left">Type</th>
-                      <th class="text-left">Configuration</th>
+                      <th class="text-left" v-if="$q.screen.gt.xs">Type</th>
+                      <th class="text-left" v-if="$q.screen.gt.xs">Configuration</th>
                       <th class="text-center" width="100">Date</th>
-                      <th class="text-center" width="50">Edit</th>
+                      <th class="text-center" width="50" v-if="editingAllowed">Edit</th>
                     </tr>
                   </thead>
                   <tbody v-if="loadedSeason.races != null && loadedSeason.races.length > 0">
@@ -83,10 +101,10 @@
                       <td class="text-center">{{race.round}}</td>
                       <td class="text-center">{{race.number}}</td>
                       <td>{{race.track.name}}</td>
-                      <td>{{race.type}}</td>
-                      <td>{{race.configuration}}</td>
+                      <td v-if="$q.screen.gt.xs">{{race.type}}</td>
+                      <td v-if="$q.screen.gt.xs">{{race.configuration}}</td>
                       <td>{{race.date}}</td>
-                      <td>
+                      <td v-if="editingAllowed">
                         <q-btn
                           round color="primary" icon="edit"
                           size="xs" @click="editRace(race)"
@@ -114,7 +132,7 @@
     </div>
 
     <!-- FLOATING BUTTON -->
-    <q-page-sticky position="bottom-right" :offset="[18, 18]">
+    <q-page-sticky v-if="editingAllowed" position="bottom-right" :offset="[18, 18]">
       <q-fab
         icon="add"
         direction="up"
@@ -152,23 +170,27 @@
 
     <!-- ADD SERIES DIALOG -->
     <add-series-dialog
-      :visibility="addSeriesDialog && addSeriesDialog" :editing="editing"
+      v-if="addSeriesDialog" :visibility="addSeriesDialog"
+      :editing="editing" :editingSeries="selectedSeries"
       @close="addSeriesDialog = false" @seriesAdded="seriesAdded"
-    />
-
-    <!-- ADD RACE DIALOG -->
-    <add-race-dialog
-      v-if="selectedSeries && selectedSeason && addRaceDialog" :editing="editing"
-      :series="selectedSeries" :season="selectedSeason"
-      :visibility="addRaceDialog" :editingRace="editingRace"
-      @close="addRaceDialog = false" @raceAdded="raceAdded"
+      @seriesEdited="seriesEdited"
     />
 
     <!-- ADD SEASON DIALOG -->
     <add-season-dialog
       v-if="selectedSeries && addSeasonDialog"
-      :series="selectedSeries" :visibility="addSeasonDialog" :editing="editing"
+      :editing="editing" :editingSeason="selectedSeason"
+      :series="selectedSeries" :visibility="addSeasonDialog"
       @close="addSeasonDialog = false" @seasonAdded="seasonAdded"
+    />
+
+    <!-- ADD RACE DIALOG -->
+    <add-race-dialog
+      v-if="selectedSeries && selectedSeason && addRaceDialog"
+      :editing="editing" :editingRace="editingRace"
+      :series="selectedSeries" :season="selectedSeason"
+      :visibility="addRaceDialog"
+      @close="addRaceDialog = false" @raceAdded="raceAdded"
     />
 
   </q-page>
@@ -225,6 +247,7 @@ export default {
   methods: {
     async loadSeriesList() {
       this.seriesLoading = true;
+      this.selectedSeries = null;
       await this.$axios
         .get(`/series/year/${this.selectedYear}`)
         .then((response) => {
@@ -257,7 +280,6 @@ export default {
       this.loadSeasonData();
     },
     seriesAdded(series) {
-      console.log(`Seasons: ${series.seasons}`);
       this.loadedSeriesList.push(series);
       this.selectedYear = series.year;
       this.selectedSeries = series;
@@ -269,6 +291,18 @@ export default {
         this.selectedSeason = this.selectedSeries.seasons[0];
       }, 200);
     },
+    seriesEdited(series) {
+      this.seriesLoading = true;
+      this.selectedYear = series.year;
+      setTimeout(() => {
+        for (let i = 0; i < this.loadedSeriesList.length; i += 1) {
+          if (this.loadedSeriesList[i]._id === series._id) {
+            this.selectedSeries = this.loadedSeriesList[i];
+          }
+        }
+      }, 1000);
+      this.seriesLoading = false;
+    },
     addRace() {
       this.editing = false;
       this.addRaceDialog = true;
@@ -278,6 +312,14 @@ export default {
       this.addRaceDialog = true;
       this.editingRace = race;
     },
+    editSeries() {
+      this.editing = true;
+      this.addSeriesDialog = true;
+    },
+    editSeason() {
+      this.editing = true;
+      this.addSeasonDialog = true;
+    },
   },
   computed: {
     seasonList() {
@@ -286,6 +328,9 @@ export default {
       }
       return [];
     },
+    editingAllowed() {
+      return true;
+    },
   },
   watch: {
     selectedYear() {
@@ -293,9 +338,12 @@ export default {
     },
     selectedSeries() {
       this.selectedSeason = null;
+      this.loadedSeason = null;
     },
     selectedSeason() {
-      this.loadSeasonData();
+      if (this.selectedSeason != null) {
+        this.loadSeasonData();
+      }
     },
   },
 };
