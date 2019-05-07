@@ -7,14 +7,14 @@
 
       <q-card-section>
         <div class="text-h6">
-          Add Season {{ getNextSeason }} to:
+          {{mode}} Season {{ getNextSeason }}:
         </div>
         <div class="text-subtitle2">
           Series: {{series.name}}
         </div>
       </q-card-section>
 
-      <q-card-section>
+      <q-card-section v-if="!editing">
         <q-checkbox v-model="copyRaces" label="Copy races from another season?" />
       </q-card-section>
 
@@ -36,7 +36,16 @@
           @click.stop="close"
         />
         <q-btn
-          flat label="Add Season" @click="addSeason"
+          v-if="editing"
+          flat label="Delete"
+          text-color="red"
+          @click="deleteSeason"
+        />
+        <q-btn
+          v-else
+          flat label="Save"
+          text-color="green"
+          @click="addSeason"
         />
       </q-card-actions>
 
@@ -53,6 +62,8 @@
 export default {
   name: 'addSeasonDialog',
   props: {
+    editing: Boolean,
+    editingSeason: Object,
     series: Object,
     visibility: Boolean,
   },
@@ -105,16 +116,48 @@ export default {
           });
       }
     },
+    async deleteSeason() {
+      await this.$axios
+        .delete(`/season/${this.editingSeason._id}`)
+        .then(() => {
+          this.$q.notify({
+            color: 'green-4',
+            textColor: 'white',
+            icon: 'fas fa-check-circle',
+            message: 'Season deleted successfully!',
+          });
+          this.close();
+          this.$emit('seasonDeleted');
+        })
+        .catch((error) => {
+          console.log(`Error: ${error}`);
+          this.$q.notify({
+            color: 'red-4',
+            textColor: 'white',
+            icon: 'fas fa-cross-circle',
+            message: 'Error deleting season!',
+          });
+        });
+    },
     close() {
       this.$emit('close');
     },
   },
   computed: {
     getNextSeason() {
+      if (this.editing === true) {
+        return this.editingSeason.season;
+      }
       if (this.series.seasons) {
         return this.series.seasons.length + 1;
       }
       return 1;
+    },
+    mode() {
+      if (this.editing === true) {
+        return 'Edit';
+      }
+      return 'Add';
     },
   },
 };

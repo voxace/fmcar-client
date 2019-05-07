@@ -139,7 +139,7 @@
         color="positive"
       >
 
-        <q-fab-action @click="addSeriesDialog = true" color="primary" icon="event_note" >
+        <q-fab-action @click="addSeries" color="primary" icon="event_note" >
           <q-tooltip anchor="center left" self="center right" >
             Add Series
           </q-tooltip>
@@ -147,7 +147,7 @@
 
         <q-fab-action
           v-if="selectedSeries"
-          @click="addSeasonDialog = true"
+          @click="addSeason"
           color="primary" icon="event"
         >
           <q-tooltip anchor="center left" self="center right" >
@@ -182,6 +182,7 @@
       :editing="editing" :editingSeason="selectedSeason"
       :series="selectedSeries" :visibility="addSeasonDialog"
       @close="addSeasonDialog = false" @seasonAdded="seasonAdded"
+      @seasonDeleted="seasonDeleted"
     />
 
     <!-- ADD RACE DIALOG -->
@@ -303,9 +304,30 @@ export default {
       }, 1000);
       this.seriesLoading = false;
     },
+    async seasonDeleted() {
+      this.seriesLoading = true;
+      const currentSeries = this.selectedSeries;
+      await this.loadSeriesList();
+      setTimeout(() => {
+        for (let i = 0; i < this.loadedSeriesList.length; i += 1) {
+          if (this.loadedSeriesList[i]._id === currentSeries._id) {
+            this.selectedSeries = this.loadedSeriesList[i];
+          }
+        }
+      }, 100);
+      this.seriesLoading = false;
+    },
     addRace() {
       this.editing = false;
       this.addRaceDialog = true;
+    },
+    addSeries() {
+      this.editing = false;
+      this.addSeriesDialog = true;
+    },
+    addSeason() {
+      this.editing = false;
+      this.addSeasonDialog = true;
     },
     editRace(race) {
       this.editing = true;
