@@ -39,7 +39,7 @@
         <q-select
           outlined v-model="addRaceModel.track" :options="loadedTracks"
           option-value="_id" option-label="name" label="Track" emit-value map-options
-          :rules="[ val => val && val.length > 0 || 'Please select a track']"
+          :rules="[ val => val && val.name.length > 0 || 'Please select a track']"
         />
       </q-card-section>
 
@@ -286,7 +286,7 @@ export default {
   computed: {
     addRaceValidation() {
       return this.addRaceModel.pointsTable != null && this.addRaceModel.pointsTable.length > 0
-          && this.addRaceModel.track != null && this.addRaceModel.track.length > 0
+          && this.addRaceModel.track != null && this.addRaceModel.track.name.length > 0
           && this.addRaceModel.round > 0 && this.addRaceModel.number > 0
           && this.addRaceModel.type != null && this.addRaceModel.type.length > 0
           && this.addRaceModel.configuration != null && this.addRaceModel.configuration.length > 0
