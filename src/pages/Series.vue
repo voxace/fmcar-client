@@ -15,7 +15,15 @@
         <q-select
           outlined v-model="selectedSeries" :options="loadedSeriesList"
           option-label="name" option-value="_id" label="Series" map-options
+          :disable="selectedYear == null" :disabled="selectedYear == null"
         >
+          <template v-slot:no-option>
+            <q-item>
+              <q-item-section>
+                None available
+              </q-item-section>
+            </q-item>
+          </template>
           <template v-slot:append v-if="seriesLoading">
             <q-avatar>
               <q-spinner
@@ -39,7 +47,15 @@
         <q-select
           outlined v-model="selectedSeason" :options="seasonList"
           option-label="season" option-value="_id" label="Season" map-options
+          :disable="selectedSeries == null" :disabled="selectedSeries == null"
         >
+          <template v-slot:no-option>
+            <q-item>
+              <q-item-section>
+                None available
+              </q-item-section>
+            </q-item>
+          </template>
           <template v-slot:append v-if="seriesLoading">
             <q-avatar>
               <q-spinner
