@@ -19,65 +19,72 @@
 
       <q-card-section>
         <div class="row">
-          <div class="col q-pr-sm">
+          <div class="col-xs-4 q-pr-sm">
             <q-input
               outlined v-model="addRaceModel.round"
-              autofocus type="number" label="Round"
+              autofocus type="number" label="Round" :dense="$q.screen.lt.sm"
               :rules="[ val => val && val > 0 && val < 100 || 'Please enter a round']"
             />
           </div>
-          <div class="col q-pl-sm">
+          <div class="col-xs-4 q-px-sm">
             <q-input
-              outlined v-model="addRaceModel.number" type="number" label="Race Number"
+              outlined v-model="addRaceModel.number" type="number"
+              label="Race Number" :dense="$q.screen.lt.sm"
               :rules="[ val => val && val > 0 && val < 10 || 'Please enter a race number']"
             />
           </div>
+          <div class="col-xs-4 q-pl-sm">
+            <q-input
+              outlined v-model="addRaceModel.date"
+              label="Date" mask="##-##-####" :dense="$q.screen.lt.sm"
+              :rules="[ val => dateIsValid() || 'Please enter a valid date']"
+            >
+              <template v-slot:append>
+                <q-icon name="event" class="cursor-pointer">
+                  <q-popup-proxy>
+                    <q-date v-model="rawDate" />
+                  </q-popup-proxy>
+                </q-icon>
+              </template>
+            </q-input>
+          </div>
+          <div class="col-xs-6 q-pr-sm">
+            <q-select
+              outlined v-model="addRaceModel.track"
+              :options="loadedTracks" :dense="$q.screen.lt.sm"
+              option-value="_id" option-label="name" label="Track" emit-value map-options
+              :rules="[ val => val != null || 'Please select a track']"
+            />
+          </div>
+          <div class="col-xs-6 q-pl-sm">
+            <q-select
+              outlined v-model="addRaceModel.pointsTable"
+              :options="loadedPointsTables" :dense="$q.screen.lt.sm"
+              option-value="_id" option-label="type" label="Points Table" emit-value map-options
+              :rules="[ val => val && val.length > 0 || 'Please select a points table']"
+            />
+          </div>
+          <div
+            class="col-xs-6 col-sm-12"
+            v-bind:class="{ 'q-pr-sm': $q.screen.lt.sm }"
+          >
+            <q-input
+              outlined v-model="addRaceModel.type"
+              label="Type" :dense="$q.screen.lt.sm"
+              :rules="[ val => val && val.length > 0 || 'Please enter the type of race']"
+            />
+          </div>
+          <div
+            class="col-xs-6 col-sm-12"
+            v-bind:class="{ 'q-pl-sm': $q.screen.lt.sm }"
+          >
+            <q-input
+              outlined v-model="addRaceModel.configuration"
+              label="Configuration" :dense="$q.screen.lt.sm"
+              :rules="[ val => val && val.length > 0 || 'Please enter the track configuration']"
+            />
+          </div>
         </div>
-      </q-card-section>
-
-      <q-card-section>
-        <q-select
-          outlined v-model="addRaceModel.track" :options="loadedTracks"
-          option-value="_id" option-label="name" label="Track" emit-value map-options
-          :rules="[ val => val != null || 'Please select a track']"
-        />
-      </q-card-section>
-
-      <q-card-section>
-        <q-select
-          outlined v-model="addRaceModel.pointsTable" :options="loadedPointsTables"
-          option-value="_id" option-label="type" label="Points Table" emit-value map-options
-          :rules="[ val => val && val.length > 0 || 'Please select a points table']"
-        />
-      </q-card-section>
-
-      <q-card-section>
-        <q-input
-          outlined v-model="addRaceModel.type" label="Type"
-          :rules="[ val => val && val.length > 0 || 'Please enter the type of race']"
-        />
-      </q-card-section>
-
-      <q-card-section>
-        <q-input
-          outlined v-model="addRaceModel.configuration" label="Configuration"
-          :rules="[ val => val && val.length > 0 || 'Please enter the track configuration']"
-        />
-      </q-card-section>
-
-      <q-card-section>
-        <q-input
-          outlined v-model="addRaceModel.date" label="Date" mask="##-##-####"
-          :rules="[ val => dateIsValid() || 'Please enter a valid date']"
-        >
-          <template v-slot:append>
-            <q-icon name="event" class="cursor-pointer">
-              <q-popup-proxy>
-                <q-date v-model="rawDate" />
-              </q-popup-proxy>
-            </q-icon>
-          </template>
-        </q-input>
       </q-card-section>
 
       <q-card-actions align="right" class="text-primary">

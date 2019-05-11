@@ -9,13 +9,17 @@
 
       <!-- SERIES SELECTION -->
       <div class="col-xs-12 col-sm-3 q-px-sm">
-        <q-select outlined v-model="selectedYear" :options="years" label="Year" />
+        <q-select
+          outlined v-model="selectedYear" :options="years"
+          label="Year" v-bind:class="{ 'q-py-xs': $q.screen.lt.sm }"
+        />
       </div>
       <div class="col-xs-12 col-sm-6 q-px-sm">
         <q-select
           outlined v-model="selectedSeries" :options="loadedSeriesList"
           option-label="name" option-value="_id" label="Series" map-options
           :disable="selectedYear == null" :disabled="selectedYear == null"
+          v-bind:class="{ 'q-py-xs': $q.screen.lt.sm }"
         >
           <template v-slot:no-option>
             <q-item>
@@ -48,6 +52,7 @@
           outlined v-model="selectedSeason" :options="seasonList"
           option-label="season" option-value="_id" label="Season" map-options
           :disable="selectedSeries == null" :disabled="selectedSeries == null"
+          v-bind:class="{ 'q-py-xs': $q.screen.lt.sm }"
         >
           <template v-slot:no-option>
             <q-item>
@@ -100,12 +105,12 @@
                 <q-markup-table seperator="cell" flat bordered>
                   <thead>
                     <tr>
-                      <th class="text-center" width="70">Round</th>
-                      <th class="text-center" width="70">Race</th>
+                      <th class="text-center" width="40">Round</th>
+                      <th class="text-center" width="40">Race</th>
                       <th class="text-left">Track</th>
                       <th class="text-left" v-if="$q.screen.gt.xs">Type</th>
                       <th class="text-left" v-if="$q.screen.gt.xs">Configuration</th>
-                      <th class="text-center" width="100">Date</th>
+                      <th class="text-center" width="90">Date</th>
                       <th class="text-center" width="50" v-if="editingAllowed">Edit</th>
                     </tr>
                   </thead>

@@ -12,29 +12,30 @@
       </q-card-section>
 
       <q-card-section>
-        <q-input
-          outlined v-model="addSeriesModel.name" label="Name" autofocus
-          :rules="[ val => val && val.length > 0 || 'Please enter a name for the series']"
-        />
-      </q-card-section>
-
-      <q-card-section>
         <div class="row">
-          <div class="col q-pr-sm">
+          <div class="col-xs-12">
             <q-input
-              outlined v-model="addSeriesModel.year" type="number" label="Year"
+              outlined v-model="addSeriesModel.name"
+              label="Name" autofocus :dense="$q.screen.lt.sm"
+              :rules="[ val => val && val.length > 0 || 'Please enter a name for the series']"
+            />
+          </div>
+          <div class="col-xs-12">
+            <q-input
+              outlined v-model="addSeriesModel.year" type="number"
+              label="Year" :dense="$q.screen.lt.sm"
               :rules="[ val => val && val > 2018 && val < 2100 || 'Please enter a valid year']"
             />
           </div>
+          <div class="col-xs-12">
+            <q-select
+              outlined v-model="addSeriesModel.game"
+              :options="loadedGames" :dense="$q.screen.lt.sm"
+              option-value="_id" option-label="name" label="Game" emit-value map-options
+              :rules="[ val => val.name && val.name.length > 0 || 'Please select a game']"
+            />
+          </div>
         </div>
-      </q-card-section>
-
-      <q-card-section>
-        <q-select
-          outlined v-model="addSeriesModel.game" :options="loadedGames"
-          option-value="_id" option-label="name" label="Game" emit-value map-options
-          :rules="[ val => val.name && val.name.length > 0 || 'Please select a game']"
-        />
       </q-card-section>
 
       <q-card-actions align="right" class="text-primary">
