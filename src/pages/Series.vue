@@ -148,12 +148,22 @@
         </q-fab-action>
 
         <q-fab-action
-          v-if="selectedSeries && selectedSeason"
+          v-if="selectedSeries && selectedSeason && tab=='Races'"
           @click="addRace"
           color="primary" icon="directions_car"
         >
           <q-tooltip anchor="center left" self="center right" >
             Add Race
+          </q-tooltip>
+        </q-fab-action>
+
+        <q-fab-action
+          v-if="selectedSeries && selectedSeason && tab=='Teams'"
+          @click="addTeam"
+          color="primary" icon="people"
+        >
+          <q-tooltip anchor="center left" self="center right" >
+            Add Team
           </q-tooltip>
         </q-fab-action>
 
@@ -186,6 +196,15 @@
       @close="addRaceDialog = false" @raceAdded="raceAdded"
     />
 
+    <!-- ADD TEAM DIALOG -->
+    <add-team-dialog
+      v-if="selectedSeries && selectedSeason && addTeamDialog"
+      :editing="editing" :editingTeam="editingTeam"
+      :series="selectedSeries" :season="selectedSeason"
+      :visibility="addTeamDialog"
+      @close="addTeamDialog = false" @teamAdded="teamAdded"
+    />
+
   </q-page>
 </template>
 
@@ -202,6 +221,7 @@ export default {
     addRaceDialog: () => import('components/Series/AddRace.vue'),
     addSeriesDialog: () => import('components/Series/AddSeries.vue'),
     addSeasonDialog: () => import('components/Series/AddSeason.vue'),
+    addTeamDialog: () => import('components/Series/AddTeam.vue'),
     raceTable: () => import('components/Series/RaceTable.vue'),
     teamsTable: () => import('components/Series/TeamsTable.vue'),
   },
@@ -227,6 +247,7 @@ export default {
       addRaceDialog: false,
       addSeriesDialog: false,
       addSeasonDialog: false,
+      addTeamDialog: false,
       editingRace: {
         pointsTable: null,
         track: null,
@@ -236,6 +257,7 @@ export default {
         configuration: null,
         date: null,
       },
+      editingTeam: null,
     };
   },
   methods: {
@@ -265,6 +287,9 @@ export default {
       this.$q.loading.hide();
     },
     raceAdded() {
+      this.loadSeasonData();
+    },
+    teamAdded() {
       this.loadSeasonData();
     },
     seasonAdded(season) {
@@ -321,6 +346,10 @@ export default {
     addSeason() {
       this.editing = false;
       this.addSeasonDialog = true;
+    },
+    addTeam() {
+      this.editing = false;
+      this.addTeamDialog = true;
     },
     editRace(race) {
       this.editing = true;
