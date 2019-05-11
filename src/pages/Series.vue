@@ -102,50 +102,21 @@
             <!-- RACES TABLE -->
             <q-tab-panel name="Races">
               <div v-if="loadedSeason != null" class="col-xs-12 q-py-md">
-                <q-markup-table seperator="cell" flat bordered>
-                  <thead>
-                    <tr>
-                      <th class="text-center" width="40">Round</th>
-                      <th class="text-center" width="40">Race</th>
-                      <th class="text-left">Track</th>
-                      <th class="text-left" v-if="$q.screen.gt.xs">Type</th>
-                      <th class="text-left" v-if="$q.screen.gt.xs">Configuration</th>
-                      <th class="text-center" width="90">Date</th>
-                      <th class="text-center" width="50" v-if="editingAllowed">Edit</th>
-                    </tr>
-                  </thead>
-                  <tbody v-if="loadedSeason.races != null && loadedSeason.races.length > 0">
-                    <tr
-                      v-for="race in loadedSeason.races"
-                      :key="race._id"
-                    >
-                      <td class="text-center">{{race.round}}</td>
-                      <td class="text-center">{{race.number}}</td>
-                      <td>{{race.track.name}}</td>
-                      <td v-if="$q.screen.gt.xs">{{race.type}}</td>
-                      <td v-if="$q.screen.gt.xs">{{race.configuration}}</td>
-                      <td>{{race.date}}</td>
-                      <td v-if="editingAllowed">
-                        <q-btn
-                          round color="primary" icon="edit"
-                          size="xs" @click="editRace(race)"
-                        />
-                      </td>
-                    </tr>
-                  </tbody>
-                  <tbody v-else>
-                    <tr>
-                      <td colspan="6" class="text-center">No data found. Add a race...</td>
-                    </tr>
-                  </tbody>
-                </q-markup-table>
+                <race-table
+                  :loadedSeason="loadedSeason" :editingAllowed="editingAllowed"
+                  @editRace="editRace"
+                />
               </div>
             </q-tab-panel>
 
             <!-- TEAMS TABLE -->
             <q-tab-panel name="Teams">
-              <div class="text-h6">Teams</div>
-              No teams yet!
+              <div v-if="loadedSeason != null" class="col-xs-12 q-py-md">
+                <teams-table
+                  :loadedSeason="loadedSeason" :editingAllowed="editingAllowed"
+                  @editRace="editRace"
+                />
+              </div>
             </q-tab-panel>
 
           </q-tab-panels>
@@ -228,9 +199,11 @@
 export default {
   name: 'Series',
   components: {
-    addRaceDialog: () => import('components/addRace.vue'),
-    addSeriesDialog: () => import('components/addSeries.vue'),
-    addSeasonDialog: () => import('components/addSeason.vue'),
+    addRaceDialog: () => import('components/Series/AddRace.vue'),
+    addSeriesDialog: () => import('components/Series/AddSeries.vue'),
+    addSeasonDialog: () => import('components/Series/AddSeason.vue'),
+    raceTable: () => import('components/Series/RaceTable.vue'),
+    teamsTable: () => import('components/Series/TeamsTable.vue'),
   },
   meta: {
     title: 'Series',
@@ -243,7 +216,6 @@ export default {
   },
   data() {
     return {
-      editing: false,
       seriesLoading: false,
       tab: 'Races',
       selectedYear: null,
