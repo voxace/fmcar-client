@@ -39,16 +39,16 @@
             />
             <q-select
               outlined use-input v-model="addNewTeamModel.driver_a"
-              :options="user_options" :dense="$q.screen.lt.sm"
+              :options="user_options_a" :dense="$q.screen.lt.sm"
               option-value="_id" option-label="name" label="Driver A"
-              emit-value map-options  @filter="filterFn"
+              emit-value map-options  @filter="filterDriversA"
               :rules="[ val => val != null || 'Please select a driver']"
             />
             <q-select
               outlined use-input v-model="addNewTeamModel.driver_b"
-              :options="user_options" :dense="$q.screen.lt.sm"
+              :options="user_options_b" :dense="$q.screen.lt.sm"
               option-value="_id" option-label="name" label="Driver B [Optional]"
-              emit-value map-options  @filter="filterFn"
+              emit-value map-options  @filter="filterDriversB"
             />
           </q-tab-panel>
           <q-tab-panel name="Existing">
@@ -56,7 +56,7 @@
               outlined use-input v-model="addExistingTeamModel"
               :options="team_options" :dense="$q.screen.lt.sm"
               option-value="_id" option-label="name" label="Team"
-              emit-value map-options  @filter="filterFn"
+              emit-value map-options  @filter="filterTeams"
               :rules="[ val => val != null || 'Please select a team']"
             />
           </q-tab-panel>
@@ -72,12 +72,13 @@
           v-if="editing"
           flat label="Delete"
           text-color="red"
-          @click="deleteTeam"
+          @click="removeTeam"
         />
         <q-btn
           flat label="Save"
           text-color="green"
-          @click="addTeam" :disabled="!addRaceValidation"
+          @click="save"
+          :disabled="!addTeamValidation"
         />
       </q-card-actions>
 
@@ -101,8 +102,10 @@ export default {
       tab: 'New',
       loadedSeries: [],
       loadedTeams: [],
+      loadedUsers: [],
       team_options: [],
-      user_options: [],
+      user_options_a: [],
+      user_options_b: [],
       addExistingTeamModel: null,
       addNewTeamModel: {
         name: null,
@@ -113,23 +116,50 @@ export default {
   },
   mounted() {
     this.loadTeamList();
+    this.loadUserList();
     if (this.editing === true) {
       this.addNewTeamModel = this.editingTeam;
       this.$forceUpdate();
     }
   },
   methods: {
-    filterFn(val, update) {
+    filterTeams(val, update) {
       if (val === '') {
         update(() => {
-          this.options = this.loadedTeams;
+          this.team_options = this.loadedTeams;
         });
         return;
       }
-
       update(() => {
         const needle = val.toLowerCase();
-        this.options = this.loadedTeams.filter(v => v.toLowerCase().indexOf(needle) > -1);
+        this.team_options = this.loadedTeams
+          .filter(v => v.name.toLowerCase().indexOf(needle) > -1);
+      });
+    },
+    filterDriversA(val, update) {
+      if (val === '') {
+        update(() => {
+          this.user_options_a = this.loadedUsers;
+        });
+        return;
+      }
+      update(() => {
+        const needle = val.toLowerCase();
+        this.user_options_a = this.loadedUsers
+          .filter(v => v.name.toLowerCase().indexOf(needle) > -1);
+      });
+    },
+    filterDriversB(val, update) {
+      if (val === '') {
+        update(() => {
+          this.user_options_b = this.loadedUsers;
+        });
+        return;
+      }
+      update(() => {
+        const needle = val.toLowerCase();
+        this.user_options_b = this.loadedUsers
+          .filter(v => v.name.toLowerCase().indexOf(needle) > -1);
       });
     },
     async loadTeamList() {
@@ -142,54 +172,75 @@ export default {
           console.log(`Error: ${error}`);
         });
     },
-    async addTeam() {
-      if (this.editing === true) {
-        await this.$axios
-          .patch(`/season/${this.season._id}/team/${this.addTeamModel}`)
-          .then(() => {
-            this.$q.notify({
-              color: 'green-4',
-              textColor: 'white',
-              icon: 'fas fa-check-circle',
-              message: 'Team updated successfully!',
-            });
-            this.close();
-            this.$emit('teamAdded');
-          })
-          .catch((error) => {
-            console.log(`Error: ${error}`);
-            this.$q.notify({
-              color: 'red-4',
-              textColor: 'white',
-              icon: 'fas fa-cross-circle',
-              message: 'Error updating race!',
-            });
-          });
+    async loadUserList() {
+      await this.$axios
+        .get('/user')
+        .then((response) => {
+          this.loadedUsers = response.data;
+        })
+        .catch((error) => {
+          console.log(`Error: ${error}`);
+        });
+    },
+    async save() {
+      if (this.tab === 'New' && this.editing === true) {
+        await this.editTeam();
+      } else if (this.tab === 'New' && this.editing === false) {
+        await this.createTeam();
       } else {
-        await this.$axios
-          .post('/race', {
-            // stuff
-          })
-          .then(() => {
-            this.$q.notify({
-              color: 'green-4',
-              textColor: 'white',
-              icon: 'fas fa-check-circle',
-              message: 'Team added successfully!',
-            });
-            this.close();
-            this.$emit('teamAdded');
-          })
-          .catch((error) => {
-            console.log(`Error: ${error}`);
-            this.$q.notify({
-              color: 'red-4',
-              textColor: 'white',
-              icon: 'fas fa-cross-circle',
-              message: 'Error adding race!',
-            });
-          });
+        await this.addTeam();
       }
+    },
+    async addTeam() {
+      await this.$axios
+        .patch(`/season/${this.season._id}/team/${this.addTeamModel}`)
+        .then(() => {
+          this.$q.notify({
+            color: 'green-4',
+            textColor: 'white',
+            icon: 'fas fa-check-circle',
+            message: 'Team added successfully!',
+          });
+          this.close();
+          this.$emit('teamAdded');
+        })
+        .catch((error) => {
+          console.log(`Error: ${error}`);
+          this.$q.notify({
+            color: 'red-4',
+            textColor: 'white',
+            icon: 'fas fa-cross-circle',
+            message: 'Error adding team!',
+          });
+        });
+    },
+    async createTeam() {
+      await this.$axios
+        .post('/team', {
+          // stuff
+        })
+        .then(() => {
+          this.$q.notify({
+            color: 'green-4',
+            textColor: 'white',
+            icon: 'fas fa-check-circle',
+            message: 'Team created successfully!',
+          });
+          this.close();
+          this.$emit('teamAdded');
+        })
+        .catch((error) => {
+          console.log(`Error: ${error}`);
+          this.$q.notify({
+            color: 'red-4',
+            textColor: 'white',
+            icon: 'fas fa-cross-circle',
+            message: 'Error creating team!',
+          });
+        });
+    },
+    async editTeam() {
+      // stuff
     },
     async removeTeam() {
       await this.$axios
@@ -219,8 +270,10 @@ export default {
     },
   },
   computed: {
-    addRaceValidation() {
-      return this.addTeamModel != null;
+    addTeamValidation() {
+      return this.addNewTeamModel.name != null
+        && this.addNewTeamModel.driver_a != null
+        && this.addNewTeamModel.name.length > 0;
     },
     mode() {
       if (this.editing === true) {

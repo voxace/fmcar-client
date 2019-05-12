@@ -373,7 +373,7 @@ export default {
       return [];
     },
     editingAllowed() {
-      return true;
+      return false;
     },
   },
   watch: {
