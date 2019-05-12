@@ -19,6 +19,7 @@
 
       <q-card-section>
         <q-tabs
+          v-if="!editing"
           v-model="tab"
           dense
           class="text-grey"
@@ -29,7 +30,7 @@
           <q-tab name="New" label="New" />
           <q-tab name="Existing" label="Existing" />
         </q-tabs>
-        <q-separator />
+        <q-separator v-if="!editing" />
         <q-tab-panels v-model="tab" animated>
           <q-tab-panel name="New">
             <q-input
@@ -100,7 +101,6 @@ export default {
   data() {
     return {
       tab: 'New',
-      loadedSeries: [],
       loadedTeams: [],
       loadedUsers: [],
       team_options: [],
@@ -118,7 +118,9 @@ export default {
     this.loadTeamList();
     this.loadUserList();
     if (this.editing === true) {
-      this.addNewTeamModel = this.editingTeam;
+      this.addNewTeamModel.name = this.editingTeam.name;
+      this.addNewTeamModel.driver_a = this.editingTeam.driver_a;
+      this.addNewTeamModel.driver_b = this.editingTeam.driver_b;
       this.$forceUpdate();
     }
   },
@@ -217,7 +219,10 @@ export default {
     async createTeam() {
       await this.$axios
         .post('/team', {
-          // stuff
+          name: this.addNewTeamModel.name,
+          driver_a: this.addNewTeamModel.driver_a,
+          driver_b: this.addNewTeamModel.driver_b,
+          season: this.season,
         })
         .then(() => {
           this.$q.notify({
@@ -240,7 +245,31 @@ export default {
         });
     },
     async editTeam() {
-      // stuff
+      await this.$axios
+        .patch(`/team/${this.editingTeam._id}`, {
+          name: this.addNewTeamModel.name,
+          driver_a: this.addNewTeamModel.driver_a,
+          driver_b: this.addNewTeamModel.driver_b,
+        })
+        .then(() => {
+          this.$q.notify({
+            color: 'green-4',
+            textColor: 'white',
+            icon: 'fas fa-check-circle',
+            message: 'Team updated successfully!',
+          });
+          this.close();
+          this.$emit('teamAdded');
+        })
+        .catch((error) => {
+          console.log(`Error: ${error}`);
+          this.$q.notify({
+            color: 'red-4',
+            textColor: 'white',
+            icon: 'fas fa-cross-circle',
+            message: 'Error updating team!',
+          });
+        });
     },
     async removeTeam() {
       await this.$axios

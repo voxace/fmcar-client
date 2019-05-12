@@ -15,15 +15,15 @@
         v-for="team in loadedSeason.teams"
         :key="team._id"
       >
-        <td class="text-left">{{race.round}}</td>
-        <td class="text-left">{{race.number}}</td>
-        <td class="text-left">{{race.track.name}}</td>
-        <td class="text-left">{{race.type}}</td>
-        <td class="text-left">{{race.configuration}}</td>
+        <td class="text-left">{{team.name}}</td>
+        <td class="text-left">{{team.driver_a.name}}</td>
+        <td class="text-left">{{team.driver_a.gamertag}}</td>
+        <td class="text-left">{{team.driver_b.name}}</td>
+        <td class="text-left">{{team.driver_b.gamertag}}</td>
         <td v-if="editingAllowed">
           <q-btn
             round color="primary" icon="edit"
-            size="xs" @click="editRace(race)"
+            size="xs" @click="editTeam(team)"
           />
         </td>
       </tr>
@@ -47,7 +47,7 @@ export default {
     loadedSeason: Object,
   },
   methods: {
-    editRace(team) {
+    editTeam(team) {
       this.$emit('editTeam', team);
     },
   },

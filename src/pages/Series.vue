@@ -114,7 +114,7 @@
               <div v-if="loadedSeason != null" class="col-xs-12 q-py-md">
                 <teams-table
                   :loadedSeason="loadedSeason" :editingAllowed="editingAllowed"
-                  @editRace="editRace"
+                  @editTeam="editTeam"
                 />
               </div>
             </q-tab-panel>
@@ -353,8 +353,8 @@ export default {
     },
     editRace(race) {
       this.editing = true;
-      this.addRaceDialog = true;
       this.editingRace = race;
+      this.addRaceDialog = true;
     },
     editSeries() {
       this.editing = true;
@@ -363,6 +363,11 @@ export default {
     editSeason() {
       this.editing = true;
       this.addSeasonDialog = true;
+    },
+    editTeam(team) {
+      this.editing = true;
+      this.editingTeam = team;
+      this.addTeamDialog = true;
     },
   },
   computed: {
