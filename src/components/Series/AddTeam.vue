@@ -32,6 +32,7 @@
         </q-tabs>
         <q-separator v-if="!editing" />
         <q-tab-panels v-model="tab" animated>
+          <!--- NEW TEAM --->
           <q-tab-panel name="New">
             <q-input
               outlined v-model="addNewTeamModel.name"
@@ -52,13 +53,13 @@
               emit-value map-options  @filter="filterDriversB"
             />
           </q-tab-panel>
+          <!--- EXISTING TEAM --->
           <q-tab-panel name="Existing">
             <q-select
               outlined use-input v-model="addExistingTeamModel"
               :options="team_options" :dense="$q.screen.lt.sm"
               option-value="_id" option-label="name" label="Team"
-              emit-value map-options  @filter="filterTeams"
-              :rules="[ val => val != null || 'Please select a team']"
+              @filter="filterTeams" :rules="[ val => val != null || 'Please select a team']"
             />
           </q-tab-panel>
         </q-tab-panels>
@@ -106,7 +107,11 @@ export default {
       team_options: [],
       user_options_a: [],
       user_options_b: [],
-      addExistingTeamModel: null,
+      addExistingTeamModel: {
+        name: null,
+        driver_a: null,
+        driver_b: null,
+      },
       addNewTeamModel: {
         name: null,
         driver_a: null,
@@ -190,31 +195,14 @@ export default {
       } else if (this.tab === 'New' && this.editing === false) {
         await this.createTeam();
       } else {
-        await this.addTeam();
+        await this.copyTeam();
       }
     },
-    async addTeam() {
-      await this.$axios
-        .patch(`/season/${this.season._id}/team/${this.addTeamModel}`)
-        .then(() => {
-          this.$q.notify({
-            color: 'green-4',
-            textColor: 'white',
-            icon: 'fas fa-check-circle',
-            message: 'Team added successfully!',
-          });
-          this.close();
-          this.$emit('teamAdded');
-        })
-        .catch((error) => {
-          console.log(`Error: ${error}`);
-          this.$q.notify({
-            color: 'red-4',
-            textColor: 'white',
-            icon: 'fas fa-cross-circle',
-            message: 'Error adding team!',
-          });
-        });
+    async copyTeam() {
+      this.addNewTeamModel.name = this.addExistingTeamModel.name;
+      this.addNewTeamModel.driver_a = this.addExistingTeamModel.driver_a;
+      this.addNewTeamModel.driver_b = this.addExistingTeamModel.driver_b;
+      await this.createTeam();
     },
     async createTeam() {
       await this.$axios
@@ -300,9 +288,12 @@ export default {
   },
   computed: {
     addTeamValidation() {
-      return this.addNewTeamModel.name != null
+      if (this.tab === 'New') {
+        return this.addNewTeamModel.name != null
         && this.addNewTeamModel.driver_a != null
         && this.addNewTeamModel.name.length > 0;
+      }
+      return this.addExistingTeamModel != null;
     },
     mode() {
       if (this.editing === true) {
