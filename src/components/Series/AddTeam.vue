@@ -34,24 +34,49 @@
         <q-tab-panels v-model="tab" animated>
           <!--- NEW TEAM --->
           <q-tab-panel name="New">
-            <q-input
-              outlined v-model="addNewTeamModel.name"
-              label="Name" :dense="$q.screen.lt.sm"
-              :rules="[ val => val && val.length > 0 || 'Please enter a name']"
-            />
-            <q-select
-              outlined use-input v-model="addNewTeamModel.driver_a"
-              :options="user_options_a" :dense="$q.screen.lt.sm"
-              option-value="_id" option-label="name" label="Driver A"
-              emit-value map-options  @filter="filterDriversA"
-              :rules="[ val => val != null || 'Please select a driver']"
-            />
-            <q-select
-              outlined use-input v-model="addNewTeamModel.driver_b"
-              :options="user_options_b" :dense="$q.screen.lt.sm"
-              option-value="_id" option-label="name" label="Driver B [Optional]"
-              emit-value map-options  @filter="filterDriversB"
-            />
+            <div class="row">
+              <div class="col-xs-12">
+                <q-input
+                  outlined v-model="addNewTeamModel.name"
+                  label="Name" :dense="$q.screen.lt.sm"
+                  :rules="[ val => val && val.length > 0 || 'Please enter a name']"
+                />
+              </div>
+              <div class="col-xs-8">
+                <q-select
+                  outlined use-input v-model="addNewTeamModel.driver_a"
+                  :options="user_options_a" :dense="$q.screen.lt.sm"
+                  option-value="_id" option-label="name" label="Driver A"
+                  emit-value map-options  @filter="filterDriversA"
+                  :rules="[ val => val != null || 'Please select a driver']"
+                />
+              </div>
+              <div class="col-xs-4 q-pl-sm">
+                <q-input
+                  v-model="addNewTeamModel.driver_a_num"
+                  type="number" outlined
+                  label="Number"
+                  :dense="$q.screen.lt.sm"
+                  :rules="[ val => checkNumber(val) != false || 'Already taken']"
+                />
+              </div>
+              <div class="col-xs-8">
+                <q-select
+                  outlined use-input v-model="addNewTeamModel.driver_b"
+                  :options="user_options_b" :dense="$q.screen.lt.sm"
+                  option-value="_id" option-label="name" label="Driver B [Optional]"
+                  emit-value map-options  @filter="filterDriversB"
+                />
+              </div>
+              <div class="col-xs-4 q-pl-sm">
+                <q-input
+                  v-model="addNewTeamModel.driver_b_num"
+                  type="number" outlined
+                  label="Number"
+                  :dense="$q.screen.lt.sm"
+                />
+              </div>
+            </div>
           </q-tab-panel>
           <!--- EXISTING TEAM --->
           <q-tab-panel name="Existing">
@@ -107,15 +132,20 @@ export default {
       team_options: [],
       user_options_a: [],
       user_options_b: [],
+      validNumbers: false,
       addExistingTeamModel: {
         name: null,
         driver_a: null,
         driver_b: null,
+        driver_a_num: null,
+        driver_b_num: null,
       },
       addNewTeamModel: {
         name: null,
         driver_a: null,
         driver_b: null,
+        driver_a_num: null,
+        driver_b_num: null,
       },
     };
   },
@@ -130,6 +160,14 @@ export default {
     }
   },
   methods: {
+    checkNumber(val) {
+      if (Number(val) === 2) {
+        this.validNumbers = false;
+        return false;
+      }
+      this.validNumbers = true;
+      return true;
+    },
     filterTeams(val, update) {
       if (val === '') {
         update(() => {
@@ -202,6 +240,8 @@ export default {
       this.addNewTeamModel.name = this.addExistingTeamModel.name;
       this.addNewTeamModel.driver_a = this.addExistingTeamModel.driver_a;
       this.addNewTeamModel.driver_b = this.addExistingTeamModel.driver_b;
+      this.addNewTeamModel.driver_a_num = this.addExistingTeamModel.driver_a_num;
+      this.addNewTeamModel.driver_b_num = this.addExistingTeamModel.driver_b_num;
       await this.createTeam();
     },
     async createTeam() {
@@ -210,6 +250,8 @@ export default {
           name: this.addNewTeamModel.name,
           driver_a: this.addNewTeamModel.driver_a,
           driver_b: this.addNewTeamModel.driver_b,
+          driver_a_num: this.addNewTeamModel.driver_a_num,
+          driver_b_num: this.addNewTeamModel.driver_b_num,
           season: this.season,
         })
         .then(() => {
@@ -238,6 +280,8 @@ export default {
           name: this.addNewTeamModel.name,
           driver_a: this.addNewTeamModel.driver_a,
           driver_b: this.addNewTeamModel.driver_b,
+          driver_a_num: this.addNewTeamModel.driver_a_num,
+          driver_b_num: this.addNewTeamModel.driver_b_num,
         })
         .then(() => {
           this.$q.notify({
@@ -291,7 +335,9 @@ export default {
       if (this.tab === 'New') {
         return this.addNewTeamModel.name != null
         && this.addNewTeamModel.driver_a != null
-        && this.addNewTeamModel.name.length > 0;
+        && this.addNewTeamModel.name.length > 0
+        && this.addNewTeamModel.driver_a_num > 0
+        && this.validNumbers === true;
       }
       return this.addExistingTeamModel != null;
     },
