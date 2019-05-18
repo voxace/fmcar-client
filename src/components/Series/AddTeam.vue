@@ -49,7 +49,17 @@
                   option-value="_id" option-label="name" label="Driver A"
                   emit-value map-options  @filter="filterDriversA"
                   :rules="[ val => val != null || 'Please select a driver']"
-                />
+                  :disable="loadingUsers" :disabled="loadingUsers"
+                >
+                  <template v-slot:append v-if="loadingUsers">
+                    <q-avatar>
+                      <q-spinner
+                        color="primary"
+                        size="2em"
+                      />
+                    </q-avatar>
+                  </template>
+                </q-select>
               </div>
               <div class="col-xs-4 q-pl-sm">
                 <q-input
@@ -57,8 +67,21 @@
                   type="number" outlined
                   label="Number"
                   :dense="$q.screen.lt.sm"
-                  :rules="[ val => checkNumber(val) != false || 'Already taken']"
-                />
+                  :disable="loadingNumbers" :disabled="loadingNumbers"
+                  :rules="[
+                    val => checkNumber(val) || 'Already taken',
+                    val => val >= 0 || 'Must be positive'
+                  ]"
+                >
+                  <template v-slot:append v-if="loadingNumbers">
+                    <q-avatar>
+                      <q-spinner
+                        color="primary"
+                        size="2em"
+                      />
+                    </q-avatar>
+                  </template>
+                </q-input>
               </div>
               <div class="col-xs-8">
                 <q-select
@@ -66,7 +89,17 @@
                   :options="user_options_b" :dense="$q.screen.lt.sm"
                   option-value="_id" option-label="name" label="Driver B [Optional]"
                   emit-value map-options  @filter="filterDriversB"
-                />
+                  :disable="loadingUsers" :disabled="loadingUsers"
+                >
+                  <template v-slot:append v-if="loadingUsers">
+                    <q-avatar>
+                      <q-spinner
+                        color="primary"
+                        size="2em"
+                      />
+                    </q-avatar>
+                  </template>
+                </q-select>
               </div>
               <div class="col-xs-4 q-pl-sm">
                 <q-input
@@ -74,7 +107,21 @@
                   type="number" outlined
                   label="Number"
                   :dense="$q.screen.lt.sm"
-                />
+                  :disable="loadingNumbers" :disabled="loadingNumbers"
+                  :rules="[
+                    val => checkNumber(val) || 'Already taken',
+                    val => val >= 0 || 'Must be positive'
+                  ]"
+                >
+                  <template v-slot:append v-if="loadingNumbers">
+                    <q-avatar>
+                      <q-spinner
+                        color="primary"
+                        size="2em"
+                      />
+                    </q-avatar>
+                  </template>
+                </q-input>
               </div>
             </div>
           </q-tab-panel>
@@ -85,7 +132,17 @@
               :options="team_options" :dense="$q.screen.lt.sm"
               option-value="_id" option-label="name" label="Team"
               @filter="filterTeams" :rules="[ val => val != null || 'Please select a team']"
-            />
+              :disable="loadingTeams" :disabled="loadingTeams"
+            >
+              <template v-slot:append v-if="loadingTeams">
+                <q-avatar>
+                  <q-spinner
+                    color="primary"
+                    size="2em"
+                  />
+                </q-avatar>
+              </template>
+            </q-select>
           </q-tab-panel>
         </q-tab-panels>
       </q-card-section>
@@ -127,8 +184,12 @@ export default {
   data() {
     return {
       tab: 'New',
+      driverNumbers: [],
       loadedTeams: [],
       loadedUsers: [],
+      loadingNumbers: false,
+      loadingTeams: false,
+      loadingUsers: false,
       team_options: [],
       user_options_a: [],
       user_options_b: [],
@@ -150,18 +211,22 @@ export default {
     };
   },
   mounted() {
-    this.loadTeamList();
     this.loadUserList();
+    this.loadDriverNumbers();
     if (this.editing === true) {
       this.addNewTeamModel.name = this.editingTeam.name;
       this.addNewTeamModel.driver_a = this.editingTeam.driver_a;
       this.addNewTeamModel.driver_b = this.editingTeam.driver_b;
+      this.addNewTeamModel.driver_a_num = this.editingTeam.driver_a_num;
+      this.addNewTeamModel.driver_b_num = this.editingTeam.driver_b_num;
       this.$forceUpdate();
+    } else {
+      this.loadTeamList();
     }
   },
   methods: {
     checkNumber(val) {
-      if (Number(val) === 2) {
+      if (this.driverNumbers.includes(Number(val))) {
         this.validNumbers = false;
         return false;
       }
@@ -207,7 +272,20 @@ export default {
           .filter(v => v.name.toLowerCase().indexOf(needle) > -1);
       });
     },
+    async loadDriverNumbers() {
+      this.loadingNumbers = true;
+      await this.$axios
+        .get(`/team/numbers/${this.season._id}`)
+        .then((response) => {
+          this.driverNumbers = response.data;
+        })
+        .catch((error) => {
+          console.log(`Error: ${error}`);
+        });
+      this.loadingNumbers = false;
+    },
     async loadTeamList() {
+      this.loadingTeams = true;
       await this.$axios
         .get('/team')
         .then((response) => {
@@ -216,8 +294,10 @@ export default {
         .catch((error) => {
           console.log(`Error: ${error}`);
         });
+      this.loadingTeams = false;
     },
     async loadUserList() {
+      this.loadingUsers = true;
       await this.$axios
         .get('/user')
         .then((response) => {
@@ -226,6 +306,7 @@ export default {
         .catch((error) => {
           console.log(`Error: ${error}`);
         });
+      this.loadingUsers = false;
     },
     async save() {
       if (this.tab === 'New' && this.editing === true) {
@@ -305,7 +386,7 @@ export default {
     },
     async removeTeam() {
       await this.$axios
-        .delete(`/team/${this.editingTeam}`)
+        .delete(`/team/${this.editingTeam._id}`)
         .then(() => {
           this.$q.notify({
             color: 'green-4',
