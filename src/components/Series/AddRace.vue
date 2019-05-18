@@ -54,7 +54,17 @@
               :options="loadedTracks" :dense="$q.screen.lt.sm"
               option-value="_id" option-label="name" label="Track" emit-value map-options
               :rules="[ val => val != null || 'Please select a track']"
-            />
+              :disable="loadingTrack" :disabled="loadingTrack"
+            >
+              <template v-slot:append v-if="loadingTrack">
+                <q-avatar>
+                  <q-spinner
+                    color="primary"
+                    size="2em"
+                  />
+                </q-avatar>
+              </template>
+            </q-select>
           </div>
           <div class="col-xs-6 q-pl-sm">
             <q-select
@@ -62,7 +72,17 @@
               :options="loadedPointsTables" :dense="$q.screen.lt.sm"
               option-value="_id" option-label="type" label="Points Table" emit-value map-options
               :rules="[ val => val && val.length > 0 || 'Please select a points table']"
-            />
+              :disable="loadingPointsTables" :disabled="loadingPointsTables"
+            >
+              <template v-slot:append v-if="loadingPointsTables">
+                <q-avatar>
+                  <q-spinner
+                    color="primary"
+                    size="2em"
+                  />
+                </q-avatar>
+              </template>
+            </q-select>
           </div>
           <div
             class="col-xs-6 col-sm-12"
@@ -133,6 +153,8 @@ export default {
       loadedSeries: [],
       loadedTracks: [],
       loadedPointsTables: [],
+      loadingTrack: false,
+      loadingPointsTables: false,
       addRaceModel: {
         pointsTable: null,
         track: null,
@@ -161,6 +183,7 @@ export default {
   },
   methods: {
     async loadTrackList() {
+      this.loadingTrack = true;
       await this.$axios
         .get('/track')
         .then((response) => {
@@ -169,8 +192,10 @@ export default {
         .catch((error) => {
           console.log(`Error: ${error}`);
         });
+      this.loadingTrack = false;
     },
     async loadPointsTablesList() {
+      this.loadingPointsTables = true;
       await this.$axios
         .get('/points')
         .then((response) => {
@@ -179,6 +204,7 @@ export default {
         .catch((error) => {
           console.log(`Error: ${error}`);
         });
+      this.loadingPointsTables = false;
     },
     async addRace() {
       if (this.editing === true) {

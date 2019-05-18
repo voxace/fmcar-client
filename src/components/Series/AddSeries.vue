@@ -33,7 +33,17 @@
               :options="loadedGames" :dense="$q.screen.lt.sm"
               option-value="_id" option-label="name" label="Game" emit-value map-options
               :rules="[ val => val.name && val.name.length > 0 || 'Please select a game']"
-            />
+              :disable="loadingGames" :disabled="loadingGames"
+            >
+              <template v-slot:append v-if="loadingGames">
+                <q-avatar>
+                  <q-spinner
+                    color="primary"
+                    size="2em"
+                  />
+                </q-avatar>
+              </template>
+            </q-select>
           </div>
         </div>
       </q-card-section>
@@ -76,6 +86,7 @@ export default {
     return {
       years: ['2019'],
       loadedGames: [],
+      loadingGames: false,
       addSeriesModel: {
         name: null,
         game: null,
@@ -94,6 +105,7 @@ export default {
   },
   methods: {
     async loadGamesList() {
+      this.loadingGames = true;
       await this.$axios
         .get('/game')
         .then((response) => {
@@ -102,6 +114,7 @@ export default {
         .catch((error) => {
           console.log(`Error: ${error}`);
         });
+      this.loadingGames = false;
     },
     async addSeries() {
       if (this.editing === true) {

@@ -172,16 +172,16 @@ export default {
           type: 'menu',
           menu: [
             {
-              to: '/admin/test1',
-              text: 'Admin Test 1',
+              to: '/admin/games',
+              text: 'Edit Games',
             },
             {
-              to: '/admin/test2',
-              text: 'Admin Test 2',
+              to: '/admin/tracks',
+              text: 'Edit Tracks',
             },
             {
-              to: '/admin/test3',
-              text: 'Admin Test 3',
+              to: '/admin/points',
+              text: 'Edit Points Tables',
             },
           ],
         },
