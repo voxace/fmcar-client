@@ -85,41 +85,38 @@
     <!-- RACES/TEAMS TABS -->
     <div class="row" v-if="loadedSeason != null">
       <div class="col-xs-12 q-pt-md">
-          <q-tabs
-            v-model="tab"
-            dense
-            class="text-grey"
-            active-color="primary"
-            indicator-color="primary"
-            align="justify"
-          >
-            <q-tab name="Races" label="Races" />
-            <q-tab name="Teams" label="Teams" />
-          </q-tabs>
-          <q-separator />
-          <q-tab-panels v-model="tab" animated>
-
-            <!-- RACES TABLE -->
-            <q-tab-panel name="Races">
-              <div v-if="loadedSeason != null" class="col-xs-12 q-py-md">
-                <race-table
-                  :loadedSeason="loadedSeason" :editingAllowed="editingAllowed"
-                  @editRace="editRace"
-                />
-              </div>
-            </q-tab-panel>
-
-            <!-- TEAMS TABLE -->
-            <q-tab-panel name="Teams">
-              <div v-if="loadedSeason != null" class="col-xs-12 q-py-md">
-                <teams-table
-                  :loadedSeason="loadedSeason" :editingAllowed="editingAllowed"
-                  @editTeam="editTeam"
-                />
-              </div>
-            </q-tab-panel>
-
-          </q-tab-panels>
+        <q-tabs
+          v-model="tab"
+          dense
+          class="text-grey"
+          active-color="primary"
+          indicator-color="primary"
+          align="justify"
+        >
+          <q-tab name="Races" label="Races" />
+          <q-tab name="Teams" label="Teams" />
+        </q-tabs>
+        <q-separator />
+        <q-tab-panels v-model="tab" animated>
+          <!-- RACES TABLE -->
+          <q-tab-panel name="Races">
+            <div v-if="loadedSeason != null" class="col-xs-12 q-py-md">
+              <race-table
+                :loadedSeason="loadedSeason" :editingAllowed="editingAllowed"
+                @editRace="editRace"
+              />
+            </div>
+          </q-tab-panel>
+          <!-- TEAMS TABLE -->
+          <q-tab-panel name="Teams">
+            <div v-if="loadedSeason != null" class="col-xs-12 q-py-md">
+              <teams-table
+                :loadedSeason="loadedSeason" :editingAllowed="editingAllowed"
+                @editTeam="editTeam"
+              />
+            </div>
+          </q-tab-panel>
+        </q-tab-panels>
       </div>
     </div>
 
@@ -130,13 +127,13 @@
         direction="up"
         color="positive"
       >
-
+        <!-- ADD SERIES -->
         <q-fab-action @click="addSeries" color="primary" icon="event_note" >
           <q-tooltip anchor="center left" self="center right" >
             Add Series
           </q-tooltip>
         </q-fab-action>
-
+        <!-- ADD SEASON -->
         <q-fab-action
           v-if="selectedSeries"
           @click="addSeason"
@@ -146,7 +143,7 @@
             Add Season
           </q-tooltip>
         </q-fab-action>
-
+        <!-- ADD RACE -->
         <q-fab-action
           v-if="selectedSeries && selectedSeason && tab=='Races'"
           @click="addRace"
@@ -156,7 +153,7 @@
             Add Race
           </q-tooltip>
         </q-fab-action>
-
+        <!-- ADD TEAM -->
         <q-fab-action
           v-if="selectedSeries && selectedSeason && tab=='Teams'"
           @click="addTeam"
@@ -166,7 +163,6 @@
             Add Team
           </q-tooltip>
         </q-fab-action>
-
       </q-fab>
     </q-page-sticky>
 
@@ -378,7 +374,7 @@ export default {
       return [];
     },
     editingAllowed() {
-      return true;
+      return this.$store.state.modules.editingAllowed;
     },
   },
   watch: {

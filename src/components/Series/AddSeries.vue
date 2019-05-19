@@ -24,7 +24,7 @@
             <q-input
               outlined v-model="addSeriesModel.year" type="number"
               label="Year" :dense="$q.screen.lt.sm"
-              :rules="[ val => val && val > 2018 && val < 2100 || 'Please enter a valid year']"
+              :rules="[ val => val && val > 2017 && val < 2100 || 'Please enter a valid year']"
             />
           </div>
           <div class="col-xs-12">
@@ -32,7 +32,7 @@
               outlined v-model="addSeriesModel.game"
               :options="loadedGames" :dense="$q.screen.lt.sm"
               option-value="_id" option-label="name" label="Game" emit-value map-options
-              :rules="[ val => val.name && val.name.length > 0 || 'Please select a game']"
+              :rules="[ val => val.length > 0 || 'Please select a game']"
               :disable="loadingGames" :disabled="loadingGames"
             >
               <template v-slot:append v-if="loadingGames">
@@ -89,7 +89,10 @@ export default {
       loadingGames: false,
       addSeriesModel: {
         name: null,
-        game: null,
+        game: {
+          _id: null,
+          name: null,
+        },
         year: null,
       },
     };
@@ -203,7 +206,7 @@ export default {
     addSeriesValidation() {
       return this.addSeriesModel.name != null && this.addSeriesModel.name.length > 0
           && this.addSeriesModel.year > 2018 && this.addSeriesModel.year < 2100
-          && this.addSeriesModel.game != null && this.addSeriesModel.game.name.length > 0;
+          && this.addSeriesModel.game != null && this.addSeriesModel.game.length > 0;
     },
     mode() {
       if (this.editing === true) {
