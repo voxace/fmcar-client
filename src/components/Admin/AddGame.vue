@@ -33,7 +33,7 @@
               auto-upload flat bordered
               accept=".jpg, image/*"
               field-name="upload"
-              url="http://localhost:3001/api/upload"
+              :url="uploadUrl"
               style="width: 100%"
               @uploaded="uploaded"
             />
@@ -69,6 +69,7 @@ export default {
   },
   data() {
     return {
+      uploadUrl: `${process.env.API}/upload`,
       addExistingGameModel: {
         name: null,
         logo: null,

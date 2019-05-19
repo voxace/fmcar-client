@@ -127,7 +127,7 @@ export default {
       this.loadGamesList();
     },
     getUrl(logo) {
-      return `http://localhost:3001/${logo}`;
+      return `${process.env.BASE}/${logo}`;
     },
     close() {
       this.$emit('close');
