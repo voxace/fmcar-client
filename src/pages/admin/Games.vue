@@ -18,7 +18,15 @@
               :ratio="16/9"
             />
             <q-card-section>
-              <div class="text-subtitle1 text-center">{{ game.name }}</div>
+              <div
+                class="text-center"
+                v-bind:class="{
+                  'text-subtitle1': $q.screen.gt.sm,
+                  'text-body2': $q.screen.lt.sm,
+                  }"
+              >
+                {{ game.name }}
+              </div>
             </q-card-section>
             <q-card-actions align="around">
               <q-btn flat text-color="blue" @click="editGame(game)">EDIT</q-btn>
