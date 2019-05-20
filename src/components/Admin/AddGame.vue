@@ -26,8 +26,25 @@
             have a cross show up on hover
             once the image is deleted, the uploader shows
           -->
+          <div v-if="showImage" class="col-xs-12">
+            <q-img
+              class="rounded-borders cursor-pointer"
+              :src="getUrl"
+              :ratio="16/9"
+              @click="editingGame.logo = null"
+            >
+              <q-tooltip
+                class="round"
+                anchor="center middle"
+                self="center middle"
+                content-class="bg-transparent"
+              >
+                <q-btn round color="red" size="lg" icon="delete" />
+              </q-tooltip>
+            </q-img>
+          </div>
 
-          <div class="col-xs-12">
+          <div v-else class="col-xs-12">
             <q-uploader
               label="Game Image / Logo"
               auto-upload flat bordered
@@ -165,6 +182,15 @@ export default {
         return 'Edit';
       }
       return 'Add';
+    },
+    showImage() {
+      if (this.editing === true && this.editingGame.logo != null) {
+        return true;
+      }
+      return false;
+    },
+    getUrl() {
+      return `${process.env.BASE}/${this.editingGame.logo}`;
     },
   },
 };
