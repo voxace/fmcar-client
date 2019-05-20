@@ -142,7 +142,7 @@ export default {
           });
         });
     },
-    async editTeam() {
+    async editGame() {
       await this.$axios
         .patch(`/game/${this.editingGame._id}`, {
           name: this.addNewGameModel.name,
