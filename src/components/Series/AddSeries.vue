@@ -4,7 +4,10 @@
     style="width: 700px; max-width: 90vw;"
   >
 
-    <q-card style="min-width: 400px">
+    <q-card
+      ref="seriesCard" class="scroll"
+      style="min-width: 400px; max-height: 500px;"
+    >
       <q-card-section>
         <div class="text-h6">
           {{mode}} Series
@@ -12,40 +15,86 @@
       </q-card-section>
 
       <q-card-section>
-        <div class="row">
-          <div class="col-xs-12">
-            <q-input
-              outlined v-model="addSeriesModel.name"
-              label="Name" autofocus :dense="$q.screen.lt.sm"
-              :rules="[ val => val && val.length > 0 || 'Please enter a name for the series']"
-            />
-          </div>
-          <div class="col-xs-12">
-            <q-input
-              outlined v-model="addSeriesModel.year" type="number"
-              label="Year" :dense="$q.screen.lt.sm"
-              :rules="[ val => val && val > 2017 && val < 2100 || 'Please enter a valid year']"
-            />
-          </div>
-          <div class="col-xs-12">
-            <q-select
-              outlined v-model="addSeriesModel.game"
-              :options="loadedGames" :dense="$q.screen.lt.sm"
-              option-value="_id" option-label="name" label="Game" emit-value map-options
-              :rules="[ val => val.length > 0 || 'Please select a game']"
-              :disable="loadingGames" :disabled="loadingGames"
-            >
-              <template v-slot:append v-if="loadingGames">
-                <q-avatar>
-                  <q-spinner
-                    color="primary"
-                    size="2em"
+        <q-tabs
+          v-model="tab"
+          dense
+          class="text-grey"
+          active-color="primary"
+          indicator-color="primary"
+          align="justify"
+        >
+          <q-tab name="info" label="Info" />
+          <q-tab name="cars" label="Cars" />
+        </q-tabs>
+        <q-separator v-if="!editing" />
+        <q-tab-panels v-model="tab" animated>
+          <!--- INFO --->
+          <q-tab-panel name="info">
+            <div class="row">
+              <div class="col-xs-12">
+                <q-input
+                  outlined v-model="addSeriesModel.name"
+                  label="Name" autofocus :dense="$q.screen.lt.sm"
+                  :rules="[ val => val && val.length > 0 || 'Please enter a name for the series']"
+                />
+              </div>
+              <div class="col-xs-12">
+                <q-input
+                  outlined v-model="addSeriesModel.year" type="number"
+                  label="Year" :dense="$q.screen.lt.sm"
+                  :rules="[ val => val && val > 2017 && val < 2100 || 'Please enter a valid year']"
+                />
+              </div>
+              <div class="col-xs-12">
+                <q-select
+                  outlined v-model="addSeriesModel.game"
+                  :options="loadedGames" :dense="$q.screen.lt.sm"
+                  option-value="_id" option-label="name" label="Game" emit-value map-options
+                  :rules="[ val => val.length > 0 || 'Please select a game']"
+                  :disable="loadingGames" :disabled="loadingGames"
+                >
+                  <template v-slot:append v-if="loadingGames">
+                    <q-avatar>
+                      <q-spinner
+                        color="primary"
+                        size="2em"
+                      />
+                    </q-avatar>
+                  </template>
+                </q-select>
+              </div>
+
+            </div>
+          </q-tab-panel>
+           <q-tab-panel name="cars">
+              <div
+                class="row q-pt-sm"
+                v-for="(carChoice, i) in addSeriesModel.carChoices" :key="i"
+              >
+                <div class="col-xs-8 q-pr-xs">
+                  <q-input
+                    outlined dense label="Car" type="Text"
+                    v-model="carChoice.car"
                   />
-                </q-avatar>
-              </template>
-            </q-select>
-          </div>
-        </div>
+                </div>
+                <div class="col-xs-4 q-pl-xs">
+                  <q-input
+                    outlined dense label="Limit" type="Number"
+                    v-model="carChoice.limit"
+                  />
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-xs-12 q-pt-sm">
+                  <q-btn
+                    id="addCarButton"
+                    color="primary" icon="add" class="full-width"
+                    @click="addCarChoice" label="Add Car Choice"
+                  />
+                </div>
+              </div>
+           </q-tab-panel>
+        </q-tab-panels>
       </q-card-section>
 
       <q-card-actions align="right" class="text-primary">
@@ -84,6 +133,7 @@ export default {
   },
   data() {
     return {
+      tab: 'info',
       years: ['2019'],
       loadedGames: [],
       loadingGames: false,
@@ -93,6 +143,7 @@ export default {
           _id: null,
           name: null,
         },
+        carChoices: [],
         year: null,
       },
     };
@@ -107,6 +158,13 @@ export default {
     }
   },
   methods: {
+    addCarChoice() {
+      this.addSeriesModel.carChoices.push({
+        car: '',
+        limit: 0,
+      });
+      this.$refs.seriesCard.scrollTop = this.$refs.seriesCard.scrollHeight;
+    },
     async loadGamesList() {
       this.loadingGames = true;
       await this.$axios

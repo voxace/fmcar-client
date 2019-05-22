@@ -20,12 +20,6 @@
               :rules="[ val => val && val.length > 0 || 'Please enter a name']"
             />
           </div>
-
-          <!-- TODO
-            Show image if in editing mode
-            have a cross show up on hover
-            once the image is deleted, the uploader shows
-          -->
           <div v-if="showImage" class="col-xs-12">
             <q-img
               class="rounded-borders cursor-pointer"
