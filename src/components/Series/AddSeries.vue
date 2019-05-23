@@ -5,8 +5,7 @@
   >
 
     <q-card
-      ref="seriesCard" class="scroll"
-      style="min-width: 400px; max-height: 500px;"
+      style="min-width: 400px;"
     >
       <q-card-section>
         <div class="text-h6">
@@ -50,7 +49,7 @@
                   outlined v-model="addSeriesModel.game"
                   :options="loadedGames" :dense="$q.screen.lt.sm"
                   option-value="_id" option-label="name" label="Game" emit-value map-options
-                  :rules="[ val => val.length > 0 || 'Please select a game']"
+                  :rules="[ val => val != null || 'Please select a game']"
                   :disable="loadingGames" :disabled="loadingGames"
                 >
                   <template v-slot:append v-if="loadingGames">
@@ -66,10 +65,18 @@
 
             </div>
           </q-tab-panel>
-           <q-tab-panel name="cars">
+          <q-tab-panel
+            name="cars" style="max-height: 400px;"
+            ref="seriesCard" class="scroll"
+          >
+            <transition
+              v-for="(carChoice, i) in addSeriesModel.carChoices" :key="i"
+              appear
+              enter-active-class="animated zoomIn slow-transition"
+              leave-active-class="animated zoomOut slow-transition"
+            >
               <div
                 class="row q-pt-sm"
-                v-for="(carChoice, i) in addSeriesModel.carChoices" :key="i"
               >
                 <div class="col-xs-8 q-pr-xs">
                   <q-input
@@ -77,22 +84,30 @@
                     v-model="carChoice.car"
                   />
                 </div>
-                <div class="col-xs-4 q-pl-xs">
+                <div class="col-xs-3 q-px-xs">
                   <q-input
                     outlined dense label="Limit" type="Number"
                     v-model="carChoice.limit"
                   />
                 </div>
-              </div>
-              <div class="row">
-                <div class="col-xs-12 q-pt-sm">
+                <div class="col-xs-1 q-pl-xs">
                   <q-btn
-                    id="addCarButton"
-                    color="primary" icon="add" class="full-width"
-                    @click="addCarChoice" label="Add Car Choice"
+                    round size="sm" style="margin-top: 4px;"
+                    icon="delete" color="red"
+                    @click="deleteCarChoice(i)"
                   />
                 </div>
               </div>
+            </transition>
+            <div class="row">
+              <div class="col-xs-12 q-pt-sm">
+                <q-btn
+                  id="addCarButton" :disabled="addCarButtonDisabled"
+                  color="primary" icon="add" class="full-width"
+                  @click="addCarChoice" label="Add Car Choice"
+                />
+              </div>
+            </div>
            </q-tab-panel>
         </q-tab-panels>
       </q-card-section>
@@ -119,6 +134,9 @@
 </template>
 
 <style>
+.slow-transition {
+  animation-duration: 0.5s;
+}
 </style>
 
 <script>
@@ -139,10 +157,7 @@ export default {
       loadingGames: false,
       addSeriesModel: {
         name: null,
-        game: {
-          _id: null,
-          name: null,
-        },
+        game: null,
         carChoices: [],
         year: null,
       },
@@ -152,18 +167,30 @@ export default {
     this.loadGamesList();
     if (this.editing === true) {
       this.addSeriesModel.name = this.editingSeries.name;
-      this.addSeriesModel.game = this.editingSeries.game;
-      this.addSeriesModel.year = this.editingSeries.year;
+      this.addSeriesModel.game = this.editingSeries.game._id;
+      this.addSeriesModel.year = Number(this.editingSeries.year);
+      this.addSeriesModel.carChoices = this.editingSeries.carChoices;
       this.$forceUpdate();
     }
   },
   methods: {
     addCarChoice() {
+      // Add car
       this.addSeriesModel.carChoices.push({
         car: '',
-        limit: 0,
+        limit: null,
       });
-      this.$refs.seriesCard.scrollTop = this.$refs.seriesCard.scrollHeight;
+      // Scroll to bottom
+      setTimeout(() => {
+        this.$refs.seriesCard.$el.scrollTo({
+          top: 10000,
+          left: 0,
+          behavior: 'smooth',
+        });
+      }, 10);
+    },
+    deleteCarChoice(i) {
+      this.addSeriesModel.carChoices.splice(i, 1);
     },
     async loadGamesList() {
       this.loadingGames = true;
@@ -180,12 +207,9 @@ export default {
     async addSeries() {
       if (this.editing === true) {
         await this.$axios
-          .patch(`/series/${this.editingSeries._id}`, {
-            name: this.addSeriesModel.name,
-            year: this.addSeriesModel.year,
-            game: this.addSeriesModel.game,
-          })
+          .patch(`/series/${this.editingSeries._id}`, { model: this.addSeriesModel })
           .then((response) => {
+            console.log(response);
             this.$q.notify({
               color: 'green-4',
               textColor: 'white',
@@ -206,11 +230,7 @@ export default {
           });
       } else {
         await this.$axios
-          .post('/series', {
-            name: this.addSeriesModel.name,
-            year: this.addSeriesModel.year,
-            game: this.addSeriesModel.game,
-          })
+          .post('/series', { model: this.addSeriesModel })
           .then((response) => {
             this.$q.notify({
               color: 'green-4',
@@ -263,14 +283,23 @@ export default {
   computed: {
     addSeriesValidation() {
       return this.addSeriesModel.name != null && this.addSeriesModel.name.length > 0
-          && this.addSeriesModel.year > 2018 && this.addSeriesModel.year < 2100
-          && this.addSeriesModel.game != null && this.addSeriesModel.game.length > 0;
+          && this.addSeriesModel.year != null && this.addSeriesModel.game != null
+          && this.addCarButtonDisabled === false;
     },
     mode() {
       if (this.editing === true) {
         return 'Edit';
       }
       return 'Add';
+    },
+    addCarButtonDisabled() {
+      if (this.addSeriesModel.carChoices.length === 0) {
+        return false;
+      }
+      if (this.addSeriesModel.carChoices[this.addSeriesModel.carChoices.length - 1].car === '') {
+        return true;
+      }
+      return false;
     },
   },
 };
