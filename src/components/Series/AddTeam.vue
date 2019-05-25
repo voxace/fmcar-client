@@ -387,7 +387,7 @@ export default {
       this.loadingUsers = false;
     },
 
-    // Chooses between add and create mode
+    // Chooses between edit and create mode
     async save() {
       if (this.editing === true) {
         await this.editTeam();

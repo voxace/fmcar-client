@@ -99,10 +99,13 @@ export default {
     }
   },
   methods: {
+
+    // Provides file name info on upload
     uploaded(info) {
-      console.log(info.xhr.response);
       this.addNewGameModel.logo = info.xhr.response;
     },
+
+    // Chooses between edit and create mode
     async save() {
       if (this.editing === true) {
         await this.editGame();
@@ -110,6 +113,8 @@ export default {
         await this.addGame();
       }
     },
+
+    // Creates a new game
     async addGame() {
       await this.$axios
         .post('/game', {
@@ -136,6 +141,8 @@ export default {
           });
         });
     },
+
+    // Updates the game
     async editGame() {
       await this.$axios
         .patch(`/game/${this.editingGame._id}`, {
@@ -162,27 +169,37 @@ export default {
           });
         });
     },
+
+    // Closes the dialog
     close() {
       this.$emit('close');
     },
   },
   computed: {
+
+    // Validate form
     addGameValidation() {
       return this.addNewGameModel.name != null
       && this.addNewGameModel.name.length > 0;
     },
+
+    // Choose between 'Add' or 'Editing' mode
     mode() {
       if (this.editing === true) {
         return 'Edit';
       }
       return 'Add';
     },
+
+    // Show image instead of uploader
     showImage() {
       if (this.editing === true && this.editingGame.logo != null) {
         return true;
       }
       return false;
     },
+
+    // Get image URL
     getUrl() {
       return `${process.env.BASE}/${this.editingGame.logo}`;
     },
