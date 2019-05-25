@@ -15,8 +15,14 @@
         :key="team._id"
       >
         <td class="text-left">{{team.name}}</td>
-        <td class="text-left">{{team.driver_a.name}}<br/>{{team.driver_b.name}}</td>
-        <td class="text-left">{{team.driver_a.gamertag}}<br/>{{team.driver_b.gamertag}}</td>
+        <td class="text-left">
+          {{team.driver_a.name}}
+          <br/><span v-if="team.driver_b">{{team.driver_b.name}}</span>
+        </td>
+        <td class="text-left">
+          {{team.driver_a.gamertag}}
+          <br/><span v-if="team.driver_b">{{team.driver_b.gamertag}}</span>
+        </td>
         <td class="text-left">{{team.car}}</td>
         <td v-if="editingAllowed">
           <q-btn

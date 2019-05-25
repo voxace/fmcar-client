@@ -252,14 +252,8 @@ export default {
         season: null,
         series: null,
         car: null,
-        driver_a: {
-          _id: null,
-          name: null,
-        },
-        driver_b: {
-          _id: null,
-          name: null,
-        },
+        driver_a: null,
+        driver_b: null,
         driver_a_num: null,
         driver_b_num: null,
       },
@@ -268,14 +262,8 @@ export default {
         season: null,
         series: null,
         car: null,
-        driver_a: {
-          _id: null,
-          name: null,
-        },
-        driver_b: {
-          _id: null,
-          name: null,
-        },
+        driver_a: null,
+        driver_b: null,
         driver_a_num: null,
         driver_b_num: null,
       },
@@ -506,19 +494,30 @@ export default {
         .get(`/team/cars/${this.season._id}`)
         .then((response) => {
           this.series.carChoices.forEach((carChoice) => {
-            response.data.forEach((teamCar) => {
-              if (carChoice.car === teamCar._id) {
-                console.log(`Match: ${carChoice.car}`);
-                console.log(`Limit: ${carChoice.limit}`);
-                console.log(`Count: ${teamCar.count}`);
-                if (carChoice.limit - teamCar.count > 0) {
-                  this.loadedCars.push(carChoice);
-                } else {
-                  carChoice.disable = true;
-                  this.loadedCars.push(carChoice);
+            if (response.data.length > 0) {
+              console.log('Cars have been selected in teams...');
+              console.log(response.data);
+              response.data.forEach((teamCar) => {
+                if (carChoice.car === teamCar._id) {
+                  console.log(`Match: ${carChoice.car}`);
+                  console.log(`Limit: ${carChoice.limit}`);
+                  console.log(`Count: ${teamCar.count}`);
+                  if (carChoice.limit != null && carChoice.limit !== 0) {
+                    if (carChoice.limit - teamCar.count > 0) {
+                      this.loadedCars.push(carChoice);
+                    } else {
+                      carChoice.disable = true;
+                      this.loadedCars.push(carChoice);
+                    }
+                  } else {
+                    console.log('No cars selected yet...');
+                    this.loadedCars.push(carChoice);
+                  }
                 }
-              }
-            });
+              });
+            } else {
+              this.loadedCars = this.series.carChoices;
+            }
           });
         })
         .catch((error) => {

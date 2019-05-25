@@ -309,6 +309,7 @@ export default {
     seriesEdited(series) {
       this.seriesLoading = true;
       this.selectedYear = series.year;
+      this.loadSeriesList();
       setTimeout(() => {
         for (let i = 0; i < this.loadedSeriesList.length; i += 1) {
           if (this.loadedSeriesList[i]._id === series._id) {

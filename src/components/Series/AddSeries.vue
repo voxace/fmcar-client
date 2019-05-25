@@ -24,6 +24,7 @@
         >
           <q-tab name="info" label="Info" />
           <q-tab name="cars" label="Cars" />
+          <q-tab name="graphics" label="Graphics" />
         </q-tabs>
         <q-separator v-if="!editing" />
         <q-tab-panels v-model="tab" animated>
@@ -88,7 +89,11 @@
                   <q-input
                     outlined dense label="Limit" type="Number"
                     v-model="carChoice.limit"
-                  />
+                  >
+                    <q-tooltip content-class="bg-amber text-black">
+                      [Optional] 0 = Unlimited
+                    </q-tooltip>
+                  </q-input>
                 </div>
                 <div class="col-xs-1 q-pl-xs">
                   <q-btn
@@ -108,7 +113,33 @@
                 />
               </div>
             </div>
-           </q-tab-panel>
+            </q-tab-panel>
+            <q-tab-panel name="graphics">
+              <div class="row">
+                <div class="col-xs-12">
+                  <q-uploader
+                    label="Series Logo"
+                    auto-upload flat bordered
+                    accept=".jpg, image/*"
+                    field-name="upload"
+                    :url="uploadUrl"
+                    style="width: 100%"
+                    @uploaded="logoUploaded"
+                  />
+                </div>
+                <div class="col-xs-12 q-pt-sm">
+                  <q-uploader
+                    label="Series Banner"
+                    auto-upload flat bordered
+                    accept=".jpg, image/*"
+                    field-name="upload"
+                    :url="uploadUrl"
+                    style="width: 100%"
+                    @uploaded="bannerUploaded"
+                  />
+                </div>
+              </div>
+            </q-tab-panel>
         </q-tab-panels>
       </q-card-section>
 
@@ -151,12 +182,15 @@ export default {
   },
   data() {
     return {
+      uploadUrl: `${process.env.API}/upload`,
       tab: 'info',
       years: ['2019'],
       loadedGames: [],
       loadingGames: false,
       addSeriesModel: {
         name: null,
+        logo: null,
+        banner: null,
         game: null,
         carChoices: [],
         year: null,
@@ -167,6 +201,8 @@ export default {
     this.loadGamesList();
     if (this.editing === true) {
       this.addSeriesModel.name = this.editingSeries.name;
+      this.addSeriesModel.logo = this.editingSeries.logo;
+      this.addSeriesModel.banner = this.editingSeries.banner;
       this.addSeriesModel.game = this.editingSeries.game._id;
       this.addSeriesModel.year = Number(this.editingSeries.year);
       this.addSeriesModel.carChoices = this.editingSeries.carChoices;
@@ -174,6 +210,12 @@ export default {
     }
   },
   methods: {
+    logoUploaded(info) {
+      this.addSeriesModel.logo = info.xhr.response;
+    },
+    bannerUploaded(info) {
+      this.addSeriesModel.banner = info.xhr.response;
+    },
     addCarChoice() {
       // Add car
       this.addSeriesModel.carChoices.push({
