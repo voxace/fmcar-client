@@ -495,13 +495,10 @@ export default {
         .then((response) => {
           this.series.carChoices.forEach((carChoice) => {
             if (response.data.length > 0) {
-              console.log('Cars have been selected in teams...');
-              console.log(response.data);
+              let found = false;
               response.data.forEach((teamCar) => {
                 if (carChoice.car === teamCar._id) {
-                  console.log(`Match: ${carChoice.car}`);
-                  console.log(`Limit: ${carChoice.limit}`);
-                  console.log(`Count: ${teamCar.count}`);
+                  found = true;
                   if (carChoice.limit != null && carChoice.limit !== 0) {
                     if (carChoice.limit - teamCar.count > 0) {
                       this.loadedCars.push(carChoice);
@@ -515,6 +512,9 @@ export default {
                   }
                 }
               });
+              if (found === false) {
+                this.loadedCars.push(carChoice);
+              }
             } else {
               this.loadedCars = this.series.carChoices;
             }
