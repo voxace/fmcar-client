@@ -2,11 +2,10 @@
   <q-markup-table seperator="cell" flat bordered>
     <thead>
       <tr>
-        <th class="text-left">Team Name</th>
-        <th class="text-left">Driver A Name</th>
-        <th class="text-left">Driver A Gamertag</th>
-        <th class="text-left">Driver B Name</th>
-        <th class="text-left">Driver B Gamertag</th>
+        <th class="text-left">Team</th>
+        <th class="text-left">Driver</th>
+        <th class="text-left">Gamertag</th>
+        <th class="text-left">Car</th>
         <th class="text-center" width="50" v-if="editingAllowed">Edit</th>
       </tr>
     </thead>
@@ -16,10 +15,9 @@
         :key="team._id"
       >
         <td class="text-left">{{team.name}}</td>
-        <td class="text-left">{{team.driver_a.name}}</td>
-        <td class="text-left">{{team.driver_a.gamertag}}</td>
-        <td class="text-left">{{team.driver_b.name}}</td>
-        <td class="text-left">{{team.driver_b.gamertag}}</td>
+        <td class="text-left">{{team.driver_a.name}}<br/>{{team.driver_b.name}}</td>
+        <td class="text-left">{{team.driver_a.gamertag}}<br/>{{team.driver_b.gamertag}}</td>
+        <td class="text-left">{{team.car}}</td>
         <td v-if="editingAllowed">
           <q-btn
             round color="primary" icon="edit"

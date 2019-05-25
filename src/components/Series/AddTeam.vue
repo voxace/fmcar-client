@@ -42,6 +42,23 @@
                   :rules="[ val => val && val.length > 0 || 'Please enter a name']"
                 />
               </div>
+              <div class="col-xs-12">
+                <q-select
+                  outlined use-input v-model="addNewTeamModel.car"
+                  :options="series.carChoices" :dense="$q.screen.lt.sm"
+                  label="Car" option-value="car" option-label="car" emit-value
+                  :rules="[ val => val != null || 'Please select a car']"
+                >
+                  <template v-slot:append v-if="loadingUsers">
+                    <q-avatar>
+                      <q-spinner
+                        color="primary"
+                        size="2em"
+                      />
+                    </q-avatar>
+                  </template>
+                </q-select>
+              </div>
               <div class="col-xs-8">
                 <q-select
                   outlined use-input v-model="addNewTeamModel.driver_a"
@@ -159,10 +176,18 @@
           @click="removeTeam"
         />
         <q-btn
+          v-if="tab == 'New'"
           flat label="Save"
           text-color="green"
           @click="save"
           :disabled="!addTeamValidation"
+        />
+        <q-btn
+          v-else
+          flat label="Copy"
+          text-color="green"
+          @click="copyTeam"
+          :disabled="addExistingTeamModel.name == null"
         />
       </q-card-actions>
 
@@ -196,15 +221,33 @@ export default {
       validNumbers: false,
       addExistingTeamModel: {
         name: null,
-        driver_a: null,
-        driver_b: null,
+        season: null,
+        series: null,
+        car: null,
+        driver_a: {
+          _id: null,
+          name: null,
+        },
+        driver_b: {
+          _id: null,
+          name: null,
+        },
         driver_a_num: null,
         driver_b_num: null,
       },
       addNewTeamModel: {
         name: null,
-        driver_a: null,
-        driver_b: null,
+        season: null,
+        series: null,
+        car: null,
+        driver_a: {
+          _id: null,
+          name: null,
+        },
+        driver_b: {
+          _id: null,
+          name: null,
+        },
         driver_a_num: null,
         driver_b_num: null,
       },
@@ -215,6 +258,7 @@ export default {
     this.loadDriverNumbers();
     if (this.editing === true) {
       this.addNewTeamModel.name = this.editingTeam.name;
+      this.addNewTeamModel.car = this.editingTeam.car;
       this.addNewTeamModel.driver_a = this.editingTeam.driver_a;
       this.addNewTeamModel.driver_b = this.editingTeam.driver_b;
       this.addNewTeamModel.driver_a_num = this.editingTeam.driver_a_num;
@@ -287,7 +331,7 @@ export default {
     async loadTeamList() {
       this.loadingTeams = true;
       await this.$axios
-        .get('/team')
+        .get(`/team/series/${this.series._id}`)
         .then((response) => {
           this.loadedTeams = response.data;
         })
@@ -309,32 +353,27 @@ export default {
       this.loadingUsers = false;
     },
     async save() {
-      if (this.tab === 'New' && this.editing === true) {
+      if (this.editing === true) {
         await this.editTeam();
-      } else if (this.tab === 'New' && this.editing === false) {
-        await this.createTeam();
       } else {
-        await this.copyTeam();
+        await this.createTeam();
       }
     },
     async copyTeam() {
+      // eslint-disable-next-line no-alert
+      alert(this.addExistingTeamModel.driver_a);
       this.addNewTeamModel.name = this.addExistingTeamModel.name;
       this.addNewTeamModel.driver_a = this.addExistingTeamModel.driver_a;
       this.addNewTeamModel.driver_b = this.addExistingTeamModel.driver_b;
       this.addNewTeamModel.driver_a_num = this.addExistingTeamModel.driver_a_num;
       this.addNewTeamModel.driver_b_num = this.addExistingTeamModel.driver_b_num;
-      await this.createTeam();
+      this.tab = 'New';
     },
     async createTeam() {
+      this.addNewTeamModel.series = this.series._id;
+      this.addNewTeamModel.season = this.season._id;
       await this.$axios
-        .post('/team', {
-          name: this.addNewTeamModel.name,
-          driver_a: this.addNewTeamModel.driver_a,
-          driver_b: this.addNewTeamModel.driver_b,
-          driver_a_num: this.addNewTeamModel.driver_a_num,
-          driver_b_num: this.addNewTeamModel.driver_b_num,
-          season: this.season,
-        })
+        .post('/team', { model: this.addNewTeamModel })
         .then(() => {
           this.$q.notify({
             color: 'green-4',
@@ -356,14 +395,10 @@ export default {
         });
     },
     async editTeam() {
+      this.addNewTeamModel.series = this.series._id;
+      this.addNewTeamModel.season = this.season._id;
       await this.$axios
-        .patch(`/team/${this.editingTeam._id}`, {
-          name: this.addNewTeamModel.name,
-          driver_a: this.addNewTeamModel.driver_a,
-          driver_b: this.addNewTeamModel.driver_b,
-          driver_a_num: this.addNewTeamModel.driver_a_num,
-          driver_b_num: this.addNewTeamModel.driver_b_num,
-        })
+        .patch(`/team/${this.editingTeam._id}`, { model: this.addNewTeamModel })
         .then(() => {
           this.$q.notify({
             color: 'green-4',
@@ -413,14 +448,12 @@ export default {
   },
   computed: {
     addTeamValidation() {
-      if (this.tab === 'New') {
-        return this.addNewTeamModel.name != null
-        && this.addNewTeamModel.driver_a != null
+      return this.addNewTeamModel.name != null
+        && this.addNewTeamModel.car != null
         && this.addNewTeamModel.name.length > 0
+        && this.addNewTeamModel.driver_a != null
         && this.addNewTeamModel.driver_a_num > 0
         && this.validNumbers === true;
-      }
-      return this.addExistingTeamModel != null;
     },
     mode() {
       if (this.editing === true) {
