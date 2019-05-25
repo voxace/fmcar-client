@@ -45,9 +45,10 @@
               <div class="col-xs-12">
                 <q-select
                   outlined use-input v-model="addNewTeamModel.car"
-                  :options="series.carChoices" :dense="$q.screen.lt.sm"
+                  :options="loadedCars" :dense="$q.screen.lt.sm"
                   label="Car" option-value="car" option-label="car" emit-value
                   :rules="[ val => val != null || 'Please select a car']"
+                  :disable="loadingCars" :disabled="loadingCars"
                 >
                   <template v-slot:append v-if="loadingUsers">
                     <q-avatar>
@@ -212,9 +213,11 @@ export default {
       driverNumbers: [],
       loadedTeams: [],
       loadedUsers: [],
+      loadedCars: [],
       loadingNumbers: false,
       loadingTeams: false,
       loadingUsers: false,
+      loadingCars: false,
       team_options: [],
       user_options_a: [],
       user_options_b: [],
@@ -256,6 +259,7 @@ export default {
   mounted() {
     this.loadUserList();
     this.loadDriverNumbers();
+    this.calculateAvailableCars();
     if (this.editing === true) {
       this.addNewTeamModel.name = this.editingTeam.name;
       this.addNewTeamModel.car = this.editingTeam.car;
@@ -441,6 +445,32 @@ export default {
             message: 'Error deleting team!',
           });
         });
+    },
+    async calculateAvailableCars() {
+      this.loadingCars = true;
+      await this.$axios
+        .get(`/team/cars/${this.season._id}`)
+        .then((response) => {
+          this.series.carChoices.forEach((carChoice) => {
+            response.data.forEach((teamCar) => {
+              if (carChoice.car === teamCar._id) {
+                console.log(`Match: ${carChoice.car}`);
+                console.log(`Limit: ${carChoice.limit}`);
+                console.log(`Count: ${teamCar.count}`);
+                if (carChoice.limit - teamCar.count > 0) {
+                  this.loadedCars.push(carChoice);
+                } else {
+                  carChoice.disable = true;
+                  this.loadedCars.push(carChoice);
+                }
+              }
+            });
+          });
+        })
+        .catch((error) => {
+          console.log(`Error: ${error}`);
+        });
+      this.loadingCars = false;
     },
     close() {
       this.$emit('close');
