@@ -5,6 +5,7 @@
   >
     <q-card style="min-width: 400px">
 
+      <!--- HEADER --->
       <q-card-section>
         <div class="text-h6">
           {{mode}} Team
@@ -18,6 +19,8 @@
       </q-card-section>
 
       <q-card-section>
+
+        <!--- TABS --->
         <q-tabs
           v-if="!editing"
           v-model="tab"
@@ -32,9 +35,12 @@
         </q-tabs>
         <q-separator v-if="!editing" />
         <q-tab-panels v-model="tab" animated>
+
           <!--- NEW TEAM --->
           <q-tab-panel name="New">
             <div class="row">
+
+              <!--- TEAM NAME --->
               <div class="col-xs-12">
                 <q-input
                   outlined v-model="addNewTeamModel.name"
@@ -42,8 +48,11 @@
                   :rules="[ val => val && val.length > 0 || 'Please enter a name']"
                 />
               </div>
+
+              <!--- CAR CHOICE --->
               <div class="col-xs-12">
                 <q-select
+                  v-if="loadedCars.length > 0"
                   outlined use-input v-model="addNewTeamModel.car"
                   :options="loadedCars" :dense="$q.screen.lt.sm"
                   label="Car" option-value="car" option-label="car" emit-value
@@ -59,7 +68,15 @@
                     </q-avatar>
                   </template>
                 </q-select>
+                <q-input
+                  v-else
+                  outlined v-model="addNewTeamModel.car"
+                  label="Car" :dense="$q.screen.lt.sm"
+                  :rules="[ val => val && val.length > 0 || 'Please enter a car']"
+                />
               </div>
+
+              <!--- DRIVER A NAME --->
               <div class="col-xs-8">
                 <q-select
                   outlined use-input v-model="addNewTeamModel.driver_a"
@@ -79,6 +96,8 @@
                   </template>
                 </q-select>
               </div>
+
+              <!--- DRIVER A NUMBER --->
               <div class="col-xs-4 q-pl-sm">
                 <q-input
                   v-model="addNewTeamModel.driver_a_num"
@@ -101,6 +120,8 @@
                   </template>
                 </q-input>
               </div>
+
+              <!--- DRIVER B NAME --->
               <div class="col-xs-8">
                 <q-select
                   outlined use-input v-model="addNewTeamModel.driver_b"
@@ -119,6 +140,8 @@
                   </template>
                 </q-select>
               </div>
+
+              <!--- DRIVER B NUMBER --->
               <div class="col-xs-4 q-pl-sm">
                 <q-input
                   v-model="addNewTeamModel.driver_b_num"
@@ -143,6 +166,7 @@
               </div>
             </div>
           </q-tab-panel>
+
           <!--- EXISTING TEAM --->
           <q-tab-panel name="Existing">
             <q-select
@@ -165,6 +189,7 @@
         </q-tab-panels>
       </q-card-section>
 
+      <!--- ACTION BUTTONS --->
       <q-card-actions align="right" class="text-primary">
         <q-btn
           flat label="Cancel"
@@ -273,6 +298,8 @@ export default {
     }
   },
   methods: {
+
+    // Ensures driver cannot choose a taken number
     checkNumber(val) {
       if (this.driverNumbers.includes(Number(val))) {
         this.validNumbers = false;
@@ -281,6 +308,8 @@ export default {
       this.validNumbers = true;
       return true;
     },
+
+    // Autocomplete for teams list
     filterTeams(val, update) {
       if (val === '') {
         update(() => {
@@ -294,6 +323,8 @@ export default {
           .filter(v => v.name.toLowerCase().indexOf(needle) > -1);
       });
     },
+
+    // Autocomplete for driver list A
     filterDriversA(val, update) {
       if (val === '') {
         update(() => {
@@ -307,6 +338,8 @@ export default {
           .filter(v => v.name.toLowerCase().indexOf(needle) > -1);
       });
     },
+
+    // Autocomplete for driver list B
     filterDriversB(val, update) {
       if (val === '') {
         update(() => {
@@ -320,6 +353,9 @@ export default {
           .filter(v => v.name.toLowerCase().indexOf(needle) > -1);
       });
     },
+
+    // Loads a list of driver numbers, which is then
+    // used to calculate the available numbers
     async loadDriverNumbers() {
       this.loadingNumbers = true;
       await this.$axios
@@ -332,6 +368,9 @@ export default {
         });
       this.loadingNumbers = false;
     },
+
+    // Loads teams so that you can copy from existing teams
+    // TODO: Search team name, pick from results
     async loadTeamList() {
       this.loadingTeams = true;
       await this.$axios
@@ -344,6 +383,9 @@ export default {
         });
       this.loadingTeams = false;
     },
+
+    // Loads a list of available drivers
+    // TODO: Autocomplete after 2 characters to reduce load
     async loadUserList() {
       this.loadingUsers = true;
       await this.$axios
@@ -356,6 +398,8 @@ export default {
         });
       this.loadingUsers = false;
     },
+
+    // Chooses between add and create mode
     async save() {
       if (this.editing === true) {
         await this.editTeam();
@@ -363,9 +407,9 @@ export default {
         await this.createTeam();
       }
     },
+
+    // Copies existing team details into the form
     async copyTeam() {
-      // eslint-disable-next-line no-alert
-      alert(this.addExistingTeamModel.driver_a);
       this.addNewTeamModel.name = this.addExistingTeamModel.name;
       this.addNewTeamModel.driver_a = this.addExistingTeamModel.driver_a;
       this.addNewTeamModel.driver_b = this.addExistingTeamModel.driver_b;
@@ -373,6 +417,8 @@ export default {
       this.addNewTeamModel.driver_b_num = this.addExistingTeamModel.driver_b_num;
       this.tab = 'New';
     },
+
+    // Creates a new team
     async createTeam() {
       this.addNewTeamModel.series = this.series._id;
       this.addNewTeamModel.season = this.season._id;
@@ -398,6 +444,8 @@ export default {
           });
         });
     },
+
+    // Updates the team
     async editTeam() {
       this.addNewTeamModel.series = this.series._id;
       this.addNewTeamModel.season = this.season._id;
@@ -423,6 +471,8 @@ export default {
           });
         });
     },
+
+    // Deletes the team and removes it from the series
     async removeTeam() {
       await this.$axios
         .delete(`/team/${this.editingTeam._id}`)
@@ -446,6 +496,10 @@ export default {
           });
         });
     },
+
+    // Compares car limits defined in the series with
+    // the number of cars chosen in teams so far to
+    // determine the available cars left to choose
     async calculateAvailableCars() {
       this.loadingCars = true;
       await this.$axios
@@ -472,11 +526,15 @@ export default {
         });
       this.loadingCars = false;
     },
+
+    // Closes the dialog
     close() {
       this.$emit('close');
     },
   },
   computed: {
+
+    // Validate form
     addTeamValidation() {
       return this.addNewTeamModel.name != null
         && this.addNewTeamModel.car != null
@@ -485,6 +543,8 @@ export default {
         && this.addNewTeamModel.driver_a_num > 0
         && this.validNumbers === true;
     },
+
+    // Choose between 'Add' or 'Editing' mode
     mode() {
       if (this.editing === true) {
         return 'Edit';
