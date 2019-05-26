@@ -1,11 +1,10 @@
 <template>
   <q-dialog
     v-model="visibility" persistent
-    style="width: 700px; max-width: 90vw;"
   >
 
     <q-card
-      style="min-width: 400px;"
+      style="width: 900px; max-width: 90vw;"
     >
       <q-card-section>
         <div class="text-h6">
@@ -24,10 +23,12 @@
         >
           <q-tab name="info" label="Info" />
           <q-tab name="cars" label="Cars" />
+          <q-tab name="raceTypes" label="Race Types" />
           <q-tab name="graphics" label="Graphics" />
         </q-tabs>
         <q-separator v-if="!editing" />
         <q-tab-panels v-model="tab" animated>
+
           <!--- INFO --->
           <q-tab-panel name="info">
             <div class="row">
@@ -63,9 +64,29 @@
                   </template>
                 </q-select>
               </div>
-
+              <div class="col-xs-12">
+                <q-select
+                  outlined v-model="addSeriesModel.pointsTables" use-chips
+                  multiple hide-dropdown-icon input-debounce="0" new-value-mode="add-unique"
+                  :options="loadedPointsTables" :dense="$q.screen.lt.sm"
+                  option-value="_id" option-label="type" label="Points Table" emit-value map-options
+                  :rules="[ val => val && val.length > 0 || 'Please select points tables']"
+                  :disable="loadingPointsTables" :disabled="loadingPointsTables"
+                >
+                  <template v-slot:append v-if="loadingPointsTables">
+                    <q-avatar>
+                      <q-spinner
+                        color="primary"
+                        size="2em"
+                      />
+                    </q-avatar>
+                  </template>
+                </q-select>
+              </div>
             </div>
           </q-tab-panel>
+
+          <!-- ADD CARS -->
           <q-tab-panel
             name="cars" style="max-height: 400px;"
             ref="seriesCard" class="scroll"
@@ -113,36 +134,95 @@
                 />
               </div>
             </div>
-            </q-tab-panel>
-            <q-tab-panel name="graphics">
-              <div class="row">
-                <div class="col-xs-12">
-                  <q-uploader
-                    label="Series Logo"
-                    auto-upload flat bordered
-                    accept=".jpg, image/*"
-                    field-name="upload"
-                    :url="uploadUrl"
-                    style="width: 100%"
-                    @uploaded="logoUploaded"
-                  />
+          </q-tab-panel>
+
+          <!-- RACE TYPES -->
+          <q-tab-panel name="raceTypes">
+            <div class="row">
+              <div class="col-xs-5 q-pr-sm">
+                <p class="text-h6">Race Type</p>
+                <transition
+                  v-for="(raceType, i) in addSeriesModel.raceTypes" :key="i"
+                  appear
+                  enter-active-class="animated zoomIn slow-transition"
+                  leave-active-class="animated zoomOut slow-transition"
+                >
+                  <div
+                    class="row q-pt-sm"
+                  >
+                    <div class="col-xs-10 q-pr-xs">
+                      <q-input
+                        outlined dense label="Race Type" type="Text"
+                        v-model="raceType.name" @click="setCurrent(i)"
+                      />
+                    </div>
+                    <div class="col-xs-2 q-pl-xs">
+                      <q-btn
+                        round size="sm" style="margin-top: 4px;"
+                        icon="delete" color="red"
+                        @click="deleteRaceType(i)"
+                      />
+                    </div>
+                  </div>
+                </transition>
+                <div class="row">
+                  <div class="col-xs-12 q-pt-sm">
+                    <q-btn
+                      id="addRaceTypeButton" :disabled="addRaceTypeButtonDisabled"
+                      color="primary" icon="add" class="full-width"
+                      @click="addRaceType" label="Add Race Type"
+                    />
+                  </div>
                 </div>
-                <div class="col-xs-12 q-pt-sm">
-                  <q-uploader
-                    label="Series Banner"
-                    auto-upload flat bordered
-                    accept=".jpg, image/*"
-                    field-name="upload"
-                    :url="uploadUrl"
-                    style="width: 100%"
-                    @uploaded="bannerUploaded"
-                  />
-                </div>
+
               </div>
-            </q-tab-panel>
+              <div class="col-xs-7">
+                <p class="text-h6">Description</p>
+                <q-editor
+                  v-model="addSeriesModel.raceTypes[current].description"
+                  min-height="10rem"
+                  width="100%"
+                  :toolbar="[
+                    ['bold', 'italic', 'underline'],
+                    ['link'],
+                    ['unordered', 'ordered'],
+                  ]"
+                />
+              </div>
+            </div>
+          </q-tab-panel>
+
+          <!-- GRAPHICS -->
+          <q-tab-panel name="graphics">
+            <div class="row">
+              <div class="col-xs-12">
+                <q-uploader
+                  label="Series Logo"
+                  auto-upload flat bordered
+                  accept=".jpg, image/*"
+                  field-name="upload"
+                  :url="uploadUrl"
+                  style="width: 100%"
+                  @uploaded="logoUploaded"
+                />
+              </div>
+              <div class="col-xs-12 q-pt-sm">
+                <q-uploader
+                  label="Series Banner"
+                  auto-upload flat bordered
+                  accept=".jpg, image/*"
+                  field-name="upload"
+                  :url="uploadUrl"
+                  style="width: 100%"
+                  @uploaded="bannerUploaded"
+                />
+              </div>
+            </div>
+          </q-tab-panel>
         </q-tab-panels>
       </q-card-section>
 
+      <!-- ACTION BUTTONS -->
       <q-card-actions align="right" class="text-primary">
         <q-btn
           flat label="Cancel"
@@ -182,30 +262,47 @@ export default {
   },
   data() {
     return {
+      current: 0,
       uploadUrl: `${process.env.API}/upload`,
       tab: 'info',
       years: ['2019'],
       loadedGames: [],
       loadingGames: false,
+      loadedPointsTables: [],
+      loadingPointsTables: false,
       addSeriesModel: {
         name: null,
         logo: null,
         banner: null,
         game: null,
         carChoices: [],
+        raceTypes: [{
+          name: '',
+          description: 'Enter a description of the race type...',
+        }],
+        pointsTables: [],
         year: null,
       },
     };
   },
   mounted() {
     this.loadGamesList();
+    this.loadPointsTablesList();
     if (this.editing === true) {
       this.addSeriesModel.name = this.editingSeries.name;
       this.addSeriesModel.logo = this.editingSeries.logo;
       this.addSeriesModel.banner = this.editingSeries.banner;
-      this.addSeriesModel.game = this.editingSeries.game._id;
-      this.addSeriesModel.year = Number(this.editingSeries.year);
-      this.addSeriesModel.carChoices = this.editingSeries.carChoices;
+      this.addSeriesModel.game = this.editingSeries.game;
+      this.addSeriesModel.year = this.editingSeries.year;
+      if (this.editingSeries.carChoices[0] != null) {
+        this.addSeriesModel.carChoices = this.editingSeries.carChoices;
+      }
+      if (this.editingSeries.raceTypes[0] != null) {
+        this.addSeriesModel.raceTypes = this.editingSeries.raceTypes;
+      }
+      if (this.editingSeries.pointsTables[0] != null) {
+        this.addSeriesModel.pointsTables = this.editingSeries.pointsTables;
+      }
       this.$forceUpdate();
     }
   },
@@ -234,6 +331,18 @@ export default {
     deleteCarChoice(i) {
       this.addSeriesModel.carChoices.splice(i, 1);
     },
+    addRaceType() {
+      this.addSeriesModel.raceTypes.push({
+        name: '',
+        description: '',
+      });
+    },
+    deleteRaceType(i) {
+      this.addSeriesModel.raceTypes.splice(i, 1);
+    },
+    setCurrent(i) {
+      this.current = i;
+    },
     async loadGamesList() {
       this.loadingGames = true;
       await this.$axios
@@ -245,6 +354,18 @@ export default {
           console.log(`Error: ${error}`);
         });
       this.loadingGames = false;
+    },
+    async loadPointsTablesList() {
+      this.loadingPointsTables = true;
+      await this.$axios
+        .get('/points')
+        .then((response) => {
+          this.loadedPointsTables = response.data;
+        })
+        .catch((error) => {
+          console.log(`Error: ${error}`);
+        });
+      this.loadingPointsTables = false;
     },
     async addSeries() {
       if (this.editing === true) {
@@ -326,7 +447,7 @@ export default {
     addSeriesValidation() {
       return this.addSeriesModel.name != null && this.addSeriesModel.name.length > 0
           && this.addSeriesModel.year != null && this.addSeriesModel.game != null
-          && this.addCarButtonDisabled === false;
+          && this.addCarButtonDisabled === false && this.addRaceTypeButtonDisabled === false;
     },
     mode() {
       if (this.editing === true) {
@@ -339,6 +460,15 @@ export default {
         return false;
       }
       if (this.addSeriesModel.carChoices[this.addSeriesModel.carChoices.length - 1].car === '') {
+        return true;
+      }
+      return false;
+    },
+    addRaceTypeButtonDisabled() {
+      if (this.addSeriesModel.raceTypes.length === 0) {
+        return false;
+      }
+      if (this.addSeriesModel.raceTypes[this.addSeriesModel.raceTypes.length - 1].name === '') {
         return true;
       }
       return false;
