@@ -208,7 +208,6 @@ export default {
     }
   },
   methods: {
-
     // Provides file name info on upload
     uploaded(info) {
       this.imageUpload = info.xhr.response;
@@ -316,7 +315,6 @@ export default {
     },
   },
   computed: {
-
     // Validate form
     addTrackValidation() {
       return this.addNewTrackModel.name != null

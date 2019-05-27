@@ -169,7 +169,7 @@
         <q-btn
           flat label="Save"
           text-color="green"
-          @click="addRace" :disabled="!addRaceValidation"
+          @click="save" :disabled="!addRaceValidation"
         />
       </q-card-actions>
 
@@ -240,6 +240,7 @@ export default {
     }
   },
   methods: {
+    // Load tracks
     async loadTrackList() {
       this.loadingTrack = true;
       await this.$axios
@@ -252,6 +253,8 @@ export default {
         });
       this.loadingTrack = false;
     },
+
+    // Load points tables
     async loadPointsTablesList() {
       this.loadingPointsTables = true;
       await this.$axios
@@ -264,57 +267,71 @@ export default {
         });
       this.loadingPointsTables = false;
     },
-    async addRace() {
+
+    // Chooses between edit and create mode
+    async save() {
       if (this.editing === true) {
-        this.addRaceModel.series = this.series._id;
-        this.addRaceModel.season = this.season._id;
-        await this.$axios
-          .patch(`/race/${this.editingRace._id}`, { model: this.addRaceModel })
-          .then(() => {
-            this.$q.notify({
-              color: 'green-4',
-              textColor: 'white',
-              icon: 'fas fa-check-circle',
-              message: 'Race updated successfully!',
-            });
-            this.close();
-            this.$emit('raceAdded');
-          })
-          .catch((error) => {
-            console.log(`Error: ${error}`);
-            this.$q.notify({
-              color: 'red-4',
-              textColor: 'white',
-              icon: 'fas fa-cross-circle',
-              message: 'Error updating race!',
-            });
-          });
+        await this.editRace();
       } else {
-        this.addRaceModel.series = this.series._id;
-        this.addRaceModel.season = this.season._id;
-        await this.$axios
-          .post('/race', { model: this.addRaceModel })
-          .then(() => {
-            this.$q.notify({
-              color: 'green-4',
-              textColor: 'white',
-              icon: 'fas fa-check-circle',
-              message: 'Race added successfully!',
-            });
-            this.close();
-            this.$emit('raceAdded');
-          })
-          .catch((error) => {
-            console.log(`Error: ${error}`);
-            this.$q.notify({
-              color: 'red-4',
-              textColor: 'white',
-              icon: 'fas fa-cross-circle',
-              message: 'Error adding race!',
-            });
-          });
+        await this.addRace();
       }
     },
+
+    // Creates a new race
+    async addRace() {
+      this.addRaceModel.series = this.series._id;
+      this.addRaceModel.season = this.season._id;
+      await this.$axios
+        .patch(`/race/${this.editingRace._id}`, { model: this.addRaceModel })
+        .then(() => {
+          this.$q.notify({
+            color: 'green-4',
+            textColor: 'white',
+            icon: 'fas fa-check-circle',
+            message: 'Race updated successfully!',
+          });
+          this.close();
+          this.$emit('raceAdded');
+        })
+        .catch((error) => {
+          console.log(`Error: ${error}`);
+          this.$q.notify({
+            color: 'red-4',
+            textColor: 'white',
+            icon: 'fas fa-cross-circle',
+            message: 'Error updating race!',
+          });
+        });
+    },
+
+    // Updates the race
+    async editRace() {
+      this.addRaceModel.series = this.series._id;
+      this.addRaceModel.season = this.season._id;
+      await this.$axios
+        .post('/race', { model: this.addRaceModel })
+        .then(() => {
+          this.$q.notify({
+            color: 'green-4',
+            textColor: 'white',
+            icon: 'fas fa-check-circle',
+            message: 'Race added successfully!',
+          });
+          this.close();
+          this.$emit('raceAdded');
+        })
+        .catch((error) => {
+          console.log(`Error: ${error}`);
+          this.$q.notify({
+            color: 'red-4',
+            textColor: 'white',
+            icon: 'fas fa-cross-circle',
+            message: 'Error adding race!',
+          });
+        });
+    },
+
+    // Deletes the race
     async deleteRace() {
       await this.$axios
         .delete(`/race/${this.editingRace._id}`)
@@ -338,11 +355,15 @@ export default {
           });
         });
     },
+
+    // Gets today's date in the correct format
     getToday() {
       const timeStamp = Date.now();
       this.addRaceModel.date = date.formatDate(timeStamp, 'DD-MM-YYYY');
       this.rawDate = date.formatDate(timeStamp, 'YYYY/MM/DD');
     },
+
+    // Checks if the date is valid and in the right format
     dateIsValid() {
       if (this.addRaceModel.date != null && this.addRaceModel.date.length > 9) {
         const data = this.addRaceModel.date.split('-');
@@ -354,15 +375,21 @@ export default {
       }
       return false;
     },
+
+    // Closes the dialog
     close() {
       this.$emit('close');
     },
+
+    // Clears the options based on track data and reloads them
     trackChanged() {
       this.addRaceModel.weather = null;
       this.addRaceModel.configuration = null;
       this.getTrackConfigurations();
       this.getWeatherOptions();
     },
+
+    // Gets possible track configurations based on the selected track
     getTrackConfigurations() {
       if (this.addRaceModel.track != null) {
         this.loadedTracks.forEach((track) => {
@@ -372,6 +399,8 @@ export default {
         });
       }
     },
+
+    // Gets possible weather options based on the selected track
     getWeatherOptions() {
       if (this.addRaceModel.track != null) {
         this.loadedTracks.forEach((track) => {
@@ -383,18 +412,23 @@ export default {
     },
   },
   computed: {
+    // Validate form
     addRaceValidation() {
       return this.addRaceModel.pointsTable != null && this.addRaceModel.track != null
           && this.addRaceModel.round > 0 && this.addRaceModel.number > 0
           && this.addRaceModel.raceType != null && this.addRaceModel.raceType.length > 0
           && this.addRaceModel.date != null && this.addRaceModel.date.length > 0;
     },
+
+    // Choose between 'Add' or 'Editing' mode
     mode() {
       if (this.editing === true) {
         return 'Edit';
       }
       return 'Add';
     },
+
+    // Displays only the points tables that are selected in the series
     availablePointsTables() {
       const tables = [];
       if (this.loadedPointsTables != null) {
