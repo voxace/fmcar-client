@@ -1,9 +1,8 @@
 <template>
   <q-dialog
     v-model="visibility" persistent
-    style="width: 700px; max-width: 90vw;"
   >
-    <q-card style="min-width: 400px">
+    <q-card style="width: 700px; max-width: 90vw; min-width: 400px">
 
       <q-card-section>
         <div class="text-h6">
