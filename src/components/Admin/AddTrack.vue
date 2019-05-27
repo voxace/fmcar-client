@@ -25,7 +25,7 @@
               class="rounded-borders cursor-pointer"
               :src="getUrl"
               :ratio="16/9"
-              @click="editingTrack.image = null"
+              @click="editingTrack.image = null; imageUpload = 'delete'"
             >
               <q-tooltip
                 class="round"
@@ -81,6 +81,7 @@ export default {
   data() {
     return {
       uploadUrl: `${process.env.API}/upload`,
+      imageUpload: null,
       addExistingTrackModel: {
         name: null,
         image: null,
@@ -106,7 +107,7 @@ export default {
 
     // Provides file name info on upload
     uploaded(info) {
-      this.addNewTrackModel.image = info.xhr.response;
+      this.imageUpload = info.xhr.response;
     },
 
     // Chooses between edit and create mode
@@ -121,7 +122,10 @@ export default {
     // Creates a new track
     async addTrack() {
       await this.$axios
-        .post('/track', { model: this.addNewTrackModel })
+        .post('/track', {
+          model: this.addNewTrackModel,
+          upload: this.imageUpload,
+        })
         .then(() => {
           this.$q.notify({
             color: 'green-4',
@@ -146,7 +150,7 @@ export default {
     // Updates the track
     async editTrack() {
       await this.$axios
-        .patch(`/track/${this.editingTrack._id}`, { model: this.addNewTrackModel })
+        .patch(`/track/${this.editingTrack._id}`, { model: this.addNewTrackModel, upload: this.imageUpload })
         .then(() => {
           this.$q.notify({
             color: 'green-4',

@@ -25,7 +25,7 @@
               class="rounded-borders cursor-pointer"
               :src="getUrl"
               :ratio="16/9"
-              @click="editingGame.logo = null"
+              @click="editingGame.logo = null; imageUpload = 'delete'"
             >
               <q-tooltip
                 class="round"
@@ -81,6 +81,7 @@ export default {
   data() {
     return {
       uploadUrl: `${process.env.API}/upload`,
+      imageUpload: null,
       addExistingGameModel: {
         name: null,
         logo: null,
@@ -102,7 +103,7 @@ export default {
 
     // Provides file name info on upload
     uploaded(info) {
-      this.addNewGameModel.logo = info.xhr.response;
+      this.imageUpload = info.xhr.response;
     },
 
     // Chooses between edit and create mode
@@ -118,8 +119,8 @@ export default {
     async addGame() {
       await this.$axios
         .post('/game', {
-          name: this.addNewGameModel.name,
-          logo: this.addNewGameModel.logo,
+          model: this.addNewGameModel,
+          upload: this.imageUpload,
         })
         .then(() => {
           this.$q.notify({
@@ -146,8 +147,8 @@ export default {
     async editGame() {
       await this.$axios
         .patch(`/game/${this.editingGame._id}`, {
-          name: this.addNewGameModel.name,
-          logo: this.addNewGameModel.logo,
+          model: this.addNewGameModel,
+          upload: this.imageUpload,
         })
         .then(() => {
           this.$q.notify({
