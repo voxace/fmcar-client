@@ -1,9 +1,8 @@
 <template>
   <q-dialog
     v-model="visibility" persistent
-    style="width: 700px; max-width: 90vw;"
   >
-    <q-card style="min-width: 400px">
+    <q-card style="min-width: 400px; width: 700px; max-width: 90vw;">
 
       <q-card-section>
         <div class="text-h6">
@@ -11,7 +10,7 @@
         </div>
       </q-card-section>
 
-      <q-card-section>
+      <q-card-section style="max-height: 600px;">
         <div class="row">
           <div class="col-xs-12">
             <q-input

@@ -11,7 +11,7 @@
       </q-card-section>
 
       <q-card-section
-        style="max-height: 400px;"
+        style="max-height: 600px;"
         ref="trackWindow" class="scroll"
       >
         <!-- TABS -->
