@@ -50,6 +50,43 @@
           </div>
           <div class="col-xs-6 q-pr-sm">
             <q-select
+              outlined v-model="addRaceModel.raceType"
+              :options="series.raceTypes" :dense="$q.screen.lt.sm"
+              option-value="name" option-label="name" label="Race Type" emit-value map-options
+              :rules="[ val => val != null || 'Please select a race type']"
+            >
+              <template v-slot:append v-if="loadingTrack">
+                <q-avatar>
+                  <q-spinner
+                    color="primary"
+                    size="2em"
+                  />
+                </q-avatar>
+              </template>
+            </q-select>
+          </div>
+          <div class="col-xs-6 q-pl-sm">
+            <q-select
+              outlined v-model="addRaceModel.pointsTable"
+              :options="availablePointsTables" :dense="$q.screen.lt.sm"
+              option-value="_id" option-label="type" label="Points Table" emit-value map-options
+              :rules="[ val => val && val.length > 0 || 'Please select a points table']"
+              :disable="loadingPointsTables" :disabled="loadingPointsTables"
+            >
+              <template v-slot:append v-if="loadingPointsTables">
+                <q-avatar>
+                  <q-spinner
+                    color="primary"
+                    size="2em"
+                  />
+                </q-avatar>
+              </template>
+            </q-select>
+          </div>
+          <div
+            class="col-xs-6 q-pr-sm"
+          >
+            <q-select
               outlined v-model="addRaceModel.track"
               :options="loadedTracks" :dense="$q.screen.lt.sm"
               option-value="_id" option-label="name" label="Track" emit-value map-options
@@ -66,15 +103,17 @@
               </template>
             </q-select>
           </div>
-          <div class="col-xs-6 q-pl-sm">
+          <div
+            class="col-xs-6 q-pl-sm"
+          >
             <q-select
-              outlined v-model="addRaceModel.pointsTable"
-              :options="loadedPointsTables" :dense="$q.screen.lt.sm"
-              option-value="_id" option-label="type" label="Points Table" emit-value map-options
-              :rules="[ val => val && val.length > 0 || 'Please select a points table']"
-              :disable="loadingPointsTables" :disabled="loadingPointsTables"
+              outlined v-model="addRaceModel.configuration"
+              :options="trackConfigurations" :dense="$q.screen.lt.sm"
+              label="Configuration"
+              :rules="[ val => val != null || 'Please select a track configuration']"
+              :disable="addRaceModel.track == null" :disabled="addRaceModel.track == null"
             >
-              <template v-slot:append v-if="loadingPointsTables">
+              <template v-slot:append v-if="loadingTrack">
                 <q-avatar>
                   <q-spinner
                     color="primary"
@@ -83,26 +122,6 @@
                 </q-avatar>
               </template>
             </q-select>
-          </div>
-          <div
-            class="col-xs-6 col-sm-12"
-            v-bind:class="{ 'q-pr-sm': $q.screen.lt.sm }"
-          >
-            <q-input
-              outlined v-model="addRaceModel.type"
-              label="Type" :dense="$q.screen.lt.sm"
-              :rules="[ val => val && val.length > 0 || 'Please enter the type of race']"
-            />
-          </div>
-          <div
-            class="col-xs-6 col-sm-12"
-            v-bind:class="{ 'q-pl-sm': $q.screen.lt.sm }"
-          >
-            <q-input
-              outlined v-model="addRaceModel.configuration"
-              label="Configuration" :dense="$q.screen.lt.sm"
-              :rules="[ val => val && val.length > 0 || 'Please enter the track configuration']"
-            />
           </div>
         </div>
       </q-card-section>
@@ -156,13 +175,16 @@ export default {
       loadingTrack: false,
       loadingPointsTables: false,
       addRaceModel: {
+        series: null,
+        season: null,
         pointsTable: null,
         track: null,
         round: null,
         number: null,
-        type: null,
-        configuration: null,
         date: null,
+        raceType: null,
+        configuration: null,
+        laps: null,
       },
     };
   },
@@ -208,18 +230,10 @@ export default {
     },
     async addRace() {
       if (this.editing === true) {
+        this.addRaceModel.series = this.series;
+        this.addRaceModel.season = this.season;
         await this.$axios
-          .patch(`/race/${this.editingRace._id}`, {
-            series: this.series._id,
-            season: this.season._id,
-            pointsTable: this.addRaceModel.pointsTable,
-            track: this.addRaceModel.track,
-            round: this.addRaceModel.round,
-            number: this.addRaceModel.number,
-            type: this.addRaceModel.type,
-            configuration: this.addRaceModel.configuration,
-            date: this.addRaceModel.date,
-          })
+          .patch(`/race/${this.editingRace._id}`, { model: this.addRaceModel })
           .then(() => {
             this.$q.notify({
               color: 'green-4',
@@ -240,18 +254,10 @@ export default {
             });
           });
       } else {
+        this.addRaceModel.series = this.series;
+        this.addRaceModel.season = this.season;
         await this.$axios
-          .post('/race', {
-            series: this.series._id,
-            season: this.season._id,
-            pointsTable: this.addRaceModel.pointsTable,
-            track: this.addRaceModel.track,
-            round: this.addRaceModel.round,
-            number: this.addRaceModel.number,
-            type: this.addRaceModel.type,
-            configuration: this.addRaceModel.configuration,
-            date: this.addRaceModel.date,
-          })
+          .post('/race', { model: this.addRaceModel })
           .then(() => {
             this.$q.notify({
               color: 'green-4',
@@ -329,6 +335,30 @@ export default {
         return 'Edit';
       }
       return 'Add';
+    },
+    trackConfigurations() {
+      let configs = [];
+      if (this.addRaceModel.track != null) {
+        this.loadedTracks.forEach((track) => {
+          if (track._id === this.addRaceModel.track) {
+            configs = track.configurations;
+          }
+        });
+      }
+      return configs;
+    },
+    availablePointsTables() {
+      const tables = [];
+      if (this.loadedPointsTables != null) {
+        this.loadedPointsTables.forEach((table) => {
+          this.series.pointsTables.forEach((seriesTable) => {
+            if (table._id === seriesTable) {
+              tables.push(table);
+            }
+          });
+        });
+      }
+      return tables;
     },
   },
   watch: {

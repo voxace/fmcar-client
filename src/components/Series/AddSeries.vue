@@ -81,6 +81,16 @@
                       />
                     </q-avatar>
                   </template>
+                  <template v-slot:after>
+                    <q-btn
+                      round dense flat icon="add"
+                      @click="addPointsTable()"
+                    >
+                      <q-tooltip content-class="bg-primary text-white">
+                        Add a new points table
+                      </q-tooltip>
+                    </q-btn>
+                  </template>
                 </q-select>
               </div>
             </div>
@@ -111,7 +121,7 @@
                     outlined dense label="Limit" type="Number"
                     v-model="carChoice.limit"
                   >
-                    <q-tooltip content-class="bg-amber text-black">
+                    <q-tooltip content-class="bg-primary text-white">
                       [Optional] 0 = Unlimited
                     </q-tooltip>
                   </q-input>
@@ -241,6 +251,11 @@
       </q-card-actions>
 
     </q-card>
+    <!-- ADD POINTS TABLE DIALOG -->
+    <add-points-table-dialog
+      v-if="addPointsTableDialog" :visibility="addPointsTableDialog"
+      :editing="false" @close="addPointsTableDialogClosed"
+    />
   </q-dialog>
 </template>
 
@@ -255,6 +270,9 @@
 
 export default {
   name: 'Series',
+  components: {
+    addPointsTableDialog: () => import('../Admin/AddPointsTable.vue'),
+  },
   props: {
     editing: Boolean,
     editingSeries: Object,
@@ -270,6 +288,7 @@ export default {
       loadingGames: false,
       loadedPointsTables: [],
       loadingPointsTables: false,
+      addPointsTableDialog: false,
       addSeriesModel: {
         name: null,
         logo: null,
@@ -438,6 +457,14 @@ export default {
             message: 'Error deleting series!',
           });
         });
+    },
+    addPointsTable() {
+      console.log('open');
+      this.addPointsTableDialog = true;
+    },
+    addPointsTableDialogClosed() {
+      this.loadPointsTablesList();
+      this.addPointsTableDialog = false;
     },
     close() {
       this.$emit('close');
