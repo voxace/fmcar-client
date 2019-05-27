@@ -19,7 +19,7 @@
         <td class="text-center">{{race.round}}</td>
         <td class="text-center">{{race.number}}</td>
         <td>{{race.track.name}}</td>
-        <td v-if="$q.screen.gt.xs">{{race.type}}</td>
+        <td v-if="$q.screen.gt.xs">{{race.raceType}}</td>
         <td v-if="$q.screen.gt.xs">{{race.configuration}}</td>
         <td>{{race.date}}</td>
         <td v-if="editingAllowed">

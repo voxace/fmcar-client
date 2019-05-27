@@ -84,14 +84,15 @@
             </q-select>
           </div>
           <div
-            class="col-xs-6 q-pr-sm"
+            class="col-xs-12"
           >
             <q-select
-              outlined v-model="addRaceModel.track"
+              outlined v-model="addRaceModel.track" map-options
               :options="loadedTracks" :dense="$q.screen.lt.sm"
-              option-value="_id" option-label="name" label="Track" emit-value map-options
+              option-value="_id" option-label="name" label="Track" emit-value
               :rules="[ val => val != null || 'Please select a track']"
               :disable="loadingTrack" :disabled="loadingTrack"
+              @input="trackChanged"
             >
               <template v-slot:append v-if="loadingTrack">
                 <q-avatar>
@@ -104,13 +105,12 @@
             </q-select>
           </div>
           <div
-            class="col-xs-6 q-pl-sm"
+            class="col-xs-6 q-pr-sm"
           >
             <q-select
+              v-if="trackConfigurations.length > 0" label="Configuration"
               outlined v-model="addRaceModel.configuration"
               :options="trackConfigurations" :dense="$q.screen.lt.sm"
-              label="Configuration"
-              :rules="[ val => val != null || 'Please select a track configuration']"
               :disable="addRaceModel.track == null" :disabled="addRaceModel.track == null"
             >
               <template v-slot:append v-if="loadingTrack">
@@ -122,6 +122,35 @@
                 </q-avatar>
               </template>
             </q-select>
+            <q-input
+              v-else outlined v-model="addRaceModel.configuration"
+              label="Configuration" :dense="$q.screen.lt.sm"
+              :disable="addRaceModel.track == null" :disabled="addRaceModel.track == null"
+            />
+          </div>
+          <div
+            class="col-xs-6 q-pr-sm"
+          >
+            <q-select
+              v-if="weatherOptions.length > 0" label="Weather"
+              outlined v-model="addRaceModel.weather"
+              :options="weatherOptions" :dense="$q.screen.lt.sm"
+              :disable="addRaceModel.track == null" :disabled="addRaceModel.track == null"
+            >
+              <template v-slot:append v-if="loadingTrack">
+                <q-avatar>
+                  <q-spinner
+                    color="primary"
+                    size="2em"
+                  />
+                </q-avatar>
+              </template>
+            </q-select>
+            <q-input
+              v-else outlined v-model="addRaceModel.weather"
+              label="Weather" :dense="$q.screen.lt.sm"
+              :disable="addRaceModel.track == null" :disabled="addRaceModel.track == null"
+            />
           </div>
         </div>
       </q-card-section>
@@ -174,6 +203,9 @@ export default {
       loadedPointsTables: [],
       loadingTrack: false,
       loadingPointsTables: false,
+      selectedTrack: null,
+      trackConfigurations: [],
+      weatherOptions: [],
       addRaceModel: {
         series: null,
         season: null,
@@ -184,6 +216,7 @@ export default {
         date: null,
         raceType: null,
         configuration: null,
+        weather: null,
         laps: null,
       },
     };
@@ -192,13 +225,16 @@ export default {
     this.getToday();
     this.loadTrackList();
     this.loadPointsTablesList();
+    this.getTrackConfigurations();
+    this.getWeatherOptions();
     if (this.editing === true) {
       this.addRaceModel.pointsTable = this.editingRace.pointsTable;
       this.addRaceModel.track = this.editingRace.track;
       this.addRaceModel.round = this.editingRace.round;
       this.addRaceModel.number = this.editingRace.number;
-      this.addRaceModel.type = this.editingRace.type;
+      this.addRaceModel.raceType = this.editingRace.raceType;
       this.addRaceModel.configuration = this.editingRace.configuration;
+      this.addRaceModel.weather = this.editingRace.weather;
       this.addRaceModel.date = this.editingRace.date;
       this.$forceUpdate();
     }
@@ -230,8 +266,8 @@ export default {
     },
     async addRace() {
       if (this.editing === true) {
-        this.addRaceModel.series = this.series;
-        this.addRaceModel.season = this.season;
+        this.addRaceModel.series = this.series._id;
+        this.addRaceModel.season = this.season._id;
         await this.$axios
           .patch(`/race/${this.editingRace._id}`, { model: this.addRaceModel })
           .then(() => {
@@ -254,8 +290,8 @@ export default {
             });
           });
       } else {
-        this.addRaceModel.series = this.series;
-        this.addRaceModel.season = this.season;
+        this.addRaceModel.series = this.series._id;
+        this.addRaceModel.season = this.season._id;
         await this.$axios
           .post('/race', { model: this.addRaceModel })
           .then(() => {
@@ -321,13 +357,36 @@ export default {
     close() {
       this.$emit('close');
     },
+    trackChanged() {
+      this.addRaceModel.weather = null;
+      this.addRaceModel.configuration = null;
+      this.getTrackConfigurations();
+      this.getWeatherOptions();
+    },
+    getTrackConfigurations() {
+      if (this.addRaceModel.track != null) {
+        this.loadedTracks.forEach((track) => {
+          if (track._id === this.addRaceModel.track) {
+            this.trackConfigurations = track.configurations;
+          }
+        });
+      }
+    },
+    getWeatherOptions() {
+      if (this.addRaceModel.track != null) {
+        this.loadedTracks.forEach((track) => {
+          if (track._id === this.addRaceModel.track) {
+            this.weatherOptions = track.weatherOptions;
+          }
+        });
+      }
+    },
   },
   computed: {
     addRaceValidation() {
       return this.addRaceModel.pointsTable != null && this.addRaceModel.track != null
           && this.addRaceModel.round > 0 && this.addRaceModel.number > 0
-          && this.addRaceModel.type != null && this.addRaceModel.type.length > 0
-          && this.addRaceModel.configuration != null && this.addRaceModel.configuration.length > 0
+          && this.addRaceModel.raceType != null && this.addRaceModel.raceType.length > 0
           && this.addRaceModel.date != null && this.addRaceModel.date.length > 0;
     },
     mode() {
@@ -335,17 +394,6 @@ export default {
         return 'Edit';
       }
       return 'Add';
-    },
-    trackConfigurations() {
-      let configs = [];
-      if (this.addRaceModel.track != null) {
-        this.loadedTracks.forEach((track) => {
-          if (track._id === this.addRaceModel.track) {
-            configs = track.configurations;
-          }
-        });
-      }
-      return configs;
     },
     availablePointsTables() {
       const tables = [];
