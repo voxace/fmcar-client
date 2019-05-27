@@ -13,6 +13,7 @@
       </q-card-section>
 
       <q-card-section>
+        <!-- TABS -->
         <q-tabs
           v-model="tab"
           dense
@@ -32,6 +33,7 @@
           <!--- INFO --->
           <q-tab-panel name="info">
             <div class="row">
+              <!-- SERIES NAME -->
               <div class="col-xs-12">
                 <q-input
                   outlined v-model="addSeriesModel.name"
@@ -39,6 +41,7 @@
                   :rules="[ val => val && val.length > 0 || 'Please enter a name for the series']"
                 />
               </div>
+              <!-- YEAR -->
               <div class="col-xs-12">
                 <q-input
                   outlined v-model="addSeriesModel.year" type="number"
@@ -46,6 +49,7 @@
                   :rules="[ val => val && val > 2017 && val < 2100 || 'Please enter a valid year']"
                 />
               </div>
+              <!-- GAME -->
               <div class="col-xs-12">
                 <q-select
                   outlined v-model="addSeriesModel.game"
@@ -64,13 +68,14 @@
                   </template>
                 </q-select>
               </div>
+              <!-- POINTS TABLES -->
               <div class="col-xs-12">
                 <q-select
                   outlined v-model="addSeriesModel.pointsTables" use-chips
                   multiple hide-dropdown-icon input-debounce="0" new-value-mode="add-unique"
-                  :options="loadedPointsTables" :dense="$q.screen.lt.sm"
-                  option-value="_id" option-label="type" label="Points Table" emit-value map-options
-                  :rules="[ val => val && val.length > 0 || 'Please select points tables']"
+                  :options="loadedPointsTables" :dense="$q.screen.lt.sm" emit-value
+                  option-value="_id" option-label="type" label="Points Tables" map-options
+                  :rules="[ val => val && val.length > 0 || 'Select at least one points table']"
                   :disable="loadingPointsTables" :disabled="loadingPointsTables"
                 >
                   <template v-slot:append v-if="loadingPointsTables">
@@ -110,12 +115,14 @@
               <div
                 class="row q-pt-sm"
               >
+                <!-- CAR -->
                 <div class="col-xs-8 q-pr-xs">
                   <q-input
                     outlined dense label="Car" type="Text"
                     v-model="carChoice.car"
                   />
                 </div>
+                <!-- LIMIT -->
                 <div class="col-xs-3 q-px-xs">
                   <q-input
                     outlined dense label="Limit" type="Number"
@@ -136,6 +143,7 @@
               </div>
             </transition>
             <div class="row">
+              <!-- ADD CAR BUTTON -->
               <div class="col-xs-12 q-pt-sm">
                 <q-btn
                   id="addCarButton" :disabled="addCarButtonDisabled"
@@ -160,6 +168,7 @@
                   <div
                     class="row q-pt-sm"
                   >
+                    <!-- RACE TYPE -->
                     <div class="col-xs-10 q-pr-xs">
                       <q-input
                         outlined dense label="Race Type" type="Text"
@@ -176,6 +185,7 @@
                   </div>
                 </transition>
                 <div class="row">
+                  <!-- ADD RACE TYPE BUTTON -->
                   <div class="col-xs-12 q-pt-sm">
                     <q-btn
                       id="addRaceTypeButton" :disabled="addRaceTypeButtonDisabled"
@@ -184,10 +194,10 @@
                     />
                   </div>
                 </div>
-
               </div>
               <div class="col-xs-7">
                 <p class="text-h6">Description</p>
+                <!-- RACE TYPE DESCRIPTION -->
                 <q-editor
                   v-model="addSeriesModel.raceTypes[current].description"
                   min-height="10rem"
@@ -205,6 +215,7 @@
           <!-- GRAPHICS -->
           <q-tab-panel name="graphics">
             <div class="row">
+              <!-- LOGO UPLOAD -->
               <div class="col-xs-12">
                 <q-uploader
                   label="Series Logo"
@@ -216,6 +227,7 @@
                   @uploaded="logoUploaded"
                 />
               </div>
+              <!-- BANNER UPLOAD -->
               <div class="col-xs-12 q-pt-sm">
                 <q-uploader
                   label="Series Banner"
@@ -251,6 +263,7 @@
       </q-card-actions>
 
     </q-card>
+
     <!-- ADD POINTS TABLE DIALOG -->
     <add-points-table-dialog
       v-if="addPointsTableDialog" :visibility="addPointsTableDialog"
@@ -305,8 +318,11 @@ export default {
     };
   },
   mounted() {
+    // Loads required data
     this.loadGamesList();
     this.loadPointsTablesList();
+
+    // If editing, copies data into the 'add series' model
     if (this.editing === true) {
       this.addSeriesModel.name = this.editingSeries.name;
       this.addSeriesModel.logo = this.editingSeries.logo;
@@ -326,12 +342,17 @@ export default {
     }
   },
   methods: {
+    // File name info about the logo uploaded
     logoUploaded(info) {
       this.addSeriesModel.logo = info.xhr.response;
     },
+
+    // File name info about the banner uploaded
     bannerUploaded(info) {
       this.addSeriesModel.banner = info.xhr.response;
     },
+
+    // Adds a car choice
     addCarChoice() {
       // Add car
       this.addSeriesModel.carChoices.push({
@@ -347,21 +368,31 @@ export default {
         });
       }, 10);
     },
+
+    // Deletes the specified car choice
     deleteCarChoice(i) {
       this.addSeriesModel.carChoices.splice(i, 1);
     },
+
+    // Adds a race type
     addRaceType() {
       this.addSeriesModel.raceTypes.push({
         name: '',
         description: '',
       });
     },
+
+    // Deletes the specified race type
     deleteRaceType(i) {
       this.addSeriesModel.raceTypes.splice(i, 1);
     },
+
+    // Sets current race type by index
     setCurrent(i) {
       this.current = i;
     },
+
+    // Loads all games
     async loadGamesList() {
       this.loadingGames = true;
       await this.$axios
@@ -374,6 +405,8 @@ export default {
         });
       this.loadingGames = false;
     },
+
+    // Loads all points tables
     async loadPointsTablesList() {
       this.loadingPointsTables = true;
       await this.$axios
@@ -386,55 +419,69 @@ export default {
         });
       this.loadingPointsTables = false;
     },
-    async addSeries() {
+
+    // Saves by adding or updating a series
+    save() {
       if (this.editing === true) {
-        await this.$axios
-          .patch(`/series/${this.editingSeries._id}`, { model: this.addSeriesModel })
-          .then((response) => {
-            console.log(response);
-            this.$q.notify({
-              color: 'green-4',
-              textColor: 'white',
-              icon: 'fas fa-check-circle',
-              message: 'Series updated successfully!',
-            });
-            this.$emit('seriesEdited', response.data);
-            this.close();
-          })
-          .catch((error) => {
-            console.log(`Error: ${error}`);
-            this.$q.notify({
-              color: 'red-4',
-              textColor: 'white',
-              icon: 'fas fa-cross-circle',
-              message: 'Error updating series!',
-            });
-          });
+        this.updateSeries();
       } else {
-        await this.$axios
-          .post('/series', { model: this.addSeriesModel })
-          .then((response) => {
-            this.$q.notify({
-              color: 'green-4',
-              textColor: 'white',
-              icon: 'fas fa-check-circle',
-              message: 'Series added successfully!',
-            });
-            console.log(response.data);
-            this.$emit('seriesAdded', response.data);
-            this.close();
-          })
-          .catch((error) => {
-            console.log(`Error: ${error}`);
-            this.$q.notify({
-              color: 'red-4',
-              textColor: 'white',
-              icon: 'fas fa-cross-circle',
-              message: 'Error adding series!',
-            });
-          });
+        this.addSeries();
       }
     },
+
+    // Updates a series
+    async updateSeries() {
+      await this.$axios
+        .patch(`/series/${this.editingSeries._id}`, { model: this.addSeriesModel })
+        .then((response) => {
+          console.log(response);
+          this.$q.notify({
+            color: 'green-4',
+            textColor: 'white',
+            icon: 'fas fa-check-circle',
+            message: 'Series updated successfully!',
+          });
+          this.$emit('seriesEdited', response.data);
+          this.close();
+        })
+        .catch((error) => {
+          console.log(`Error: ${error}`);
+          this.$q.notify({
+            color: 'red-4',
+            textColor: 'white',
+            icon: 'fas fa-cross-circle',
+            message: 'Error updating series!',
+          });
+        });
+    },
+
+    // Creates a new series
+    async addSeries() {
+      await this.$axios
+        .post('/series', { model: this.addSeriesModel })
+        .then((response) => {
+          this.$q.notify({
+            color: 'green-4',
+            textColor: 'white',
+            icon: 'fas fa-check-circle',
+            message: 'Series added successfully!',
+          });
+          console.log(response.data);
+          this.$emit('seriesAdded', response.data);
+          this.close();
+        })
+        .catch((error) => {
+          console.log(`Error: ${error}`);
+          this.$q.notify({
+            color: 'red-4',
+            textColor: 'white',
+            icon: 'fas fa-cross-circle',
+            message: 'Error adding series!',
+          });
+        });
+    },
+
+    // Deletes the series
     async deleteSeries() {
       await this.$axios
         .delete(`/series/${this.editingSeries._id}`)
@@ -458,30 +505,40 @@ export default {
           });
         });
     },
+
+    // Opens the points tables dialog
     addPointsTable() {
-      console.log('open');
       this.addPointsTableDialog = true;
     },
+
+    // Closes the points tables dialog and reloads the data
     addPointsTableDialogClosed() {
       this.loadPointsTablesList();
       this.addPointsTableDialog = false;
     },
+
+    // Emits a 'close' event when the dialog is closed
     close() {
       this.$emit('close');
     },
   },
   computed: {
+    // Validates compulsory form information
     addSeriesValidation() {
       return this.addSeriesModel.name != null && this.addSeriesModel.name.length > 0
           && this.addSeriesModel.year != null && this.addSeriesModel.game != null
           && this.addCarButtonDisabled === false && this.addRaceTypeButtonDisabled === false;
     },
+
+    // Determines add or editing mode
     mode() {
       if (this.editing === true) {
         return 'Edit';
       }
       return 'Add';
     },
+
+    // Disables add car button if no info has been added in to last input
     addCarButtonDisabled() {
       if (this.addSeriesModel.carChoices.length === 0) {
         return false;
@@ -491,6 +548,8 @@ export default {
       }
       return false;
     },
+
+    // Disables add race type button if no info has been added in to last input
     addRaceTypeButtonDisabled() {
       if (this.addSeriesModel.raceTypes.length === 0) {
         return false;
