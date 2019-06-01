@@ -139,7 +139,7 @@ export default {
             color: 'green',
           });
           console.log(response);
-          this.$router.push({ name: 'Home' });
+          this.$router.push({ path: '/' });
           this.$store.commit('setUser', response.data.user);
           this.$store.commit('setJWTtoken', response.data.token);
         })
