@@ -144,6 +144,7 @@ export default {
             icon: 'fas fa-check-circle',
             message: 'Points table created successfully!',
           });
+          this.$emit('tableAdded');
           this.close();
         })
         .catch((error) => {
