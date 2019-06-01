@@ -1,22 +1,23 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import modules from './modules';
 
 Vue.use(Vuex);
 
-/*
- * If not building with SSR mode, you can
- * directly export the Store instantiation
- */
-
-export default function (/* { ssrContext } */) {
+export default function () {
   const Store = new Vuex.Store({
-    modules: {
-      modules,
+    state: {
+      editingAllowed: true,
+      user: null,
+      JWTtoken: null,
     },
-
-    // enable strict mode (adds overhead!)
-    // for dev mode only
+    mutations: {
+      setUser(state, user) {
+        state.user = user;
+      },
+      setJWTtoken(state, token) {
+        state.JWTtoken = token;
+      },
+    },
     strict: process.env.DEV,
   });
 

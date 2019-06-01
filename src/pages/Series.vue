@@ -375,7 +375,7 @@ export default {
       return [];
     },
     editingAllowed() {
-      return this.$store.state.modules.editingAllowed;
+      return this.$store.state.editingAllowed;
     },
   },
   watch: {
