@@ -1,6 +1,12 @@
 <template>
   <q-page class="flex flex-center" @keyup.enter="authorize">
-    <q-card class="auth-card">
+    <q-card
+      class="auth-card"
+      v-bind:class="{
+        'tall': mode=='register',
+        'short': mode=='login',
+      }"
+    >
       <q-tabs
         v-model="mode"
         dense
@@ -33,8 +39,23 @@
             :rules="[ val => val && val.length > 0 || 'Please enter an email address']"
           />
           <q-input
+            v-model="registerModel.name" label="Full Name" outlined
+            :rules="[ val => val && val.length > 0 || 'Please enter your full name']"
+          />
+          <q-input
+            v-model="registerModel.gamertag" label="Gamertag" outlined
+            :rules="[ val => val && val.length > 0 || 'Please enter a gamertag']"
+          />
+          <q-input
             v-model="registerModel.password" type="password" label="Password" outlined
             :rules="[ val => val && val.length > 0 || 'Please enter a password']"
+          />
+          <q-input
+            v-model="passwordCheck" type="password" label="Password Again" outlined
+            :rules="[
+              val => val && val.length > 0 || 'Please enter a password',
+              val => val == registerModel.password || 'The passwords do not match'
+            ]"
           />
         </q-tab-panel>
       </q-tab-panels>
@@ -53,8 +74,17 @@
 <style scoped>
 .auth-card {
   margin: auto;
+  height: auto;
+  overflow: hidden;
   width: 500px;
   max-width: 90vw;
+  transition: all 0.5s ease-out;
+}
+.tall {
+  height: 515px;
+}
+.short {
+  height: 285px;
 }
 </style>
 
@@ -74,8 +104,11 @@ export default {
   data() {
     return {
       mode: this.$route.params.mode,
+      passwordCheck: null,
       registerModel: {
         email: null,
+        name: null,
+        gamertag: null,
         password: null,
       },
       loginModel: {
@@ -162,7 +195,10 @@ export default {
       }
       if (this.mode === 'register') {
         return this.registerModel.email != null && this.registerModel.email.length > 0
-          && this.registerModel.password != null && this.registerModel.length > 0;
+          && this.registerModel.password != null && this.registerModel.password.length > 0
+          && this.passwordCheck != null && this.registerModel.password === this.passwordCheck
+          && this.registerModel.gamertag != null && this.registerModel.gamertag.length > 0
+          && this.registerModel.name != null && this.registerModel.name.length > 0;
       }
       return false;
     },

@@ -24,6 +24,7 @@
               </div>
               <div class="col-xs-1">
                 <q-btn
+                  v-if="editingAllowed"
                   round flat color="primary" icon="edit"
                   size="xs" @click="editTable(table)"
                 />
