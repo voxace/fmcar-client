@@ -28,7 +28,7 @@
                 {{ game.name }}
               </div>
             </q-card-section>
-            <q-card-actions align="around">
+            <q-card-actions align="around" v-if="editingAllowed">
               <q-btn flat text-color="blue" @click="editGame(game)">EDIT</q-btn>
               <q-btn flat text-color="red" @click="deleteGame(game._id)">DELETE</q-btn>
             </q-card-actions>
@@ -143,7 +143,10 @@ export default {
   },
   computed: {
     editingAllowed() {
-      return this.$store.state.editingAllowed;
+      if (this.$store.state.user) {
+        return this.$store.state.user.admin;
+      }
+      return false;
     },
   },
 };

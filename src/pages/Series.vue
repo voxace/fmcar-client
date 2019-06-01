@@ -375,7 +375,10 @@ export default {
       return [];
     },
     editingAllowed() {
-      return this.$store.state.editingAllowed;
+      if (this.$store.state.user) {
+        return this.$store.state.user.admin;
+      }
+      return false;
     },
   },
   watch: {

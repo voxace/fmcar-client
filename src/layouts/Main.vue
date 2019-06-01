@@ -202,6 +202,14 @@ export default {
       ],
     };
   },
+  created() {
+    const user = this.$q.cookies.get('fmcar-user');
+    const token = this.$q.cookies.get('fmcar-token');
+    if (user !== 'undefined' && token !== 'undefined') {
+      this.$store.commit('setUser', user);
+      this.$store.commit('setJWTtoken', token);
+    }
+  },
   methods: {
     openURL,
     subIsActive(input) {
@@ -212,7 +220,9 @@ export default {
   computed: {
     activeLinks() {
       if (this.auth) {
-        return this.links.filter(link => this.auth.admin === link.auth && link.loggedIn !== false);
+        return this.links.filter(link => (link.auth === false
+          || link.auth === this.auth.admin)
+          && link.loggedIn !== false);
       }
       return this.links.filter(link => !link.loggedIn);
     },

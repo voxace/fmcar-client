@@ -142,6 +142,8 @@ export default {
           this.$router.push({ path: '/' });
           this.$store.commit('setUser', response.data.user);
           this.$store.commit('setJWTtoken', response.data.token);
+          this.$q.cookies.set('fmcar-user', response.data.user, { expires: 3, path: '/' });
+          this.$q.cookies.set('fmcar-token', response.data.token, { expires: 3, path: '/' });
         })
         .catch((err) => {
           console.log(err);

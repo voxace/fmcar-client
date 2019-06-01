@@ -12,6 +12,8 @@ export default {
   name: 'Logout',
   created() {
     this.$store.commit('logout');
+    this.$q.cookies.remove('fmcar-user');
+    this.$q.cookies.remove('fmcar-token');
     this.$router.push({ path: '/' });
     this.$q.notify({
       message: 'You are now logged out...',
