@@ -1,9 +1,16 @@
 <template>
   <q-page class="flex flex-center" @keyup.enter="authorize">
-    <q-spinner
-      color="primary"
-      size="3em"
-    />
+    <div class="row">
+      <div class="col-xs-12 text-center q-my-lg">
+        <q-spinner
+          color="primary"
+          size="10em"
+        />
+      </div>
+      <div class="col-xs-12 text-center q-my-lg">
+        Logging you out...
+      </div>
+    </div>
   </q-page>
 </template>
 
@@ -14,11 +21,13 @@ export default {
     this.$store.commit('logout');
     this.$q.cookies.remove('fmcar-user');
     this.$q.cookies.remove('fmcar-token');
-    this.$router.push({ path: '/' });
-    this.$q.notify({
-      message: 'You are now logged out...',
-      color: 'green',
-    });
+    setTimeout(() => {
+      this.$router.push({ path: '/' });
+      this.$q.notify({
+        message: 'You are now logged out...',
+        color: 'green',
+      });
+    }, 500);
   },
 };
 </script>
