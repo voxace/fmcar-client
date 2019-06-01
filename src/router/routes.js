@@ -12,6 +12,7 @@ const routes = [
       { path: '/facebook', beforeEnter() { window.location.href = 'https://www.facebook.com/ForzaMotorsportCommunityAustralia'; } },
       { path: '/login', component: () => import('pages/Login.vue') },
       { path: '/register', component: () => import('pages/Login.vue') },
+      { path: '/logout', component: () => import('pages/Logout.vue') },
       { path: '/admin/games', component: () => import('pages/admin/Games.vue') },
       { path: '/admin/tracks', component: () => import('pages/admin/Tracks.vue') },
       { path: '/admin/points', component: () => import('pages/admin/Points.vue') },

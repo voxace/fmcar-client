@@ -17,6 +17,10 @@ export default function () {
       setJWTtoken(state, token) {
         state.JWTtoken = token;
       },
+      logout(state) {
+        state.JWTtoken = null;
+        state.user = null;
+      },
     },
     strict: process.env.DEV,
   });

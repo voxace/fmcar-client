@@ -131,43 +131,43 @@ export default {
         {
           to: '/',
           text: 'Home',
-          auth: 0,
+          auth: false,
           type: 'link',
         },
         {
           to: '/series',
           text: 'Series',
-          auth: 0,
+          auth: false,
           type: 'link',
         },
         {
           to: '/results',
           text: 'Results',
-          auth: 0,
+          auth: false,
           type: 'link',
         },
         {
           to: '/calendar',
           text: 'Calendar',
-          auth: 0,
+          auth: false,
           type: 'link',
         },
         {
           to: '/discord',
           text: 'Discord',
-          auth: 0,
+          auth: false,
           type: 'link',
         },
         {
           to: '/facebook',
           text: 'Facebook',
-          auth: 0,
+          auth: false,
           type: 'link',
         },
         {
           text: 'Admin',
           to: '/admin',
-          auth: 2,
+          auth: true,
           loggedIn: true,
           type: 'menu',
           menu: [
@@ -188,14 +188,14 @@ export default {
         {
           to: '/logout',
           text: 'Logout',
-          auth: 0,
+          auth: false,
           loggedIn: true,
           type: 'link',
         },
         {
           to: '/login',
           text: 'Login / Register',
-          auth: 0,
+          auth: false,
           loggedIn: false,
           type: 'link',
         },
@@ -211,12 +211,13 @@ export default {
   },
   computed: {
     activeLinks() {
-      const auth = { access: 2 };
-      if (auth) {
-        console.log(this.links.filter(link => auth.access >= link.auth && link.loggedIn !== false));
-        return this.links.filter(link => auth.access >= link.auth && link.loggedIn !== false);
+      if (this.auth) {
+        return this.links.filter(link => this.auth.admin === link.auth && link.loggedIn !== false);
       }
       return this.links.filter(link => !link.loggedIn);
+    },
+    auth() {
+      return this.$store.state.user;
     },
   },
   watch: {
