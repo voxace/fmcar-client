@@ -143,7 +143,7 @@ export default {
   },
   computed: {
     editingAllowed() {
-      return this.$store.state.modules.editingAllowed;
+      return this.$store.state.editingAllowed;
     },
   },
 };
