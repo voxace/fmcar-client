@@ -1,6 +1,6 @@
 <template>
   <q-page class="flex flex-center">
-    <div class="row" v-if="verifying">
+    <div class="row" v-if="verifying && !error">
       <div class="col-xs-12 text-center q-my-lg">
         <q-spinner
           color="primary"
@@ -11,11 +11,18 @@
         <p>Verifying your email...</p>
       </div>
     </div>
-    <div class="row" v-else>
+    <div class="row" v-if="!verifying && !error">
       <div class="col-xs-12 text-center q-my-lg">
         <p>Thankyou for verifying your email.</p>
-        <p>This window will now close...</p>
       </div>
+    </div>
+    <div class="row" v-if="error">
+      <q-banner dense inline-actions class="text-white bg-red">
+        Something went wrong. You might already be verified. try logging in.
+        <template v-slot:action>
+          <q-btn flat color="white" label="Go to login" @click="redirect"/>
+        </template>
+      </q-banner>
     </div>
   </q-page>
 </template>
@@ -29,6 +36,7 @@ export default {
   data() {
     return {
       verifying: true,
+      error: false,
     };
   },
   mounted() {
@@ -45,9 +53,10 @@ export default {
             icon: 'fas fa-check-circle',
             message: 'Email address verified successfully!',
           });
+          this.verifying = false;
           setTimeout(() => {
-            window.close();
-          }, 5000);
+            this.$router.push({ path: '/login' });
+          }, 3000);
         })
         .catch(() => {
           this.$q.notify({
@@ -57,6 +66,10 @@ export default {
             message: 'Error verifying email address!',
           });
         });
+      this.error = true;
+    },
+    redirect() {
+      this.$router.push({ path: '/login' });
     },
   },
 };
