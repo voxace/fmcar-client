@@ -65,8 +65,8 @@ export default {
             icon: 'fas fa-cross-circle',
             message: 'Error verifying email address!',
           });
+          this.error = true;
         });
-      this.error = true;
     },
     redirect() {
       this.$router.push({ path: '/login' });
