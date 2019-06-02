@@ -16,6 +16,7 @@ const routes = [
       { path: '/admin/games', component: () => import('pages/admin/Games.vue') },
       { path: '/admin/tracks', component: () => import('pages/admin/Tracks.vue') },
       { path: '/admin/points', component: () => import('pages/admin/Points.vue') },
+      { path: '/verify/:token', component: () => import('pages/admin/Verify.vue') },
       { path: '*', component: () => import('pages/Error404.vue') },
     ],
   },

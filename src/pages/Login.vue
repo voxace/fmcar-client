@@ -4,7 +4,8 @@
       class="auth-card"
       v-bind:class="{
         'tall': mode=='register',
-        'short': mode=='login',
+        'short': mode=='login && !regoComplete',
+        'medium': mode=='login && regoComplete',
       }"
     >
       <q-tabs
@@ -31,6 +32,15 @@
             v-model="loginModel.password" type="password" label="Password" outlined
             :rules="[ val => val && val.length > 0 || 'Please enter a password']"
           />
+          <q-banner
+            v-if="regoComplete"
+            dense inline-actions class="text-white bg-red text-center"
+          >
+            Please check your inbox for a confirmation email.
+            <template v-slot:action>
+              <q-btn flat label="Dismiss" @click="regoComplete = false"/>
+            </template>
+          </q-banner>
         </q-tab-panel>
 
         <q-tab-panel name="register">
@@ -86,6 +96,9 @@
 .short {
   height: 285px;
 }
+.medium {
+  height: 325px;
+}
 </style>
 
 <script>
@@ -105,6 +118,7 @@ export default {
     return {
       mode: this.$route.params.mode,
       passwordCheck: null,
+      regoComplete: false,
       registerModel: {
         email: null,
         name: null,
@@ -151,12 +165,11 @@ export default {
             message: 'Succesfully Registered!',
             color: 'green',
           });
-          console.log(response);
-          this.loginModel.email = response.email;
+          this.loginModel.email = response.data.email;
           this.mode = 'login';
+          this.regoComplete = true;
         })
-        .catch((err) => {
-          console.log(err);
+        .catch(() => {
           this.$q.notify({
             message: 'Email Already Registered',
             color: 'red',
@@ -171,7 +184,6 @@ export default {
             message: 'Succesfully Logged In!',
             color: 'green',
           });
-          console.log(response);
           this.$router.push({ path: '/' });
           this.$store.commit('setUser', response.data.user);
           this.$store.commit('setJWTtoken', response.data.token);
