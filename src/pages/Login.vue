@@ -4,8 +4,8 @@
       class="auth-card"
       v-bind:class="{
         'tall': mode=='register',
-        'short': mode=='login && !regoComplete',
-        'medium': mode=='login && regoComplete',
+        'short': mode=='login' && !regoComplete,
+        'medium': mode=='login' && regoComplete,
       }"
     >
       <q-tabs
