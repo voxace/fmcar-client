@@ -88,7 +88,7 @@
           >
             <q-select
               outlined v-model="addRaceModel.track" map-options
-              :options="loadedTracks" :dense="$q.screen.lt.sm"
+              :options="trackOptions" :dense="$q.screen.lt.sm"
               option-value="_id" option-label="name" label="Track" emit-value
               :rules="[ val => val != null || 'Please select a track']"
               :disable="loadingTrack" :disabled="loadingTrack"
@@ -441,6 +441,15 @@ export default {
         });
       }
       return tables;
+    },
+
+    // All tracks are available if none are set for the game
+    trackOptions() {
+      if (this.series.game.tracks != null && this.series.game.tracks.length === 0) {
+        return this.loadedTracks;
+      }
+      // Filters loaded tracks by the object id of the tracks in the series
+      return this.loadedTracks.filter(o => !this.series.game.tracks.find(o2 => o._id === o2));
     },
   },
   watch: {
