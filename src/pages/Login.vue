@@ -23,6 +23,8 @@
       <q-separator />
 
       <q-tab-panels v-model="mode" animated class="q-px-xs q-pt-md">
+
+        <!-- LOGIN -->
         <q-tab-panel name="login">
           <q-input
             v-model="loginModel.email" label="Email" outlined
@@ -43,6 +45,7 @@
           </q-banner>
         </q-tab-panel>
 
+        <!-- REGISTER -->
         <q-tab-panel name="register">
           <q-input
             v-model="registerModel.email" label="Email" outlined
@@ -69,6 +72,8 @@
           />
         </q-tab-panel>
       </q-tab-panels>
+
+      <!-- SUBMIT BUTTON -->
       <q-card-actions align="right" class="text-primary">
         <q-btn
           flat :label="mode" class="q-mr-sm q-mb-xs"
