@@ -80,6 +80,7 @@ export default {
       editing: false,
       editingGame: {
         name: null,
+        tracks: null,
         logo: null,
       },
     };

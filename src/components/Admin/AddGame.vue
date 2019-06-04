@@ -19,6 +19,37 @@
               :rules="[ val => val && val.length > 0 || 'Please enter a name']"
             />
           </div>
+          <div
+            class="col-xs-12"
+          >
+            <q-select
+              outlined v-model="addNewGameModel.tracks" use-input emit-value
+              :options="trackOptions" :dense="$q.screen.lt.sm" use-chips
+              multiple input-debounce="0" new-value-mode="add-unique"
+              option-value="_id" option-label="name" label="Tracks"
+              :rules="[ val => val.length > 0 || 'Please choose the tracks available in the game']"
+              :disable="loadingTrack" :disabled="loadingTrack" @filter="filterTracks"
+            >
+              <template v-slot:selected-item="scope">
+                <q-chip
+                  removable
+                  dense
+                  @remove="scope.removeAtIndex(scope.index)"
+                  :tabindex="scope.tabindex"
+                >
+                  {{ mappedModel[scope.opt] }}
+                </q-chip>
+              </template>
+              <template v-slot:append v-if="loadingTrack">
+                <q-avatar>
+                  <q-spinner
+                    color="primary"
+                    size="2em"
+                  />
+                </q-avatar>
+              </template>
+            </q-select>
+          </div>
           <div v-if="showImage" class="col-xs-12">
             <q-img
               class="rounded-borders cursor-pointer"
@@ -81,28 +112,44 @@ export default {
     return {
       uploadUrl: `${process.env.API}/upload`,
       imageUpload: null,
+      loadedTracks: [],
+      trackOptions: [],
+      loadingTrack: false,
       addExistingGameModel: {
         name: null,
+        tracks: [],
         logo: null,
       },
       addNewGameModel: {
         name: null,
+        tracks: [],
         logo: null,
       },
     };
   },
-  mounted() {
-    if (this.editing === true) {
-      this.addNewGameModel.name = this.editingGame.name;
-      this.addNewGameModel.logo = this.editingGame.logo;
-      this.$forceUpdate();
-    }
+  async mounted() {
+    this.loadTrackList();
   },
   methods: {
 
     // Provides file name info on upload
     uploaded(info) {
       this.imageUpload = info.xhr.response;
+    },
+
+    // Autocomplete for tracks list
+    filterTracks(val, update) {
+      if (val === '') {
+        update(() => {
+          this.trackOptions = this.loadedTracks;
+        });
+        return;
+      }
+      update(() => {
+        const needle = val.toLowerCase();
+        this.trackOptions = this.loadedTracks
+          .filter(v => v.name.toLowerCase().includes(needle));
+      });
     },
 
     // Chooses between edit and create mode
@@ -170,6 +217,26 @@ export default {
         });
     },
 
+    // Load tracks
+    async loadTrackList() {
+      this.loadingTrack = true;
+      await this.$axios
+        .get('/track')
+        .then((response) => {
+          this.loadedTracks = response.data;
+          if (this.editing === true) {
+            this.addNewGameModel.name = this.editingGame.name;
+            this.addNewGameModel.tracks = this.editingGame.tracks.map(track => track._id);
+            this.addNewGameModel.logo = this.editingGame.logo;
+            this.$forceUpdate();
+          }
+        })
+        .catch((error) => {
+          console.log(`Error: ${error}`);
+        });
+      this.loadingTrack = false;
+    },
+
     // Closes the dialog
     close() {
       this.$emit('close');
@@ -202,6 +269,14 @@ export default {
     // Get image URL
     getUrl() {
       return `${process.env.BASE}/${this.editingGame.logo}`;
+    },
+
+    // Manually map options
+    mappedModel() {
+      return this.loadedTracks.reduce((acc, o) => {
+        acc[o._id] = o.name;
+        return acc;
+      }, {});
     },
   },
 };
