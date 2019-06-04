@@ -277,8 +277,8 @@ export default {
       }
     },
 
-    // Creates a new race
-    async addRace() {
+    // Updates the race
+    async editRace() {
       this.addRaceModel.series = this.series._id;
       this.addRaceModel.season = this.season._id;
       await this.$axios
@@ -304,8 +304,8 @@ export default {
         });
     },
 
-    // Updates the race
-    async editRace() {
+    // Creates a new race
+    async addRace() {
       this.addRaceModel.series = this.series._id;
       this.addRaceModel.season = this.season._id;
       await this.$axios
