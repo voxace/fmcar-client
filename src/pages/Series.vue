@@ -82,7 +82,7 @@
       </div>
     </div>
 
-    <!-- RACES/TEAMS TABS -->
+    <!-- ROUNDS/TEAMS TABS -->
     <div class="row" v-if="loadedSeason != null">
       <div class="col-xs-12 q-pt-md">
         <q-tabs
@@ -93,13 +93,13 @@
           indicator-color="primary"
           align="justify"
         >
-          <q-tab name="Races" label="Races" />
+          <q-tab name="Rounds" label="Rounds" />
           <q-tab name="Teams" label="Teams" />
         </q-tabs>
         <q-separator />
         <q-tab-panels v-model="tab" animated>
-          <!-- RACES TABLE -->
-          <q-tab-panel name="Races">
+          <!-- ROUNDS TABLE -->
+          <q-tab-panel name="Rounds">
             <div v-if="loadedSeason != null" class="col-xs-12 q-py-md">
               <race-table
                 :loadedSeason="loadedSeason" :editingAllowed="editingAllowed"
@@ -145,7 +145,7 @@
         </q-fab-action>
         <!-- ADD RACE -->
         <q-fab-action
-          v-if="selectedSeries && selectedSeason && tab=='Races'"
+          v-if="selectedSeries && selectedSeason && tab=='Rounds'"
           @click="addRace"
           color="primary" icon="directions_car"
         >
@@ -233,7 +233,7 @@ export default {
   data() {
     return {
       seriesLoading: false,
-      tab: 'Races',
+      tab: 'Rounds',
       selectedYear: null,
       selectedSeries: null,
       selectedSeason: null,
