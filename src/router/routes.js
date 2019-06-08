@@ -6,10 +6,9 @@ const routes = [
     children: [
       { path: '', component: () => import('pages/Index.vue') },
       { path: '/series', component: () => import('pages/Series.vue') },
-      { path: '/results', component: () => import('pages/Results.vue') },
       { path: '/calendar', component: () => import('pages/Calendar.vue') },
-      { path: '/discord', beforeEnter() { window.location.href = 'https://discord.gg/dWSQBrQ'; } },
-      { path: '/facebook', beforeEnter() { window.location.href = 'https://www.facebook.com/ForzaMotorsportCommunityAustralia'; } },
+      { path: '/discord', beforeEnter() { window.open('https://discord.gg/dWSQBrQ'); } },
+      { path: '/facebook', beforeEnter() { window.open('https://www.facebook.com/groups/632070486958150/'); } },
       { path: '/login', component: () => import('pages/Login.vue') },
       { path: '/register', component: () => import('pages/Login.vue') },
       { path: '/logout', component: () => import('pages/Logout.vue') },

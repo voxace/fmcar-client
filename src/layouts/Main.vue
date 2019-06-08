@@ -141,12 +141,6 @@ export default {
           type: 'link',
         },
         {
-          to: '/results',
-          text: 'Results',
-          auth: false,
-          type: 'link',
-        },
-        {
           to: '/calendar',
           text: 'Calendar',
           auth: false,
