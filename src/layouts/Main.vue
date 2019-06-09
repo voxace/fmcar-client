@@ -3,7 +3,7 @@
     <q-header>
       <q-toolbar>
         <q-toolbar-title>
-          <router-link to="/" class="logo"><img src="../assets/logo.png"></router-link>
+          <router-link to="/"><img src="../assets/logo.png" class="logo"></router-link>
         </q-toolbar-title>
 
         <template v-if="$q.screen.gt.sm">
@@ -237,7 +237,7 @@ h3 {
   margin-block-start: 0.2em;
   margin-block-end: 0.5em;
 }
-.logo img {
+.logo {
   width:200px;
   height:auto;
 }
@@ -252,5 +252,9 @@ h3 {
 .menu-item {
   font-size: 0.9em;
   margin-left: 10px;
+}
+.responsive-img {
+  width: 100%;
+  height: auto;
 }
 </style>
