@@ -188,9 +188,9 @@
 
     <!-- ADD ROUND DIALOG -->
     <add-round-dialog
-      v-if="loadedSeries && selectedSeason && addRoundDialog"
+      v-if="loadedSeason && selectedSeries && addRoundDialog"
       :editing="editing" :editingRound="editingRound"
-      :series="loadedSeries" :season="selectedSeason"
+      :series="selectedSeries" :season="loadedSeason"
       :visibility="addRoundDialog"
       @close="addRoundDialog = false" @roundAdded="roundAdded"
     />
@@ -287,16 +287,16 @@ export default {
       this.$q.loading.hide();
     },
     roundAdded() {
-      this.loadSeriesData();
+      this.loadSeasonData();
     },
     teamAdded() {
-      this.loadSeriesData();
+      this.loadSeasonData();
     },
     seasonAdded(season) {
       this.selectedSeries.seasons.push(season);
       this.selectedSeason = this.selectedSeries.seasons[this.selectedSeries.seasons.length - 1];
       this.$forceUpdate();
-      this.loadSeriesData();
+      this.loadSeasonData();
     },
     seriesAdded(series) {
       this.loadedSeriesList.push(series);
@@ -390,9 +390,7 @@ export default {
       this.loadSeriesList();
     },
     selectedSeries() {
-      console.log(this.selectedSeries);
       this.selectedSeason = this.selectedSeries.seasons[0]._id;
-      console.log(this.selectedSeason);
     },
     selectedSeason() {
       this.loadSeasonData();

@@ -287,8 +287,8 @@ export default {
       addRoundModel: {
         series: this.series._id,
         season: this.season._id,
-        track: null,
         round: null,
+        track: null,
         roundType: null,
         configuration: null,
         sessions: [{
@@ -309,14 +309,10 @@ export default {
     this.getTrackConfigurations();
     this.getWeatherOptions();
     if (this.editing === true) {
-      this.addRoundModel.pointsTable = this.editingRound.pointsTable;
-      this.addRoundModel.track = this.editingRound.track;
       this.addRoundModel.round = this.editingRound.round;
-      this.addRoundModel.number = this.editingRound.number;
+      this.addRoundModel.track = this.editingRound.track;
       this.addRoundModel.roundType = this.editingRound.roundType;
       this.addRoundModel.configuration = this.editingRound.configuration;
-      this.addRoundModel.weather = this.editingRound.weather;
-      this.addRoundModel.date = this.editingRound.date;
       this.$forceUpdate();
     }
   },
@@ -410,6 +406,7 @@ export default {
     async addRound() {
       this.addRoundModel.series = this.series._id;
       this.addRoundModel.season = this.season._id;
+      this.addRoundModel.round = this.roundNumber;
       await this.$axios
         .post('/round', { model: this.addRoundModel })
         .then(() => {
@@ -540,7 +537,7 @@ export default {
     // Calculate round number
     roundNumber() {
       if (!this.editing) {
-        return this.series.seasons[this.season.season - 1].rounds.length + 1;
+        return this.season.rounds.length + 1;
       }
       return this.editingRound.round;
     },

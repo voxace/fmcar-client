@@ -476,7 +476,6 @@ export default {
             icon: 'fas fa-check-circle',
             message: 'Series added successfully!',
           });
-          console.log(response.data);
           this.$emit('seriesAdded', response.data);
           this.close();
         })
@@ -535,7 +534,6 @@ export default {
   computed: {
     // Validates compulsory form information
     addSeriesValidation() {
-      console.log(this.addSeriesModel);
       return this.addSeriesModel.name != null && this.addSeriesModel.name.length > 0
           && this.addSeriesModel.year != null && this.addSeriesModel.game != null
           && this.addCarButtonDisabled === false && this.addRoundTypeButtonDisabled === false;
