@@ -237,10 +237,6 @@ h3 {
   margin-block-start: 0.2em;
   margin-block-end: 0.5em;
 }
-.logo {
-  color: white;
-  text-decoration: none;
-}
 .logo img {
   width:200px;
   height:auto;
