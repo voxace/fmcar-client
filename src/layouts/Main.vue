@@ -240,6 +240,8 @@ h3 {
 .logo {
   color: white;
   text-decoration: none;
+}
+.logo img {
   width:200px;
   height:auto;
 }
