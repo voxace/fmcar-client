@@ -10,21 +10,44 @@
       </tr>
     </thead>
     <tbody v-if="loadedSeason != null && loadedSeason.length > 0">
-      <tr
-        v-for="round in loadedSeason"
-        :key="round._id"
-      >
-        <td class="text-center">{{round.round}}</td>
-        <td>{{round.track.name}}</td>
-        <td v-if="$q.screen.gt.xs">{{round.roundType}}</td>
-        <td v-if="$q.screen.gt.xs">{{round.configuration}}</td>
-        <td v-if="editingAllowed">
-          <q-btn
-            round color="primary" icon="edit"
-            size="xs" @click="editRound(round)"
-          />
-        </td>
-      </tr>
+      <template v-for="round in loadedSeason">
+        <tr :key="round._id" class="cursor-pointer">
+          <td class="text-center">{{round.round}}</td>
+          <td>{{round.track.name}}</td>
+          <td v-if="$q.screen.gt.xs">{{round.roundType}}</td>
+          <td v-if="$q.screen.gt.xs">{{round.configuration}}</td>
+          <td v-if="editingAllowed">
+            <q-btn
+              round color="primary" icon="edit"
+              size="xs" @click="editRound(round)"
+            />
+          </td>
+        </tr>
+        <tr v-for="(session, i) in round.sessions" :key="session._id">
+          <td colspan="5" class="text-center cursor-pointer">
+            <div class="row">
+              <div class="col-xs-2">
+                <strong>Session:</strong> {{ i }} - {{ session.sessionType }}
+              </div>
+              <div class="col-xs-2">
+                <strong>Date:</strong> {{ session.date }}
+              </div>
+              <div class="col-xs-2">
+                <strong>Time:</strong> {{ session.time }}
+              </div>
+              <div class="col-xs-2">
+                <strong>Laps:</strong> {{ session.laps }}
+              </div>
+              <div class="col-xs-2">
+                <strong>Points Table:</strong> {{ session.pointsTable.name }}
+              </div>
+              <div class="col-xs-2">
+                <strong>Weather:</strong> {{ session.weather }}
+              </div>
+            </div>
+          </td>
+        </tr>
+      </template>
     </tbody>
     <tbody v-else>
       <tr>
