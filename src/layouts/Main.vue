@@ -3,7 +3,7 @@
     <q-header>
       <q-toolbar>
         <q-toolbar-title>
-          <router-link to="/" class="logo">FMCAR</router-link>
+          <router-link to="/" class="logo"><img src="../assets/logo.png"></router-link>
         </q-toolbar-title>
 
         <template v-if="$q.screen.gt.sm">
