@@ -179,8 +179,8 @@
 
     <!-- ADD SEASON DIALOG -->
     <add-season-dialog
-      v-if="selectedSeries && addSeasonDialog"
-      :editing="editing" :editingSeason="selectedSeason"
+      v-if="selectedSeries && loadedSeason && addSeasonDialog"
+      :editing="editing" :editingSeason="loadedSeason"
       :series="selectedSeries" :visibility="addSeasonDialog"
       @close="addSeasonDialog = false" @seasonAdded="seasonAdded"
       @seasonDeleted="seasonDeleted"

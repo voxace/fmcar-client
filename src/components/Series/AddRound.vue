@@ -313,6 +313,7 @@ export default {
       this.addRoundModel.track = this.editingRound.track;
       this.addRoundModel.roundType = this.editingRound.roundType;
       this.addRoundModel.configuration = this.editingRound.configuration;
+      this.addRoundModel.sessions = this.editingRound.sessions;
       this.$forceUpdate();
     }
   },
@@ -356,7 +357,7 @@ export default {
         pointsTable: null,
       });
       setTimeout(() => {
-        this.tab = this.addRoundModel.rounds.length - 1;
+        this.tab = this.addRoundModel.sessions.length - 1;
         document.getElementsByClassName('q-tabs__content')[1].scrollTo({
           top: 0,
           left: 1000,
