@@ -320,10 +320,6 @@ export default {
         pointsTables: [],
         carChoices: [],
         roundTypes: [],
-        seasons: [{
-          teams: [],
-          rounds: [],
-        }],
         banner: null,
         logo: null,
         dropRound: false,

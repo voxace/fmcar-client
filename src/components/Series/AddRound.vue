@@ -14,7 +14,7 @@
               Series: {{series.name}}
             </div>
             <div class="text-subtitle2">
-              Season: {{season}}
+              Season: {{season.season}}
             </div>
           </div>
           <div class="col-xs-3 q-pt-lg">
@@ -268,7 +268,7 @@ export default {
     editing: Boolean,
     editingRound: Object,
     series: Object,
-    season: Number,
+    season: Object,
     visibility: Boolean,
   },
   data() {
@@ -285,8 +285,8 @@ export default {
       trackConfigurations: [],
       weatherOptions: [],
       addRoundModel: {
-        series: null,
-        season: null,
+        series: this.series._id,
+        season: this.season._id,
         track: null,
         round: null,
         roundType: null,
@@ -524,10 +524,9 @@ export default {
   computed: {
     // Validate form
     addRoundValidation() {
-      return this.addRoundModel.pointsTable != null && this.addRoundModel.track != null
-          && this.addRoundModel.round > 0 && this.addRoundModel.number > 0
-          && this.addRoundModel.roundType != null && this.addRoundModel.roundType.length > 0
-          && this.addRoundModel.date != null && this.addRoundModel.date.length > 0;
+      return this.addRoundModel.track != null;
+      // && this.addRoundModel.roundType != null && this.addRoundModel.roundType.length > 0
+      // && this.addRoundModel.date != null && this.addRoundModel.date.length > 0;
     },
 
     // Choose between 'Add' or 'Editing' mode
@@ -541,7 +540,7 @@ export default {
     // Calculate round number
     roundNumber() {
       if (!this.editing) {
-        return this.series.seasons[this.season - 1].rounds.length + 1;
+        return this.series.seasons[this.season.season - 1].rounds.length + 1;
       }
       return this.editingRound.round;
     },
