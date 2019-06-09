@@ -187,9 +187,9 @@
 
     <!-- ADD ROUND DIALOG -->
     <add-round-dialog
-      v-if="selectedSeries && selectedSeason && addRoundDialog"
+      v-if="loadedSeries && selectedSeason && addRoundDialog"
       :editing="editing" :editingRound="editingRound"
-      :series="selectedSeries" :season="selectedSeason"
+      :series="loadedSeries" :season="selectedSeason"
       :visibility="addRoundDialog"
       @close="addRoundDialog = false" @roundAdded="roundAdded"
     />

@@ -14,7 +14,7 @@
               Series: {{series.name}}
             </div>
             <div class="text-subtitle2">
-              Season: {{season.season}}
+              Season: {{season}}
             </div>
           </div>
           <div class="col-xs-3 q-pt-lg">
@@ -268,7 +268,7 @@ export default {
     editing: Boolean,
     editingRound: Object,
     series: Object,
-    season: Object,
+    season: Number,
     visibility: Boolean,
   },
   data() {
@@ -541,7 +541,7 @@ export default {
     // Calculate round number
     roundNumber() {
       if (!this.editing) {
-        return this.season.sessions.length + 1;
+        return this.series.seasons[this.season - 1].rounds.length + 1;
       }
       return this.editingRound.round;
     },
