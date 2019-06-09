@@ -240,6 +240,8 @@ h3 {
 .logo {
   color: white;
   text-decoration: none;
+  width:200px;
+  height:auto;
 }
 .active-btn {
   font-weight: bold;
