@@ -165,7 +165,7 @@
             </div>
           </q-tab-panel>
 
-          <!-- RACE TYPES -->
+          <!-- ROUND TYPES -->
           <q-tab-panel name="roundTypes">
             <div class="row">
               <div class="col-xs-5 q-pr-sm">
@@ -179,7 +179,7 @@
                   <div
                     class="row q-pt-sm"
                   >
-                    <!-- RACE TYPE -->
+                    <!-- ROUND TYPE -->
                     <div class="col-xs-10 q-pr-xs">
                       <q-input
                         outlined dense label="Round Type" type="Text"
@@ -196,7 +196,7 @@
                   </div>
                 </transition>
                 <div class="row">
-                  <!-- ADD RACE TYPE BUTTON -->
+                  <!-- ADD ROUND TYPE BUTTON -->
                   <div class="col-xs-12 q-pt-sm">
                     <q-btn
                       id="addRoundTypeButton" :disabled="addRoundTypeButtonDisabled"
@@ -206,7 +206,7 @@
                   </div>
                 </div>
               </div>
-              <div class="col-xs-7">
+              <div class="col-xs-7" v-if="addSeriesModel.roundTypes.length > 0">
                 <p class="text-h6">Description</p>
                 <!-- RACE TYPE DESCRIPTION -->
                 <q-editor
@@ -315,16 +315,17 @@ export default {
       addPointsTableDialog: false,
       addSeriesModel: {
         name: null,
-        logo: null,
-        banner: null,
         game: null,
-        carChoices: [],
-        roundTypes: [{
-          name: '',
-          description: 'Enter a description of the round type...',
-        }],
-        pointsTables: [],
         year: null,
+        pointsTables: [],
+        carChoices: [],
+        roundTypes: [],
+        seasons: [{
+          teams: [],
+          rounds: [],
+        }],
+        banner: null,
+        logo: null,
         dropRound: false,
       },
     };
@@ -538,6 +539,7 @@ export default {
   computed: {
     // Validates compulsory form information
     addSeriesValidation() {
+      console.log(this.addSeriesModel);
       return this.addSeriesModel.name != null && this.addSeriesModel.name.length > 0
           && this.addSeriesModel.year != null && this.addSeriesModel.game != null
           && this.addCarButtonDisabled === false && this.addRoundTypeButtonDisabled === false;

@@ -9,17 +9,19 @@
 
       <!-- SERIES SELECTION -->
       <div class="col-xs-12 col-sm-3 q-px-sm">
+        <!-- YEAR -->
         <q-select
           outlined v-model="selectedYear" :options="years"
           label="Year" v-bind:class="{ 'q-py-xs': $q.screen.lt.sm }"
         />
       </div>
       <div class="col-xs-12 col-sm-6 q-px-sm">
+        <!-- SERIES -->
         <q-select
           outlined v-model="selectedSeries" :options="loadedSeriesList"
           option-label="name" option-value="_id" label="Series" map-options
           :disable="selectedYear == null" :disabled="selectedYear == null"
-          v-bind:class="{ 'q-py-xs': $q.screen.lt.sm }"
+          v-bind:class="{ 'q-py-xs': $q.screen.lt.sm }" emit-value
         >
           <template v-slot:no-option>
             <q-item>
@@ -48,11 +50,11 @@
         </q-select>
       </div>
       <div class="col-xs-12 col-sm-3 q-px-sm">
+        <!-- SEASON -->
         <q-select
           outlined v-model="selectedSeason" :options="seasonList"
-          option-label="season" option-value="_id" label="Season" map-options
+          label="Season" v-bind:class="{ 'q-py-xs': $q.screen.lt.sm }"
           :disable="selectedSeries == null" :disabled="selectedSeries == null"
-          v-bind:class="{ 'q-py-xs': $q.screen.lt.sm }"
         >
           <template v-slot:no-option>
             <q-item>
@@ -83,7 +85,7 @@
     </div>
 
     <!-- ROUNDS/TEAMS TABS -->
-    <div class="row" v-if="loadedSeason != null">
+    <div class="row" v-if="selectedSeason != null">
       <div class="col-xs-12 q-pt-md">
         <q-tabs
           v-model="tab"
@@ -100,19 +102,19 @@
         <q-tab-panels v-model="tab" animated>
           <!-- ROUNDS TABLE -->
           <q-tab-panel name="Rounds">
-            <div v-if="loadedSeason != null" class="col-xs-12 q-py-md">
+            <div v-if="selectedSeason != null" class="col-xs-12 q-py-md">
               <round-table
-                :loadedSeason="loadedSeason" :editingAllowed="editingAllowed"
-                @editRound="editRound"
+                :loadedSeason="loadedSeries.seasons[selectedSeason - 1].rounds"
+                @editRound="editRound" :editingAllowed="editingAllowed"
               />
             </div>
           </q-tab-panel>
           <!-- TEAMS TABLE -->
           <q-tab-panel name="Teams">
-            <div v-if="loadedSeason != null" class="col-xs-12 q-py-md">
+            <div v-if="selectedSeason != null" class="col-xs-12 q-py-md">
               <teams-table
-                :loadedSeason="loadedSeason" :editingAllowed="editingAllowed"
-                @editTeam="editTeam"
+                :loadedSeason="loadedSeries.seasons[selectedSeason - 1].teams"
+                @editTeam="editTeam" :editingAllowed="editingAllowed"
               />
             </div>
           </q-tab-panel>
@@ -239,7 +241,7 @@ export default {
       selectedSeason: null,
       years: ['2018', '2019', '2020'],
       loadedSeriesList: [],
-      loadedSeason: null,
+      loadedSeries: null,
       addRoundDialog: false,
       addSeriesDialog: false,
       addSeasonDialog: false,
@@ -270,12 +272,12 @@ export default {
         });
       this.seriesLoading = false;
     },
-    async loadSeasonData() {
+    async loadSeriesData() {
       this.$q.loading.show();
       await this.$axios
-        .get(`/season/id/${this.selectedSeason._id}/populate`)
+        .get(`/series/id/${this.selectedSeries}`)
         .then((response) => {
-          this.loadedSeason = response.data;
+          this.loadedSeries = response.data;
         })
         .catch((error) => {
           console.log(`Error: ${error}`);
@@ -283,16 +285,16 @@ export default {
       this.$q.loading.hide();
     },
     roundAdded() {
-      this.loadSeasonData();
+      this.loadSeriesData();
     },
     teamAdded() {
-      this.loadSeasonData();
+      this.loadSeriesData();
     },
     seasonAdded(season) {
       this.selectedSeries.seasons.push(season);
       this.selectedSeason = this.selectedSeries.seasons[this.selectedSeries.seasons.length - 1];
       this.$forceUpdate();
-      this.loadSeasonData();
+      this.loadSeriesData();
     },
     seriesAdded(series) {
       this.loadedSeriesList.push(series);
@@ -369,10 +371,13 @@ export default {
   },
   computed: {
     seasonList() {
-      if (this.selectedSeries != null && this.selectedSeries.seasons.length > 0) {
-        return this.selectedSeries.seasons;
+      const seasonNums = [];
+      if (this.loadedSeries != null && this.loadedSeries.seasons.length > 0) {
+        for (let i = 0; i < this.loadedSeries.seasons.length; i += 1) {
+          seasonNums.push(i + 1);
+        }
       }
-      return [];
+      return seasonNums;
     },
     editingAllowed() {
       if (this.$store.state.user) {
@@ -386,13 +391,10 @@ export default {
       this.loadSeriesList();
     },
     selectedSeries() {
-      this.selectedSeason = null;
-      this.loadedSeason = null;
-    },
-    selectedSeason() {
-      if (this.selectedSeason != null) {
-        this.loadSeasonData();
-      }
+      this.loadSeriesData()
+        .then(() => {
+          this.selectedSeason = 1;
+        });
     },
   },
 };
