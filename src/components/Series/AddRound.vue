@@ -304,18 +304,20 @@ export default {
   },
   mounted() {
     this.getToday();
-    this.loadTrackList();
     this.loadPointsTablesList();
-    this.getTrackConfigurations();
-    this.getWeatherOptions();
-    if (this.editing === true) {
-      this.addRoundModel.round = this.editingRound.round;
-      this.addRoundModel.track = this.editingRound.track;
-      this.addRoundModel.roundType = this.editingRound.roundType;
-      this.addRoundModel.configuration = this.editingRound.configuration;
-      this.addRoundModel.sessions = this.editingRound.sessions;
-      this.$forceUpdate();
-    }
+    this.loadTrackList()
+      .then(() => {
+        if (this.editing === true) {
+          this.addRoundModel.round = this.editingRound.round;
+          this.addRoundModel.track = this.editingRound.track._id;
+          this.addRoundModel.roundType = this.editingRound.roundType;
+          this.addRoundModel.configuration = this.editingRound.configuration;
+          this.addRoundModel.sessions = this.editingRound.sessions;
+          this.$forceUpdate();
+        }
+        this.getTrackConfigurations();
+        this.getWeatherOptions();
+      });
   },
   methods: {
     // Load tracks
