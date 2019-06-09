@@ -2,15 +2,25 @@
   <q-page>
     <div class="row q-px-lg">
       <div class="col-xs-12">
-        <h3>Forza Motorsport Community Australia</h3>
-        <p v-if="user">You are logged in as {{ user.name }} ({{ user.email }})</p>
-        <p v-else>You are not logged in...</p>
+        <div class="content">
+          <img src="../assets/fb-join.png">
+          <h3>Forza Motorsport Community Australia</h3>
+          <p v-if="user">You are logged in as {{ user.name }} ({{ user.email }})</p>
+          <p v-else>You are not logged in...</p>
+        </div>
       </div>
     </div>
   </q-page>
 </template>
 
 <style>
+.content {
+width:100%;
+}
+.content img {
+width:400px;
+margin:0 auto;
+}
 </style>
 
 <script>
