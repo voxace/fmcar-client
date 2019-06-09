@@ -101,9 +101,9 @@
           <!-- ROUNDS TABLE -->
           <q-tab-panel name="Rounds">
             <div v-if="loadedSeason != null" class="col-xs-12 q-py-md">
-              <race-table
+              <round-table
                 :loadedSeason="loadedSeason" :editingAllowed="editingAllowed"
-                @editRace="editRace"
+                @editRound="editRound"
               />
             </div>
           </q-tab-panel>
@@ -146,11 +146,11 @@
         <!-- ADD RACE -->
         <q-fab-action
           v-if="selectedSeries && selectedSeason && tab=='Rounds'"
-          @click="addRace"
+          @click="addRound"
           color="primary" icon="directions_car"
         >
           <q-tooltip anchor="center left" self="center right" >
-            Add Race
+            Add Round
           </q-tooltip>
         </q-fab-action>
         <!-- ADD TEAM -->
@@ -183,13 +183,13 @@
       @seasonDeleted="seasonDeleted"
     />
 
-    <!-- ADD RACE DIALOG -->
-    <add-race-dialog
-      v-if="selectedSeries && selectedSeason && addRaceDialog"
-      :editing="editing" :editingRace="editingRace"
+    <!-- ADD ROUND DIALOG -->
+    <add-round-dialog
+      v-if="selectedSeries && selectedSeason && addRoundDialog"
+      :editing="editing" :editingRound="editingRound"
       :series="selectedSeries" :season="selectedSeason"
-      :visibility="addRaceDialog"
-      @close="addRaceDialog = false" @raceAdded="raceAdded"
+      :visibility="addRoundDialog"
+      @close="addRoundDialog = false" @roundAdded="roundAdded"
     />
 
     <!-- ADD TEAM DIALOG -->
@@ -214,11 +214,11 @@
 export default {
   name: 'Series',
   components: {
-    addRaceDialog: () => import('components/Series/AddRace.vue'),
+    addRoundDialog: () => import('components/Series/AddRound.vue'),
     addSeriesDialog: () => import('components/Series/AddSeries.vue'),
     addSeasonDialog: () => import('components/Series/AddSeason.vue'),
     addTeamDialog: () => import('components/Series/AddTeam.vue'),
-    raceTable: () => import('components/Series/RaceTable.vue'),
+    roundTable: () => import('components/Series/RoundTable.vue'),
     teamsTable: () => import('components/Series/TeamsTable.vue'),
   },
   meta: {
@@ -240,11 +240,11 @@ export default {
       years: ['2018', '2019', '2020'],
       loadedSeriesList: [],
       loadedSeason: null,
-      addRaceDialog: false,
+      addRoundDialog: false,
       addSeriesDialog: false,
       addSeasonDialog: false,
       addTeamDialog: false,
-      editingRace: {
+      editingRound: {
         pointsTable: null,
         track: null,
         round: null,
@@ -282,7 +282,7 @@ export default {
         });
       this.$q.loading.hide();
     },
-    raceAdded() {
+    roundAdded() {
       this.loadSeasonData();
     },
     teamAdded() {
@@ -332,9 +332,9 @@ export default {
       }, 100);
       this.seriesLoading = false;
     },
-    addRace() {
+    addRound() {
       this.editing = false;
-      this.addRaceDialog = true;
+      this.addRoundDialog = true;
     },
     addSeries() {
       this.editing = false;
@@ -348,10 +348,10 @@ export default {
       this.editing = false;
       this.addTeamDialog = true;
     },
-    editRace(race) {
+    editRound(round) {
       this.editing = true;
-      this.editingRace = race;
-      this.addRaceDialog = true;
+      this.editingRound = round;
+      this.addRoundDialog = true;
     },
     editSeries() {
       this.editing = true;

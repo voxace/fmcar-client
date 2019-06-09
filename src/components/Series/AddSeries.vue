@@ -24,7 +24,7 @@
         >
           <q-tab name="info" label="Info" />
           <q-tab name="cars" label="Cars" />
-          <q-tab name="raceTypes" label="Race Types" />
+          <q-tab name="roundTypes" label="Round Types" />
           <q-tab name="graphics" label="Graphics" />
         </q-tabs>
         <q-separator v-if="!editing" />
@@ -98,6 +98,17 @@
                   </template>
                 </q-select>
               </div>
+              <!-- DROP ROUND -->
+              <div class="col-xs-12">
+                <q-toggle
+                  v-model="addSeriesModel.dropRound"
+                  label="Drop worst round: "
+                  left-label
+                />
+                <span v-if="addSeriesModel.dropRound" class="q-ml-md text-blue">
+                  Each driver's worst round <strong>will not</strong> be included in their total
+                </span>
+              </div>
             </div>
           </q-tab-panel>
 
@@ -155,12 +166,12 @@
           </q-tab-panel>
 
           <!-- RACE TYPES -->
-          <q-tab-panel name="raceTypes">
+          <q-tab-panel name="roundTypes">
             <div class="row">
               <div class="col-xs-5 q-pr-sm">
-                <p class="text-h6">Race Type</p>
+                <p class="text-h6">Round Type</p>
                 <transition
-                  v-for="(raceType, i) in addSeriesModel.raceTypes" :key="i"
+                  v-for="(roundType, i) in addSeriesModel.roundTypes" :key="i"
                   appear
                   enter-active-class="animated zoomIn slow-transition"
                   leave-active-class="animated zoomOut slow-transition"
@@ -171,15 +182,15 @@
                     <!-- RACE TYPE -->
                     <div class="col-xs-10 q-pr-xs">
                       <q-input
-                        outlined dense label="Race Type" type="Text"
-                        v-model="raceType.name" @click="setCurrent(i)"
+                        outlined dense label="Round Type" type="Text"
+                        v-model="roundType.name" @click="setCurrent(i)"
                       />
                     </div>
                     <div class="col-xs-2 q-pl-xs">
                       <q-btn
                         round size="sm" style="margin-top: 4px;"
                         icon="delete" color="red"
-                        @click="deleteRaceType(i)"
+                        @click="deleteRoundType(i)"
                       />
                     </div>
                   </div>
@@ -188,9 +199,9 @@
                   <!-- ADD RACE TYPE BUTTON -->
                   <div class="col-xs-12 q-pt-sm">
                     <q-btn
-                      id="addRaceTypeButton" :disabled="addRaceTypeButtonDisabled"
+                      id="addRoundTypeButton" :disabled="addRoundTypeButtonDisabled"
                       color="primary" icon="add" class="full-width"
-                      @click="addRaceType" label="Add Race Type"
+                      @click="addRoundType" label="Add Round Type"
                     />
                   </div>
                 </div>
@@ -199,7 +210,7 @@
                 <p class="text-h6">Description</p>
                 <!-- RACE TYPE DESCRIPTION -->
                 <q-editor
-                  v-model="addSeriesModel.raceTypes[current].description"
+                  v-model="addSeriesModel.roundTypes[current].description"
                   min-height="10rem"
                   width="100%"
                   :toolbar="[
@@ -308,12 +319,13 @@ export default {
         banner: null,
         game: null,
         carChoices: [],
-        raceTypes: [{
+        roundTypes: [{
           name: '',
-          description: 'Enter a description of the race type...',
+          description: 'Enter a description of the round type...',
         }],
         pointsTables: [],
         year: null,
+        dropRound: false,
       },
     };
   },
@@ -329,11 +341,12 @@ export default {
       this.addSeriesModel.banner = this.editingSeries.banner;
       this.addSeriesModel.game = this.editingSeries.game;
       this.addSeriesModel.year = this.editingSeries.year;
+      this.addSeriesModel.dropRound = this.editingSeries.dropRound;
       if (this.editingSeries.carChoices[0] != null) {
         this.addSeriesModel.carChoices = this.editingSeries.carChoices;
       }
-      if (this.editingSeries.raceTypes[0] != null) {
-        this.addSeriesModel.raceTypes = this.editingSeries.raceTypes;
+      if (this.editingSeries.roundTypes[0] != null) {
+        this.addSeriesModel.roundTypes = this.editingSeries.roundTypes;
       }
       if (this.editingSeries.pointsTables[0] != null) {
         this.addSeriesModel.pointsTables = this.editingSeries.pointsTables;
@@ -374,20 +387,20 @@ export default {
       this.addSeriesModel.carChoices.splice(i, 1);
     },
 
-    // Adds a race type
-    addRaceType() {
-      this.addSeriesModel.raceTypes.push({
+    // Adds a round type
+    addRoundType() {
+      this.addSeriesModel.roundTypes.push({
         name: '',
         description: '',
       });
     },
 
-    // Deletes the specified race type
-    deleteRaceType(i) {
-      this.addSeriesModel.raceTypes.splice(i, 1);
+    // Deletes the specified round type
+    deleteRoundType(i) {
+      this.addSeriesModel.roundTypes.splice(i, 1);
     },
 
-    // Sets current race type by index
+    // Sets current round type by index
     setCurrent(i) {
       this.current = i;
     },
@@ -527,7 +540,7 @@ export default {
     addSeriesValidation() {
       return this.addSeriesModel.name != null && this.addSeriesModel.name.length > 0
           && this.addSeriesModel.year != null && this.addSeriesModel.game != null
-          && this.addCarButtonDisabled === false && this.addRaceTypeButtonDisabled === false;
+          && this.addCarButtonDisabled === false && this.addRoundTypeButtonDisabled === false;
     },
 
     // Determines add or editing mode
@@ -549,12 +562,12 @@ export default {
       return false;
     },
 
-    // Disables add race type button if no info has been added in to last input
-    addRaceTypeButtonDisabled() {
-      if (this.addSeriesModel.raceTypes.length === 0) {
+    // Disables add round type button if no info has been added in to last input
+    addRoundTypeButtonDisabled() {
+      if (this.addSeriesModel.roundTypes.length === 0) {
         return false;
       }
-      if (this.addSeriesModel.raceTypes[this.addSeriesModel.raceTypes.length - 1].name === '') {
+      if (this.addSeriesModel.roundTypes[this.addSeriesModel.roundTypes.length - 1].name === '') {
         return true;
       }
       return false;
