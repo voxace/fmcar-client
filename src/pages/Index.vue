@@ -18,7 +18,7 @@
 width:100%;
 }
 .content img {
-width:400px;
+width:430px;
 margin:0 auto;
 }
 </style>
