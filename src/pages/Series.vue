@@ -85,8 +85,8 @@
       </div>
     </div>
 
-    <!-- ROUNDS/TEAMS TABS -->
-    <div class="row" v-if="loadedSeason != null">
+    <!-- INFO/ROUNDS/TEAMS TABS -->
+    <div class="row" v-if="selectedSeason != null">
       <div class="col-xs-12 q-pt-md">
         <q-tabs
           v-model="tab"
@@ -96,11 +96,48 @@
           indicator-color="primary"
           align="justify"
         >
+          <q-tab name="Info" label="Info" />
           <q-tab name="Rounds" label="Rounds" />
           <q-tab name="Teams" label="Teams" />
         </q-tabs>
         <q-separator />
         <q-tab-panels v-model="tab" animated>
+
+          <!-- SERIES INFO -->
+          <q-tab-panel name="Info">
+            <div v-if="selectedSeries != null" class="row q-py-md">
+              <div class="col-xs-12">
+                <q-img
+                  v-if="selectedSeries.banner"
+                  :src="getUrl(selectedSeries.banner)"
+                  :ratio="21/9"
+                />
+              </div>
+              <div class="col-xs-12 col-sm-6" v-bind:class="{ 'q-pr-sm': $q.screen.gt.xs }">
+                <q-card flat bordered>
+                  <q-card-section class="bg-primary text-white q-py-sm q-mb-md">
+                    <div class="text-h6">Rules and Info</div>
+                  </q-card-section>
+                  <q-card-section>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+                    tempor incididunt ut labore et dolore magna aliqua.
+                  </q-card-section>
+                </q-card>
+              </div>
+              <div class="col-xs-12 col-sm-6" v-bind:class="{ 'q-pl-sm': $q.screen.gt.xs }">
+                <q-card flat bordered>
+                  <q-card-section class="bg-primary text-white q-py-sm q-mb-md">
+                    <div class="text-h6">Leaderboard</div>
+                  </q-card-section>
+                  <q-card-section>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+                    tempor incididunt ut labore et dolore magna aliqua.
+                  </q-card-section>
+                </q-card>
+              </div>
+            </div>
+          </q-tab-panel>
+
           <!-- ROUNDS TABLE -->
           <q-tab-panel name="Rounds">
             <div v-if="loadedSeason != null" class="col-xs-12 q-py-md">
@@ -110,6 +147,7 @@
               />
             </div>
           </q-tab-panel>
+
           <!-- TEAMS TABLE -->
           <q-tab-panel name="Teams">
             <div v-if="loadedSeason != null" class="col-xs-12 q-py-md">
@@ -236,7 +274,7 @@ export default {
   data() {
     return {
       seriesLoading: false,
-      tab: 'Rounds',
+      tab: 'Info',
       selectedYear: null,
       selectedSeries: null,
       selectedSeason: null,
@@ -368,6 +406,9 @@ export default {
       this.editing = true;
       this.editingTeam = team;
       this.addTeamDialog = true;
+    },
+    getUrl(image) {
+      return `${process.env.BASE}/${image}`;
     },
   },
   computed: {

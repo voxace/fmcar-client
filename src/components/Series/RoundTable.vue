@@ -1,6 +1,6 @@
 <template>
   <q-markup-table seperator="cell" flat bordered>
-    <thead>
+    <thead class="bg-primary text-white">
       <tr>
         <th class="text-center" width="40">Round</th>
         <th class="text-left">Track</th>
@@ -82,10 +82,6 @@
 }
 .sessions-thead:hover {
   background-color: transparent !important;
-}
-th {
-  font-weight: bold !important;
-  opacity: 0.7 !important;
 }
 </style>
 

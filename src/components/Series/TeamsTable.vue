@@ -1,6 +1,6 @@
 <template>
   <q-markup-table seperator="cell" flat bordered>
-    <thead>
+    <thead class="bg-primary text-white">
       <tr>
         <th class="text-left">Team</th>
         <th class="text-left">Driver</th>

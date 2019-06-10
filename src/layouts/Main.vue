@@ -260,4 +260,9 @@ h3 {
 .q-field__messages {
   line-height: 0.4 !important;
 }
+th {
+  font-weight: bold !important;
+  opacity: 1 !important;
+  font-size: 14px !important;
+}
 </style>
