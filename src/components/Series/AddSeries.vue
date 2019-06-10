@@ -24,9 +24,11 @@
         >
           <q-tab name="info" label="Info" />
           <q-tab name="description" label="Description" />
+          <q-tab name="regs" label="Regulations" />
           <q-tab name="cars" label="Cars" />
           <q-tab name="roundTypes" label="Round Types" />
-          <q-tab name="graphics" label="Graphics" />
+          <q-tab name="banner" label="Banner" />
+          <q-tab name="logo" label="Logo" />
         </q-tabs>
         <q-separator v-if="!editing" />
         <q-tab-panels v-model="tab" animated>
@@ -121,90 +123,31 @@
                   v-model="addSeriesModel.description"
                   min-height="400px"
                   width="100%"
-                  :toolbar="[
-                    [
-                      {
-                        label: $q.lang.editor.align,
-                        icon: $q.iconSet.editor.align,
-                        fixedLabel: true,
-                        list: 'only-icons',
-                        options: ['left', 'center', 'right', 'justify']
-                      },
-                      {
-                        label: $q.lang.editor.align,
-                        icon: $q.iconSet.editor.align,
-                        fixedLabel: true,
-                        options: ['left', 'center', 'right', 'justify']
-                      }
-                    ],
-                    ['bold', 'italic', 'strike', 'underline', 'subscript', 'superscript'],
-                    ['token', 'hr', 'link', 'custom_btn'],
-                    ['print', 'fullscreen'],
-                    [
-                      {
-                        label: $q.lang.editor.formatting,
-                        icon: $q.iconSet.editor.formatting,
-                        list: 'no-icons',
-                        options: [
-                          'p',
-                          'h1',
-                          'h2',
-                          'h3',
-                          'h4',
-                          'h5',
-                          'h6',
-                          'code'
-                        ]
-                      },
-                      {
-                        label: $q.lang.editor.fontSize,
-                        icon: $q.iconSet.editor.fontSize,
-                        fixedLabel: true,
-                        fixedIcon: true,
-                        list: 'no-icons',
-                        options: [
-                          'size-1',
-                          'size-2',
-                          'size-3',
-                          'size-4',
-                          'size-5',
-                          'size-6',
-                          'size-7'
-                        ]
-                      },
-                      {
-                        label: $q.lang.editor.defaultFont,
-                        icon: $q.iconSet.editor.font,
-                        fixedIcon: true,
-                        list: 'no-icons',
-                        options: [
-                          'default_font',
-                          'arial',
-                          'arial_black',
-                          'comic_sans',
-                          'courier_new',
-                          'impact',
-                          'lucida_grande',
-                          'times_new_roman',
-                          'verdana'
-                        ]
-                      },
-                      'removeFormat'
-                    ],
-                    ['quote', 'unordered', 'ordered', 'outdent', 'indent'],
+                  :toolbar="toolbar"
+                  :fonts="fonts"
+                  toolbar-text-color="white"
+                  toolbar-toggle-color="yellow-8"
+                  toolbar-flat
+                  toolbar-bg="primary"
+                />
+              </div>
+            </div>
+          </q-tab-panel>
 
-                    ['undo', 'redo']
-                  ]"
-                  :fonts="{
-                    arial: 'Arial',
-                    arial_black: 'Arial Black',
-                    comic_sans: 'Comic Sans MS',
-                    courier_new: 'Courier New',
-                    impact: 'Impact',
-                    lucida_grande: 'Lucida Grande',
-                    times_new_roman: 'Times New Roman',
-                    verdana: 'Verdana'
-                  }"
+          <!-- REGULATIONS -->
+          <q-tab-panel name="regs">
+            <div class="row">
+              <div class="col-xs-12">
+                <q-editor
+                  v-model="addSeriesModel.regs"
+                  min-height="400px"
+                  width="100%"
+                  :toolbar="toolbar"
+                  :fonts="fonts"
+                  toolbar-text-color="white"
+                  toolbar-toggle-color="yellow-8"
+                  toolbar-flat
+                  toolbar-bg="primary"
                 />
               </div>
             </div>
@@ -309,7 +252,7 @@
                 <!-- RACE TYPE DESCRIPTION -->
                 <q-editor
                   v-model="addSeriesModel.roundTypes[current].description"
-                  min-height="10rem"
+                  min-height="300px"
                   width="100%"
                   :toolbar="[
                     ['bold', 'italic', 'underline'],
@@ -321,23 +264,29 @@
             </div>
           </q-tab-panel>
 
-          <!-- GRAPHICS -->
-          <q-tab-panel name="graphics">
+          <!-- BANNER -->
+          <q-tab-panel name="banner">
             <div class="row">
-              <!-- LOGO UPLOAD -->
-              <div class="col-xs-12">
-                <q-uploader
-                  label="Series Logo"
-                  auto-upload flat bordered
-                  accept=".jpg, image/*"
-                  field-name="upload"
-                  :url="uploadUrl"
-                  style="width: 100%"
-                  @uploaded="logoUploaded"
-                />
+              <!-- BANNER IMAGE -->
+              <div v-if="editingSeries.banner != null" class="col-xs-12">
+                <q-img
+                  class="rounded-borders cursor-pointer"
+                  :src="getUrl(editingSeries.banner)"
+                  :ratio="40/10" contain
+                  @click="editingSeries.banner = null; bannerUpload = 'delete'"
+                >
+                  <q-tooltip
+                    class="round"
+                    anchor="center middle"
+                    self="center middle"
+                    content-class="bg-transparent"
+                  >
+                    <q-btn round color="red" size="lg" icon="delete" />
+                  </q-tooltip>
+                </q-img>
               </div>
               <!-- BANNER UPLOAD -->
-              <div class="col-xs-12 q-pt-sm">
+              <div v-else class="col-xs-12 q-pt-sm">
                 <q-uploader
                   label="Series Banner"
                   auto-upload flat bordered
@@ -350,6 +299,43 @@
               </div>
             </div>
           </q-tab-panel>
+
+          <!-- LOGO -->
+          <q-tab-panel name="logo">
+            <div class="row">
+              <!-- BANNER IMAGE -->
+              <div v-if="editingSeries.logo != null" class="col-xs-12">
+                <q-img
+                  class="rounded-borders cursor-pointer"
+                  :src="getUrl(editingSeries.logo)"
+                  :ratio="16/9" contain
+                  @click="editingSeries.logo = null; logoUpload = 'delete'"
+                >
+                  <q-tooltip
+                    class="round"
+                    anchor="center middle"
+                    self="center middle"
+                    content-class="bg-transparent"
+                  >
+                    <q-btn round color="red" size="lg" icon="delete" />
+                  </q-tooltip>
+                </q-img>
+              </div>
+              <!-- LOGO UPLOAD -->
+              <div v-else class="col-xs-12 q-pt-sm">
+                <q-uploader
+                  label="Series Logo"
+                  auto-upload flat bordered
+                  accept=".jpg, image/*"
+                  field-name="upload"
+                  :url="uploadUrl"
+                  style="width: 100%"
+                  @uploaded="logoUploaded"
+                />
+              </div>
+            </div>
+          </q-tab-panel>
+
         </q-tab-panels>
       </q-card-section>
 
@@ -422,6 +408,56 @@ export default {
         logo: null,
         dropRound: false,
         description: '',
+        regs: '',
+      },
+      toolbar: [
+        ['left', 'center', 'right', 'justify'],
+        ['bold', 'italic', 'underline'], ['removeFormat', 'hr', 'link'],
+        ['print', 'fullscreen'],
+        [
+          {
+            label: this.$q.lang.editor.formatting,
+            icon: this.$q.iconSet.editor.formatting,
+            list: 'no-icons',
+            options: [
+              'p',
+              'h1',
+              'h2',
+              'h3',
+              'h4',
+              'h5',
+              'h6',
+              'code',
+            ],
+          },
+          {
+            label: this.$q.lang.editor.fontSize,
+            icon: this.$q.iconSet.editor.fontSize,
+            fixedLabel: true,
+            fixedIcon: true,
+            list: 'no-icons',
+            options: [
+              'size-1',
+              'size-2',
+              'size-3',
+              'size-4',
+              'size-5',
+              'size-6',
+              'size-7',
+            ],
+          },
+        ],
+        ['unordered', 'ordered', 'outdent', 'indent'],
+      ],
+      fonts: {
+        arial: 'Arial',
+        arial_black: 'Arial Black',
+        comic_sans: 'Comic Sans MS',
+        courier_new: 'Courier New',
+        impact: 'Impact',
+        lucida_grande: 'Lucida Grande',
+        times_new_roman: 'Times New Roman',
+        verdana: 'Verdana',
       },
     };
   },
@@ -438,6 +474,7 @@ export default {
       this.addSeriesModel.game = this.editingSeries.game;
       this.addSeriesModel.year = this.editingSeries.year;
       this.addSeriesModel.description = this.editingSeries.description;
+      this.addSeriesModel.regs = this.editingSeries.regs;
       this.addSeriesModel.dropRound = this.editingSeries.dropRound;
       if (this.editingSeries.carChoices[0] != null) {
         this.addSeriesModel.carChoices = this.editingSeries.carChoices;
@@ -624,6 +661,11 @@ export default {
     addPointsTableDialogClosed() {
       this.loadPointsTablesList();
       this.addPointsTableDialog = false;
+    },
+
+    // Get image URL
+    getUrl(image) {
+      return `${process.env.BASE}/${image}`;
     },
 
     // Emits a 'close' event when the dialog is closed
