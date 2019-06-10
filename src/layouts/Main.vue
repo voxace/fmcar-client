@@ -257,4 +257,7 @@ h3 {
   width: 100%;
   height: auto;
 }
+.q-field__messages {
+  line-height: 0.4 !important;
+}
 </style>

@@ -9,9 +9,9 @@
         <th class="text-center" width="50" v-if="editingAllowed">Edit</th>
       </tr>
     </thead>
-    <tbody v-if="loadedSeason.teams != null && loadedSeason.teams.length > 0">
+    <tbody v-if="loadedSeason != null && loadedSeason.length > 0">
       <tr
-        v-for="team in loadedSeason.teams"
+        v-for="team in loadedSeason"
         :key="team._id"
       >
         <td class="text-left">{{team.name}}</td>
@@ -48,7 +48,7 @@ export default {
       type: Boolean,
       default: true,
     },
-    loadedSeason: Object,
+    loadedSeason: Array,
   },
   methods: {
     editTeam(team) {

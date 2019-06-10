@@ -9,6 +9,7 @@ export default function () {
       editingAllowed: true,
       user: null,
       JWTtoken: null,
+      years: [2018, 2019, 2020],
     },
     mutations: {
       setUser(state, user) {

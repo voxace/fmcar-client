@@ -11,7 +11,7 @@
       <div class="col-xs-12 col-sm-3 q-px-sm">
         <!-- YEAR -->
         <q-select
-          outlined v-model="selectedYear" :options="years"
+          outlined v-model="selectedYear" :options="$store.state.years"
           label="Year" v-bind:class="{ 'q-py-xs': $q.screen.lt.sm }"
         />
       </div>
@@ -199,7 +199,7 @@
     <add-team-dialog
       v-if="selectedSeries && selectedSeason && addTeamDialog"
       :editing="editing" :editingTeam="editingTeam"
-      :series="selectedSeries" :season="selectedSeason"
+      :series="selectedSeries" :season="loadedSeason"
       :visibility="addTeamDialog"
       @close="addTeamDialog = false" @teamAdded="teamAdded"
     />
@@ -240,7 +240,6 @@ export default {
       selectedYear: null,
       selectedSeries: null,
       selectedSeason: null,
-      years: ['2018', '2019', '2020'],
       loadedSeriesList: [],
       loadedSeries: null,
       loadedSeason: null,
