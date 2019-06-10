@@ -2,11 +2,6 @@
   <q-page padding>
     <div class="row">
 
-      <!-- HEADING -->
-      <div class="col-xs-12">
-        <h3>Series</h3>
-      </div>
-
       <!-- SERIES SELECTION -->
       <div class="col-xs-12 col-sm-3 q-px-sm">
         <!-- YEAR -->
@@ -201,6 +196,14 @@
                           <td>Ford Falcon</td>
                           <td>390</td>
                         </tr>
+                        <tr>
+                          <td>6</td>
+                          <td>9</td>
+                          <td>Evan Sanders</td>
+                          <td>MOPVR</td>
+                          <td>Holden Commodore</td>
+                          <td>390</td>
+                        </tr>
                       </tbody>
                     </q-markup-table>
                   </q-card-section>
@@ -230,6 +233,10 @@
           </q-tab-panel>
         </q-tab-panels>
       </div>
+    </div>
+
+    <div v-else class="absolute-center text-subtitle1 text-grey-8">
+      Please select a series to continue...
     </div>
 
     <!-- FLOATING BUTTON -->
