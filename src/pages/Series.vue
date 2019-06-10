@@ -119,29 +119,7 @@
                     />
                   </q-card-section>
                   <q-card-section>
-                    <div class="text-h5">FMCAR Supercars Series Administrators</div>
-                    <div class="text-body2">
-                      <br>Brad Whybrow: Tonafun85
-                      <br>Geoff Tate: SevenSidedDie
-                      <br>David Hawkins: Sipheren07
-                      <br>Evan Sanders: MOPVR
-                    </div>
-                    <div class="text-h5"><br>Lobby Leaders</div>
-                    <div class="text-body2">
-                      <br>Only the Lobby Leaders are to make announcements that affects the lobby
-                      (Eg: Safety Car). If you have been involved in an incident,
-                      notify the leader of your damage status, do NOT call for a safety car.
-                      <br>
-                      <strong>Apex:</strong>
-                      <br>David Hawkins - Sipheren07
-                      <br>Geoff tate - SevenSidedDie
-                      <br>Evan Sanders - MOPVR
-                      <br><strong>Challenge:</strong>
-                      <br>Brad Whybrow - Tonafun85
-                      <br>
-                      <br><em>The “Dedicated Safety Car” may also assist make announcements
-                        during Safety Car intervention.</em>
-                    </div>
+                    <span v-html="selectedSeries.description"></span>
                   </q-card-section>
                 </q-card>
               </div>

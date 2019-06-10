@@ -41,7 +41,7 @@
                     <th>Date</th>
                     <th>Time</th>
                     <th>Laps</th>
-                    <th v-if="$q.screen.gt.xs">Points Table</th>
+                    <th v-if="$q.screen.gt.xs && editingAllowed">Points Table</th>
                     <th>Weather</th>
                   </tr>
                 </thead>
@@ -55,7 +55,7 @@
                     <td>{{ session.date }}</td>
                     <td>{{ session.time }}</td>
                     <td>{{ session.laps }}</td>
-                    <td v-if="$q.screen.gt.xs">{{ session.pointsTable.name }}</td>
+                    <td v-if="$q.screen.gt.xs && editingAllowed">{{ session.pointsTable.name }}</td>
                     <td>{{ session.weather }}</td>
                   </tr>
                 </tbody>

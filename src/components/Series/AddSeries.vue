@@ -23,6 +23,7 @@
           align="justify"
         >
           <q-tab name="info" label="Info" />
+          <q-tab name="description" label="Description" />
           <q-tab name="cars" label="Cars" />
           <q-tab name="roundTypes" label="Round Types" />
           <q-tab name="graphics" label="Graphics" />
@@ -108,6 +109,103 @@
                 <span v-if="addSeriesModel.dropRound" class="q-ml-md text-blue">
                   Each driver's worst round <strong>will not</strong> be included in their total
                 </span>
+              </div>
+            </div>
+          </q-tab-panel>
+
+          <!-- DESCRIPTION -->
+          <q-tab-panel name="description">
+            <div class="row">
+              <div class="col-xs-12">
+                <q-editor
+                  v-model="addSeriesModel.description"
+                  min-height="400px"
+                  width="100%"
+                  :toolbar="[
+                    [
+                      {
+                        label: $q.lang.editor.align,
+                        icon: $q.iconSet.editor.align,
+                        fixedLabel: true,
+                        list: 'only-icons',
+                        options: ['left', 'center', 'right', 'justify']
+                      },
+                      {
+                        label: $q.lang.editor.align,
+                        icon: $q.iconSet.editor.align,
+                        fixedLabel: true,
+                        options: ['left', 'center', 'right', 'justify']
+                      }
+                    ],
+                    ['bold', 'italic', 'strike', 'underline', 'subscript', 'superscript'],
+                    ['token', 'hr', 'link', 'custom_btn'],
+                    ['print', 'fullscreen'],
+                    [
+                      {
+                        label: $q.lang.editor.formatting,
+                        icon: $q.iconSet.editor.formatting,
+                        list: 'no-icons',
+                        options: [
+                          'p',
+                          'h1',
+                          'h2',
+                          'h3',
+                          'h4',
+                          'h5',
+                          'h6',
+                          'code'
+                        ]
+                      },
+                      {
+                        label: $q.lang.editor.fontSize,
+                        icon: $q.iconSet.editor.fontSize,
+                        fixedLabel: true,
+                        fixedIcon: true,
+                        list: 'no-icons',
+                        options: [
+                          'size-1',
+                          'size-2',
+                          'size-3',
+                          'size-4',
+                          'size-5',
+                          'size-6',
+                          'size-7'
+                        ]
+                      },
+                      {
+                        label: $q.lang.editor.defaultFont,
+                        icon: $q.iconSet.editor.font,
+                        fixedIcon: true,
+                        list: 'no-icons',
+                        options: [
+                          'default_font',
+                          'arial',
+                          'arial_black',
+                          'comic_sans',
+                          'courier_new',
+                          'impact',
+                          'lucida_grande',
+                          'times_new_roman',
+                          'verdana'
+                        ]
+                      },
+                      'removeFormat'
+                    ],
+                    ['quote', 'unordered', 'ordered', 'outdent', 'indent'],
+
+                    ['undo', 'redo']
+                  ]"
+                  :fonts="{
+                    arial: 'Arial',
+                    arial_black: 'Arial Black',
+                    comic_sans: 'Comic Sans MS',
+                    courier_new: 'Courier New',
+                    impact: 'Impact',
+                    lucida_grande: 'Lucida Grande',
+                    times_new_roman: 'Times New Roman',
+                    verdana: 'Verdana'
+                  }"
+                />
               </div>
             </div>
           </q-tab-panel>
@@ -323,6 +421,7 @@ export default {
         banner: null,
         logo: null,
         dropRound: false,
+        description: '',
       },
     };
   },
@@ -338,6 +437,7 @@ export default {
       this.addSeriesModel.banner = this.editingSeries.banner;
       this.addSeriesModel.game = this.editingSeries.game;
       this.addSeriesModel.year = this.editingSeries.year;
+      this.addSeriesModel.description = this.editingSeries.description;
       this.addSeriesModel.dropRound = this.editingSeries.dropRound;
       if (this.editingSeries.carChoices[0] != null) {
         this.addSeriesModel.carChoices = this.editingSeries.carChoices;
