@@ -269,7 +269,7 @@
         />
         <q-btn
           flat label="Save"
-          @click="addSeries" :disabled="!addSeriesValidation"
+          @click="save" :disabled="!addSeriesValidation"
         />
       </q-card-actions>
 

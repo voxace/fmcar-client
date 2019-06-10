@@ -106,21 +106,42 @@
           <!-- SERIES INFO -->
           <q-tab-panel name="Info">
             <div v-if="selectedSeries != null" class="row q-py-md">
-              <div class="col-xs-12">
-                <q-img
-                  v-if="selectedSeries.banner"
-                  :src="getUrl(selectedSeries.banner)"
-                  :ratio="21/9"
-                />
-              </div>
               <div class="col-xs-12 col-sm-6" v-bind:class="{ 'q-pr-sm': $q.screen.gt.xs }">
                 <q-card flat bordered>
                   <q-card-section class="bg-primary text-white q-py-sm q-mb-md">
                     <div class="text-h6">Rules and Info</div>
                   </q-card-section>
                   <q-card-section>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-                    tempor incididunt ut labore et dolore magna aliqua.
+                    <q-img
+                      v-if="selectedSeries.banner"
+                      :src="getUrl(selectedSeries.banner)"
+                      :ratio="6" contain
+                    />
+                  </q-card-section>
+                  <q-card-section>
+                    <div class="text-h5">FMCAR Supercars Series Administrators</div>
+                    <div class="text-body2">
+                      <br>Brad Whybrow: Tonafun85
+                      <br>Geoff Tate: SevenSidedDie
+                      <br>David Hawkins: Sipheren07
+                      <br>Evan Sanders: MOPVR
+                    </div>
+                    <div class="text-h5"><br>Lobby Leaders</div>
+                    <div class="text-body2">
+                      <br>Only the Lobby Leaders are to make announcements that affects the lobby
+                      (Eg: Safety Car). If you have been involved in an incident,
+                      notify the leader of your damage status, do NOT call for a safety car.
+                      <br>
+                      <strong>Apex:</strong>
+                      <br>David Hawkins - Sipheren07
+                      <br>Geoff tate - SevenSidedDie
+                      <br>Evan Sanders - MOPVR
+                      <br><strong>Challenge:</strong>
+                      <br>Brad Whybrow - Tonafun85
+                      <br>
+                      <br><em>The “Dedicated Safety Car” may also assist make announcements
+                        during Safety Car intervention.</em>
+                    </div>
                   </q-card-section>
                 </q-card>
               </div>
@@ -130,8 +151,60 @@
                     <div class="text-h6">Leaderboard</div>
                   </q-card-section>
                   <q-card-section>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-                    tempor incididunt ut labore et dolore magna aliqua.
+                    <q-markup-table flat>
+                      <thead class="text-center">
+                        <tr>
+                          <th>Position</th>
+                          <th>Number</th>
+                          <th>Driver</th>
+                          <th>Gamertag</th>
+                          <th>Car</th>
+                          <th>Points</th>
+                        </tr>
+                      </thead>
+                      <tbody class="text-center">
+                        <tr>
+                          <td>1</td>
+                          <td>1</td>
+                          <td>Geoff Tate</td>
+                          <td>SevenSidedDie</td>
+                          <td>Ford Falcon</td>
+                          <td>576</td>
+                        </tr>
+                        <tr>
+                          <td>2</td>
+                          <td>51</td>
+                          <td>Stefan McCartain</td>
+                          <td>Kingbowlermk2</td>
+                          <td>Ford Falcon</td>
+                          <td>558</td>
+                        </tr>
+                        <tr>
+                          <td>3</td>
+                          <td>777</td>
+                          <td>David Hawkins</td>
+                          <td>Sipheren07</td>
+                          <td>Ford Falcon</td>
+                          <td>456</td>
+                        </tr>
+                        <tr>
+                          <td>4</td>
+                          <td>360</td>
+                          <td>Alistair Taylor</td>
+                          <td>Dektra</td>
+                          <td>Ford Falcon</td>
+                          <td>444</td>
+                        </tr>
+                        <tr>
+                          <td>5</td>
+                          <td>75</td>
+                          <td>Mitchell Nemec</td>
+                          <td>Envy The Best</td>
+                          <td>Ford Falcon</td>
+                          <td>390</td>
+                        </tr>
+                      </tbody>
+                    </q-markup-table>
                   </q-card-section>
                 </q-card>
               </div>
