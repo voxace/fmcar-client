@@ -23,6 +23,14 @@ export default function () {
         state.user = null;
       },
     },
+    getters: {
+      editingAllowed: (state) => {
+        if (state.user) {
+          return state.user.admin;
+        }
+        return false;
+      },
+    },
     strict: process.env.DEV,
   });
 

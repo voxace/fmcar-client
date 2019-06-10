@@ -44,15 +44,16 @@
 export default {
   name: 'Series',
   props: {
-    editingAllowed: {
-      type: Boolean,
-      default: true,
-    },
     loadedSeason: Array,
   },
   methods: {
     editTeam(team) {
       this.$emit('editTeam', team);
+    },
+  },
+  computed: {
+    editingAllowed() {
+      return this.$store.getters.editingAllowed;
     },
   },
 };

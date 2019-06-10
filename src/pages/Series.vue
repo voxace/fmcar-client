@@ -194,7 +194,7 @@
             <div v-if="loadedSeason != null" class="col-xs-12 q-py-md">
               <round-table
                 :loadedSeason="loadedSeason.rounds"
-                @editRound="editRound" :editingAllowed="editingAllowed"
+                @editRound="editRound"
               />
             </div>
           </q-tab-panel>
@@ -204,7 +204,7 @@
             <div v-if="loadedSeason != null" class="col-xs-12 q-py-md">
               <teams-table
                 :loadedSeason="loadedSeason.teams"
-                @editTeam="editTeam" :editingAllowed="editingAllowed"
+                @editTeam="editTeam"
               />
             </div>
           </q-tab-panel>
@@ -470,10 +470,7 @@ export default {
       return [];
     },
     editingAllowed() {
-      if (this.$store.state.user) {
-        return this.$store.state.user.admin;
-      }
-      return false;
+      return this.$store.getters.editingAllowed;
     },
   },
   watch: {
