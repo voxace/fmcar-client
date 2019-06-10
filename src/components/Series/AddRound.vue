@@ -65,6 +65,7 @@
               <div
                 class="col-xs-12"
               >
+                <!-- TRACK -->
                 <q-select
                   outlined v-model="addRoundModel.track" map-options
                   :options="trackOptions" :dense="$q.screen.lt.sm"
@@ -84,6 +85,7 @@
                 </q-select>
               </div>
               <div class="col-xs-12">
+                <!-- ROUND TYPE -->
                 <q-select
                   outlined v-model="addRoundModel.roundType"
                   :options="series.roundTypes" :dense="$q.screen.lt.sm"
@@ -103,6 +105,7 @@
               <div
                 class="col-xs-12"
               >
+                <!-- CONFIGURATION -->
                 <q-select
                   v-if="trackConfigurations.length > 0" label="Configuration"
                   outlined v-model="addRoundModel.configuration"
@@ -135,7 +138,7 @@
           >
             <div class="row">
               <!-- DATE -->
-              <div class="col-xs-12">
+              <div class="col-xs-12 col-sm-6" v-bind:class="{ 'q-pr-xs': $q.screen.gt.xs }">
                 <q-input
                   outlined v-model="session.date"
                   label="Date" mask="##-##-####" :dense="$q.screen.lt.sm"
@@ -151,7 +154,7 @@
                 </q-input>
               </div>
               <!-- TIME -->
-              <div class="col-xs-12">
+              <div class="col-xs-12 col-sm-6" v-bind:class="{ 'q-pl-xs': $q.screen.gt.xs }">
                 <q-input
                   outlined label="Time" v-model="session.time"
                   mask="time" :rules="['time']" :dense="$q.screen.lt.sm"
@@ -170,7 +173,12 @@
                 <q-input
                   outlined v-model="session.laps"
                   type="number" label="Laps" :dense="$q.screen.lt.sm"
-                  :rules="[ val => val && val > 0 && val < 1000 || 'Enter number of laps']"
+                  :rules="[
+                    val => val != null &&  val != '' || 'Enter a number',
+                    val => isInt(val) || 'Enter a whole number',
+                    val => val >= 0 || 'Must be 0 or larger',
+                    val => val <= 9999 || 'Must be 9999 or smaller'
+                  ]"
                 />
               </div>
               <!-- SESSION TYPE -->
@@ -182,7 +190,7 @@
                 />
               </div>
               <!-- POINTS TABLE -->
-              <div class="col-xs-12">
+              <div class="col-xs-12 col-sm-6" v-bind:class="{ 'q-pr-xs': $q.screen.gt.xs }">
                 <q-select
                   outlined v-model="session.pointsTable" label="Points Table"
                   :options="availablePointsTables" :dense="$q.screen.lt.sm"
@@ -201,7 +209,10 @@
                 </q-select>
               </div>
               <!-- WEATHER -->
-              <div class="col-xs-12" v-if="weatherOptions.length > 0">
+              <div
+                class="col-xs-12 col-sm-6" v-bind:class="{ 'q-pl-xs': $q.screen.gt.xs }"
+                v-if="weatherOptions.length > 0"
+              >
                 <q-select
                   label="Weather"
                   outlined v-model="session.weather"
@@ -218,7 +229,10 @@
                   </template>
                 </q-select>
               </div>
-              <div class="col-xs-12" v-else>
+              <div
+                class="col-xs-12 col-sm-6" v-bind:class="{ 'q-pl-xs': $q.screen.gt.xs }"
+                v-else
+              >
                 <q-input
                   outlined v-model="session.weather"
                   label="Weather" :dense="$q.screen.lt.sm"
@@ -463,6 +477,11 @@ export default {
       const timeStamp = Date.now();
       this.addRoundModel.date = date.formatDate(timeStamp, 'DD-MM-YYYY');
       this.rawDate = date.formatDate(timeStamp, 'YYYY/MM/DD');
+    },
+
+    // Checks to see if the number is an integer
+    isInt(n) {
+      return n % 1 === 0;
     },
 
     // Checks if the date is valid and in the right format

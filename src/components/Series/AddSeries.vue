@@ -43,10 +43,10 @@
               </div>
               <!-- YEAR -->
               <div class="col-xs-12">
-                <q-input
+                <q-select
                   outlined v-model="addSeriesModel.year" type="number"
-                  label="Year" :dense="$q.screen.lt.sm"
-                  :rules="[ val => val && val > 2017 && val < 2100 || 'Please enter a valid year']"
+                  label="Year" :dense="$q.screen.lt.sm" :options="$store.state.years"
+                  :rules="[ val => val != null || 'Please select a year']"
                 />
               </div>
               <!-- GAME -->

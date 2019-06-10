@@ -106,7 +106,8 @@
                   :dense="$q.screen.lt.sm"
                   :disable="loadingNumbers" :disabled="loadingNumbers"
                   :rules="[
-                    val => val != null && isInt(val) || 'Enter a whole number',
+                    val => val != null &&  val != '' || 'Enter a number',
+                    val => isInt(val) || 'Enter a whole number',
                     val => val >= 0 || 'Must be 0 or larger',
                     val => val <= 9999 || 'Must be 9999 or smaller',
                     val => checkNumber(val, 'a') || 'Already taken'
@@ -152,7 +153,8 @@
                   :dense="$q.screen.lt.sm"
                   :disable="loadingNumbers" :disabled="loadingNumbers"
                   :rules="[
-                    val => val != null && isInt(val) || 'Enter a whole number',
+                    val => val != null &&  val != '' || 'Enter a number',
+                    val => isInt(val) || 'Enter a whole number',
                     val => val >= 0 || 'Must be 0 or larger',
                     val => val <= 9999 || 'Must be 9999 or smaller',
                     val => checkNumber(val, 'b') || 'Already taken'
