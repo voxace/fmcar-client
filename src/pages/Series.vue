@@ -146,7 +146,7 @@
               <div class="col-xs-12 col-sm-6" v-bind:class="{ 'q-pl-sm': $q.screen.gt.xs }">
                 <q-card flat bordered>
                   <q-card-section class="bg-primary text-white q-py-sm q-mb-md">
-                    <div class="text-h6">Leaderboard</div>
+                    <div class="text-subtitle2 text-center leaderboard">LEADERBOARD</div>
                   </q-card-section>
                   <q-card-section>
                     <q-markup-table flat>
@@ -317,6 +317,9 @@
 </template>
 
 <style>
+.leaderboard {
+  padding: 5px;
+}
 </style>
 
 <script>
