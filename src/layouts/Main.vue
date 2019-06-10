@@ -141,6 +141,12 @@ export default {
           type: 'link',
         },
         {
+          to: '/rules',
+          text: 'Rules',
+          auth: false,
+          type: 'link',
+        },
+        {
           to: '/calendar',
           text: 'Calendar',
           auth: false,
