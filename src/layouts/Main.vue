@@ -12,7 +12,7 @@
               v-if="link.type == 'link'"
               :key="link.to"
               :to="link.to"
-              :class="{ 'active-btn': $route.path == link.to }"
+              :class="{ 'active-btn': $route.path.includes(link.to) }"
               flat
             >
               {{ link.text }}
@@ -70,7 +70,6 @@
             :key="link.to"
             :to="link.to"
             active-class="active-list"
-            exact
             clickable
           >
             <q-item-section>
@@ -129,7 +128,7 @@ export default {
       leftDrawerOpen: false,
       links: [
         {
-          to: '/',
+          to: '/home',
           text: 'Home',
           auth: false,
           type: 'link',
@@ -137,6 +136,12 @@ export default {
         {
           to: '/series',
           text: 'Series',
+          auth: false,
+          type: 'link',
+        },
+        {
+          to: '/rules',
+          text: 'Rules',
           auth: false,
           type: 'link',
         },

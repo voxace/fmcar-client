@@ -2,11 +2,6 @@
   <q-page padding>
     <div class="row">
 
-      <!-- HEADING -->
-      <div class="col-xs-12">
-        <h3>Series</h3>
-      </div>
-
       <!-- SERIES SELECTION -->
       <div class="col-xs-12 col-sm-3 q-px-sm">
         <!-- YEAR -->
@@ -108,25 +103,45 @@
             <div v-if="selectedSeries != null" class="row q-py-md">
               <div class="col-xs-12 col-sm-6" v-bind:class="{ 'q-pr-sm': $q.screen.gt.xs }">
                 <q-card flat bordered>
-                  <q-card-section class="bg-primary text-white q-py-sm q-mb-md">
-                    <div class="text-h6">Rules and Info</div>
-                  </q-card-section>
-                  <q-card-section>
-                    <q-img
-                      v-if="selectedSeries.banner"
-                      :src="getUrl(selectedSeries.banner)"
-                      :ratio="6" contain
-                    />
-                  </q-card-section>
-                  <q-card-section>
-                    <span v-html="selectedSeries.description"></span>
-                  </q-card-section>
+                  <q-tabs
+                    v-model="tab2"
+                    class="bg-primary text-white q-mb-md"
+                    active-color="white"
+                    indicator-color="blue-10"
+                    align="justify"
+                  >
+                    <q-tab name="info" label="General Information" />
+                    <q-tab name="regs" label="Regulations" />
+                  </q-tabs>
+                  <q-tab-panels v-model="tab2" animated>
+                    <q-tab-panel name="info">
+                      <div class="row">
+                        <div class="col-xs-12">
+                          <q-img
+                            v-if="selectedSeries.banner"
+                            :src="getUrl(selectedSeries.banner)"
+                            :ratio="6" contain
+                          />
+                        </div>
+                        <div class="col-xs-12 q-py-sm q-px-sm">
+                          <span v-html="selectedSeries.description"></span>
+                        </div>
+                      </div>
+                    </q-tab-panel>
+                    <q-tab-panel name="regs">
+                      <div class="row">
+                        <div class="col-xs-12 q-px-sm">
+                          <span v-html="selectedSeries.regs"></span>
+                        </div>
+                      </div>
+                    </q-tab-panel>
+                  </q-tab-panels>
                 </q-card>
               </div>
               <div class="col-xs-12 col-sm-6" v-bind:class="{ 'q-pl-sm': $q.screen.gt.xs }">
                 <q-card flat bordered>
                   <q-card-section class="bg-primary text-white q-py-sm q-mb-md">
-                    <div class="text-h6">Leaderboard</div>
+                    <div class="text-subtitle2 text-center leaderboard">LEADERBOARD</div>
                   </q-card-section>
                   <q-card-section>
                     <q-markup-table flat>
@@ -181,6 +196,14 @@
                           <td>Ford Falcon</td>
                           <td>390</td>
                         </tr>
+                        <tr>
+                          <td>6</td>
+                          <td>9</td>
+                          <td>Evan Sanders</td>
+                          <td>MOPVR</td>
+                          <td>Holden Commodore</td>
+                          <td>390</td>
+                        </tr>
                       </tbody>
                     </q-markup-table>
                   </q-card-section>
@@ -210,6 +233,10 @@
           </q-tab-panel>
         </q-tab-panels>
       </div>
+    </div>
+
+    <div v-else class="absolute-center text-subtitle1 text-grey-8">
+      Please select a series to continue...
     </div>
 
     <!-- FLOATING BUTTON -->
@@ -297,6 +324,9 @@
 </template>
 
 <style>
+.leaderboard {
+  padding: 5px;
+}
 </style>
 
 <script>
@@ -326,6 +356,7 @@ export default {
     return {
       seriesLoading: false,
       tab: 'Info',
+      tab2: 'info',
       selectedYear: null,
       selectedSeries: null,
       selectedSeason: null,
@@ -347,6 +378,21 @@ export default {
       },
       editingTeam: null,
     };
+  },
+  created() {
+    if (this.$route.params.year && this.$route.params.series_id && this.$route.params.season_id) {
+      this.selectedYear = this.$route.params.year;
+      setTimeout(() => {
+        for (let i = 0; i < this.loadedSeriesList.length; i += 1) {
+          if (this.loadedSeriesList[i]._id === this.$route.params.series_id) {
+            this.selectedSeries = this.loadedSeriesList[i];
+            setTimeout(() => {
+              this.selectedSeason = this.$route.params.season_id;
+            }, 500);
+          }
+        }
+      }, 500);
+    }
   },
   methods: {
     async loadSeriesList() {
