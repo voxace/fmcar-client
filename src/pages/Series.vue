@@ -379,6 +379,21 @@ export default {
       editingTeam: null,
     };
   },
+  created() {
+    if (this.$route.params.year && this.$route.params.series_id && this.$route.params.season_id) {
+      this.selectedYear = this.$route.params.year;
+      setTimeout(() => {
+        for (let i = 0; i < this.loadedSeriesList.length; i += 1) {
+          if (this.loadedSeriesList[i]._id === this.$route.params.series_id) {
+            this.selectedSeries = this.loadedSeriesList[i];
+            setTimeout(() => {
+              this.selectedSeason = this.$route.params.season_id;
+            }, 500);
+          }
+        }
+      }, 500);
+    }
+  },
   methods: {
     async loadSeriesList() {
       this.seriesLoading = true;
