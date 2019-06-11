@@ -7,7 +7,7 @@ const routes = [
       { path: '', redirect: '/home' },
       { path: '/home', component: () => import('pages/Index.vue') },
       { path: '/series', component: () => import('pages/Series.vue') },
-      { path: '/series/:year/:series_id/:season_id', component: () => import('pages/Series.vue') },
+      { path: '/series/:year/:series_id', component: () => import('pages/Series.vue') },
       { path: '/rules', component: () => import('pages/Rules.vue') },
       { path: '/calendar', component: () => import('pages/Calendar.vue') },
       { path: '/discord', beforeEnter() { window.open('https://discord.gg/dWSQBrQ'); } },

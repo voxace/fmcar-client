@@ -380,15 +380,12 @@ export default {
     };
   },
   created() {
-    if (this.$route.params.year && this.$route.params.series_id && this.$route.params.season_id) {
+    if (this.$route.params.year && this.$route.params.series_id) {
       this.selectedYear = this.$route.params.year;
       setTimeout(() => {
         for (let i = 0; i < this.loadedSeriesList.length; i += 1) {
           if (this.loadedSeriesList[i]._id === this.$route.params.series_id) {
             this.selectedSeries = this.loadedSeriesList[i];
-            setTimeout(() => {
-              this.selectedSeason = this.$route.params.season_id;
-            }, 500);
           }
         }
       }, 500);
@@ -507,6 +504,16 @@ export default {
     getUrl(image) {
       return `${process.env.BASE}/${image}`;
     },
+    pushParams() {
+      if (this.selectedYear && this.selectedSeries) {
+        window.history.replaceState({},
+          `series/${this.selectedYear}/${this.selectedSeries._id}`,
+          `/series/${this.selectedYear}/${this.selectedSeries._id}`);
+      } else {
+        window.history.replaceState({},
+          'series', '/series');
+      }
+    },
   },
   computed: {
     seasonList() {
@@ -522,9 +529,12 @@ export default {
   watch: {
     selectedYear() {
       this.loadSeriesList();
+      this.$route.params.year = this.selectedYear;
+      this.pushParams();
     },
     selectedSeries() {
       this.selectedSeason = this.selectedSeries.seasons[0]._id;
+      this.pushParams();
     },
     selectedSeason() {
       this.loadSeasonData();
