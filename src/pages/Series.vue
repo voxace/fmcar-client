@@ -100,8 +100,13 @@
 
           <!-- SERIES INFO -->
           <q-tab-panel name="Info">
+
+            <!-- GENERAL INFO AND REGS -->
             <div v-if="selectedSeries != null" class="row q-py-md">
-              <div class="col-xs-12 col-sm-6" v-bind:class="{ 'q-pr-sm': $q.screen.gt.xs }">
+              <div
+                class="col-xs-12 col-md-6"
+                v-bind:class="{ 'q-pr-sm': $q.screen.gt.sm }"
+              >
                 <q-card flat bordered>
                   <q-tabs
                     v-model="tab2"
@@ -113,7 +118,7 @@
                     <q-tab name="info" label="General Information" />
                     <q-tab name="regs" label="Regulations" />
                   </q-tabs>
-                  <q-tab-panels v-model="tab2" animated>
+                  <q-tab-panels v-model="tab2" animated class="scroll height-1000">
                     <q-tab-panel name="info">
                       <div class="row">
                         <div class="col-xs-12">
@@ -138,12 +143,17 @@
                   </q-tab-panels>
                 </q-card>
               </div>
-              <div class="col-xs-12 col-sm-6" v-bind:class="{ 'q-pl-sm': $q.screen.gt.xs }">
+
+              <!-- LEADERBOARD -->
+              <div
+                class="col-xs-12 col-md-6"
+                v-bind:class="{ 'q-pl-sm': $q.screen.gt.sm, 'q-pt-sm': $q.screen.lt.md }"
+              >
                 <q-card flat bordered>
                   <q-card-section class="bg-primary text-white q-py-sm q-mb-md">
                     <div class="text-subtitle2 text-center leaderboard">LEADERBOARD</div>
                   </q-card-section>
-                  <q-card-section>
+                  <q-card-section class="scroll height-1000">
                     <q-markup-table flat>
                       <thead class="text-center">
                         <tr>
@@ -326,6 +336,9 @@
 <style>
 .leaderboard {
   padding: 5px;
+}
+.height-1000 {
+  max-height: 1000px;
 }
 </style>
 
