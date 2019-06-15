@@ -48,7 +48,7 @@
                 <tbody>
                   <tr
                     v-for="(session, i) in round.sessions"
-                    :key="session._id" class="cursor-pointer"
+                    :key="session._id" @click="viewResults(round, i)"
                   >
                     <td>{{ i + 1 }}</td>
                     <td>{{ session.sessionType }}</td>
@@ -70,6 +70,12 @@
         <td colspan="5" class="text-center">No data found. Add a round...</td>
       </tr>
     </tbody>
+    <!-- ADD TEAM DIALOG -->
+    <session-results
+      v-if="sessionDialog" :visibility="sessionDialog"
+      :session="selectedSession" :round="selectedRound"
+      @close="sessionDialog = false"
+    />
   </q-markup-table>
 </template>
 
@@ -87,17 +93,19 @@
 
 <script>
 export default {
-  name: 'Series',
+  name: 'RoundTable',
+  components: {
+    sessionResults: () => import('components/Series/SessionResults.vue'),
+  },
   props: {
-    editingAllowed: {
-      type: Boolean,
-      default: true,
-    },
     loadedSeason: Array,
   },
   data() {
     return {
       sessionToggle: null,
+      sessionDialog: false,
+      selectedSession: 0,
+      selectedRound: null,
     };
   },
   methods: {
@@ -110,6 +118,16 @@ export default {
       } else {
         this.sessionToggle = id;
       }
+    },
+    viewResults(round, session) {
+      this.selectedSession = session;
+      this.selectedRound = round;
+      this.sessionDialog = true;
+    },
+  },
+  computed: {
+    editingAllowed() {
+      return this.$store.getters.editingAllowed;
     },
   },
 };
