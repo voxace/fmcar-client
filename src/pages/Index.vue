@@ -1,13 +1,11 @@
 <template>
   <q-page class="q-px-lg">
 
-    <div class="row q-pt-lg">
-      <div class="col-xs-12 col-sm-8">
-        <div class="text-h3">Forza Motorsport Community Australia</div>
-      </div>
-      <div class="col-xs-12 col-sm-4 border">
-        <img src="../assets/fb-join.png" class="responsive-img">
-      </div>
+    <div class="row q-pt-lg justify-center">
+      <div class="text-h3">Forza Motorsport Community Australia</div>
+    </div>
+    <div class="row q-pt-lg justify-center">
+      <img src="../assets/fb-join.png" class="responsive-img">
     </div>
 
     <div v-if="user">
@@ -29,6 +27,10 @@
 <style>
 .border {
   border:1px solid black;
+}
+.responsive-img {
+  width:430px;
+  height:auto;
 }
 </style>
 
