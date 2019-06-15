@@ -48,14 +48,14 @@
                 <tbody>
                   <tr
                     v-for="(session, i) in round.sessions"
-                    :key="session._id" @click="viewResults(round, i)"
+                    :key="session._id" class="cursor-pointer" @click="viewResults(round, i)"
                   >
                     <td>{{ i + 1 }}</td>
                     <td>{{ session.sessionType }}</td>
                     <td>{{ session.date }}</td>
                     <td>{{ session.time }}</td>
                     <td>{{ session.laps }}</td>
-                    <td v-if="$q.screen.gt.xs && editingAllowed">{{ session.pointsTable.name }}</td>
+                    <td v-if="$q.screen.gt.xs && editingAllowed">{{ session.pointsTable.type }}</td>
                     <td>{{ session.weather }}</td>
                   </tr>
                 </tbody>
