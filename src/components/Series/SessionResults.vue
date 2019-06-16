@@ -45,10 +45,28 @@
                 </td>
               </tr>
             </template>
+            <tr v-if="editingAllowed">
+              <td colspan="6" class="text-center">
+                <q-btn
+                  :label="addButton" icon="add" color="primary"
+                  class="full-width"  @click="addResult()"
+                />
+              </td>
+            </tr>
           </tbody>
           <tbody v-else>
           <tr>
-            <td colspan="6" class="text-center">No data found. Add some results...</td>
+            <td colspan="6" class="text-center">
+              No results found
+            </td>
+          </tr>
+          <tr v-if="editingAllowed">
+            <td colspan="6" class="text-center">
+              <q-btn
+                :label="addButton" icon="add" color="primary"
+                class="full-width"  @click="addResult()"
+              />
+            </td>
           </tr>
         </tbody>
         </q-markup-table>
@@ -60,6 +78,14 @@
         />
       </q-card-actions>
     </q-card>
+    <!-- ADD RESULT DIALOG -->
+    <add-result-dialog
+      v-if="editingAllowed && addResultDialog"
+      :editing="editing" :editingResult="editingResult"
+      :round="round" :session="session"
+      :visibility="addResultDialog"
+      @close="addResultDialog = false" @resultAdded="resultAdded"
+    />
   </q-dialog>
 </template>
 
@@ -67,16 +93,21 @@
 /* eslint-disable no-underscore-dangle */
 export default {
   name: 'sessionResultsDialog',
+  components: {
+    addResultDialog: () => import('components/Series/AddResult.vue'),
+  },
   props: {
-    editing: Boolean,
     session: Number,
     round: Object,
     visibility: Boolean,
   },
   data() {
     return {
+      editing: false,
       loadingResults: false,
       loadedResults: [],
+      addResultDialog: false,
+      editingResult: null,
     };
   },
   mounted() {
@@ -97,6 +128,24 @@ export default {
       this.loadingResults = false;
     },
 
+    // Launches the edit result dialog
+    editResult(result) {
+      this.editing = true;
+      this.editingResult = result;
+      this.addResultDialog = true;
+    },
+
+    // Launches the add result dialog
+    addResult() {
+      this.editing = false;
+      this.addResultDialog = true;
+    },
+
+    // Reloads table once result is added
+    resultAdded() {
+      this.loadResults();
+    },
+
     // Closes the dialog
     close() {
       this.$emit('close');
@@ -112,6 +161,12 @@ export default {
     },
     editingAllowed() {
       return this.$store.getters.editingAllowed;
+    },
+    addButton() {
+      if (this.session.results !== null && this.round.sessions[this.session].results.length > 0) {
+        return `Add Position ${this.round.sessions[this.session].results.length + 1}`;
+      }
+      return 'Add Position 1';
     },
   },
 };

@@ -106,11 +106,8 @@
                   :dense="$q.screen.lt.sm"
                   :disable="loadingNumbers" :disabled="loadingNumbers"
                   :rules="[
-                    val => val != null &&  val != '' || 'Enter a number',
-                    val => isInt(val) || 'Enter a whole number',
-                    val => val >= 0 || 'Must be 0 or larger',
-                    val => val <= 9999 || 'Must be 9999 or smaller',
-                    val => checkNumber(val, 'a') || 'Already taken'
+                    val => checkValid(val) || 'Enter a valid number',
+                    val => checkTaken(val, 'b') || 'Already taken',
                   ]"
                 >
                   <template v-slot:append v-if="loadingNumbers">
@@ -153,11 +150,8 @@
                   :dense="$q.screen.lt.sm"
                   :disable="loadingNumbers" :disabled="loadingNumbers"
                   :rules="[
-                    val => val != null &&  val != '' || 'Enter a number',
-                    val => isInt(val) || 'Enter a whole number',
-                    val => val >= 0 || 'Must be 0 or larger',
-                    val => val <= 9999 || 'Must be 9999 or smaller',
-                    val => checkNumber(val, 'b') || 'Already taken'
+                    val => checkValid(val) || 'Enter a valid number',
+                    val => checkTaken(val, 'b') || 'Already taken',
                   ]"
                 >
                   <template v-slot:append v-if="loadingNumbers">
@@ -252,8 +246,7 @@ export default {
       team_options: [],
       user_options_a: [],
       user_options_b: [],
-      validNumberA: false,
-      validNumberB: false,
+      validNumbers: false,
       addExistingTeamModel: {
         name: null,
         season: null,
@@ -295,23 +288,43 @@ export default {
   methods: {
 
     // Ensures driver cannot choose a taken number
-    checkNumber(val, driver) {
-      if (Number(val) === this.editingTeam.driver_a_num
+    checkTaken(val, driver) {
+      if (this.editingTeam) {
+        if (Number(val) === this.editingTeam.driver_a_num
           && driver === 'a') {
-        this.validNumberA = true;
-        return true;
-      }
-      if (Number(val) === this.editingTeam.driver_b_num
-          && driver === 'b') {
-        this.validNumberB = true;
-        return true;
+          this.validNumbers = true;
+          return true;
+        }
+        if (Number(val) === this.editingTeam.driver_b_num
+            && driver === 'b') {
+          this.validNumbers = true;
+          return true;
+        }
       }
       if (this.driverNumbers.includes(Number(val))) {
         this.validNumbers = false;
         return false;
       }
-      if (driver === 'a') { this.validNumberA = true; }
-      if (driver === 'b') { this.validNumberB = true; }
+      if (this.addNewTeamModel.driver_a_num === this.addNewTeamModel.driver_b_num) {
+        this.validNumbers = false;
+        return false;
+      }
+      this.validNumbers = true;
+      return true;
+    },
+
+    // Ensures driver cannot choose an invalid number
+    checkValid(val) {
+      if (val === null
+        || val < 0
+        || val > 9999
+        || val === ''
+        || !this.isInt(val)
+      ) {
+        this.validNumbers = false;
+        return false;
+      }
+      this.validNumbers = true;
       return true;
     },
 
@@ -563,8 +576,7 @@ export default {
         && this.addNewTeamModel.name.length > 0
         && this.addNewTeamModel.driver_a != null
         && this.addNewTeamModel.driver_a_num > 0
-        && this.validNumberA === true
-        && this.validNumberB === true;
+        && this.validNumbers === true;
     },
 
     // Choose between 'Add' or 'Editing' mode
