@@ -107,7 +107,9 @@ export default {
       loadingResults: false,
       loadedResults: [],
       addResultDialog: false,
-      editingResult: null,
+      editingResult: {
+        position: 1,
+      },
     };
   },
   mounted() {
@@ -138,6 +140,9 @@ export default {
     // Launches the add result dialog
     addResult() {
       this.editing = false;
+      this.editingResult = {
+        position: this.loadedResults.length + 1,
+      };
       this.addResultDialog = true;
     },
 
@@ -163,8 +168,8 @@ export default {
       return this.$store.getters.editingAllowed;
     },
     addButton() {
-      if (this.session.results !== null && this.round.sessions[this.session].results.length > 0) {
-        return `Add Position ${this.round.sessions[this.session].results.length + 1}`;
+      if (this.loadedResults != null) {
+        return `Add Position ${this.loadedResults.length + 1}`;
       }
       return 'Add Position 1';
     },

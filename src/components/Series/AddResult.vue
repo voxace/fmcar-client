@@ -32,7 +32,7 @@
               outlined use-input v-model="selectedUser"
               :options="user_options" :dense="$q.screen.lt.sm"
               option-value="_id" option-label="name" label="Driver"
-              emit-value map-options  @filter="filterDrivers"
+              @filter="filterDrivers"
               :disable="loadingUsers" :disabled="loadingUsers"
             >
               <template v-slot:append v-if="loadingUsers">
@@ -102,6 +102,7 @@ export default {
   name: 'addResultDialog',
   props: {
     editing: Boolean,
+    editingResult: Object,
     session: Number,
     round: Object,
     visibility: Boolean,
@@ -114,6 +115,7 @@ export default {
       loadingTeam: false,
       loadingUsers: false,
       selectedUser: null,
+      position: null,
       addResultModel: {
         user: null,
         team: null,
@@ -121,24 +123,16 @@ export default {
         series: null,
         season: null,
         position: null,
-        raceTime: null,
-        fastestLap: {
-          minutes: null,
-          seconds: null,
-          millis: null,
-        },
       },
     };
   },
   mounted() {
+    this.calcPosition();
     this.loadUserList()
       .then(() => {
         if (this.editing === true) {
-          this.addResultModel.result = this.editingResult.result;
-          this.addResultModel.track = this.editingResult.track._id;
-          this.addResultModel.resultType = this.editingResult.resultType;
-          this.addResultModel.configuration = this.editingResult.configuration;
-          this.addResultModel.sessions = this.editingResult.sessions;
+          this.addResultModel.position = this.editingResult.position;
+          this.selectedUser = this.editingResult.user;
           this.$forceUpdate();
         }
       });
@@ -201,8 +195,10 @@ export default {
 
     // Updates the result
     async editResult() {
-      this.addResultModel.series = this.series._id;
-      this.addResultModel.season = this.season._id;
+      this.addResultModel.position = this.position;
+      this.addResultModel.series = this.round.series;
+      this.addResultModel.season = this.round.season;
+      this.addResultModel.session = this.round.sessions[this.session]._id;
       await this.$axios
         .patch(`/result/${this.editingResult._id}`, { model: this.addResultModel })
         .then(() => {
@@ -228,9 +224,10 @@ export default {
 
     // Creates a new result
     async addResult() {
-      this.addResultModel.series = this.series._id;
-      this.addResultModel.season = this.season._id;
-      this.addResultModel.result = this.resultNumber;
+      this.addResultModel.position = this.position;
+      this.addResultModel.series = this.round.series;
+      this.addResultModel.season = this.round.season;
+      this.addResultModel.session = this.round.sessions[this.session]._id;
       await this.$axios
         .post('/result', { model: this.addResultModel })
         .then(() => {
@@ -284,6 +281,11 @@ export default {
       return n % 1 === 0;
     },
 
+    // Calculate current position
+    calcPosition() {
+      this.position = this.editingResult.position;
+    },
+
     // Closes the dialog
     close() {
       this.$emit('close');
@@ -292,9 +294,8 @@ export default {
   computed: {
     // Validate form
     addResultValidation() {
-      return this.addResultModel.track != null;
-      // && this.addResultModel.resultType != null && this.addResultModel.resultType.length > 0
-      // && this.addResultModel.date != null && this.addResultModel.date.length > 0;
+      return this.addResultModel.user != null
+        && this.addResultModel.team != null;
     },
 
     // Choose between 'Add' or 'Editing' mode
@@ -312,18 +313,10 @@ export default {
       }
       return this.editingResult.result;
     },
-
-    // Calculate current position
-    position() {
-      if (this.session.results !== null && this.round.sessions[this.session].results.length > 0) {
-        return this.round.sessions[this.session].results.length + 1;
-      }
-      return 1;
-    },
   },
   watch: {
     selectedUser(val) {
-      this.addResultModel.user = val;
+      this.addResultModel.user = val._id;
       this.loadTeam();
     },
   },
