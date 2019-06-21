@@ -82,7 +82,7 @@
     <add-result-dialog
       v-if="editingAllowed && addResultDialog"
       :editing="editing" :editingResult="editingResult"
-      :round="round" :session="session"
+      :round="round" :session="session" :results="loadedResults"
       :visibility="addResultDialog"
       @close="addResultDialog = false" @resultAdded="resultAdded"
     />

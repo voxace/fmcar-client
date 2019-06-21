@@ -2,7 +2,7 @@
   <q-dialog
     v-model="visibility" persistent
   >
-    <q-card style="width: 900px; max-width: 90vw;">
+    <q-card style="width: 800px; max-width: 90vw;">
 
       <q-card-section>
         <div class="row">
@@ -80,12 +80,7 @@
           @click="deleteResult"
         />
         <q-btn
-          flat label="Save and Add Another"
-          text-color="green"
-          @click="save" :disabled="!addResultValidation"
-        />
-        <q-btn
-          flat label="Save and Close"
+          flat label="Save"
           text-color="green"
           @click="save" :disabled="!addResultValidation"
         />
@@ -105,12 +100,14 @@ export default {
     editingResult: Object,
     session: Number,
     round: Object,
+    results: Array,
     visibility: Boolean,
   },
   data() {
     return {
       loadedTeam: null,
       loadedUsers: [],
+      remainingDrivers: [],
       user_options: [],
       loadingTeam: false,
       loadingUsers: false,
@@ -131,13 +128,23 @@ export default {
     this.loadUserList()
       .then(() => {
         if (this.editing === true) {
-          this.addResultModel.position = this.editingResult.position;
           this.selectedUser = this.editingResult.user;
           this.$forceUpdate();
         }
+        this.addResultModel.position = this.editingResult.position;
+        this.calcRemainingDrivers();
       });
   },
   methods: {
+
+    calcRemainingDrivers() {
+      const resultUserIDs = this.results.map(result => result.user._id);
+      const filteredResults = this.loadedUsers.filter(user => resultUserIDs.indexOf(user._id) < 0);
+      this.remainingDrivers = filteredResults;
+      if (this.editing) {
+        this.remainingDrivers.push(this.selectedUser);
+      }
+    },
 
     // Loads teams to autofill team field for driver
     async loadTeam() {
@@ -173,13 +180,13 @@ export default {
     filterDrivers(val, update) {
       if (val === '') {
         update(() => {
-          this.user_options = this.loadedUsers;
+          this.user_options = this.remainingDrivers;
         });
         return;
       }
       update(() => {
         const needle = val.toLowerCase();
-        this.user_options = this.loadedUsers
+        this.user_options = this.remainingDrivers
           .filter(v => v.name.toLowerCase().indexOf(needle) > -1);
       });
     },
