@@ -7,14 +7,36 @@
         <div class="text-h6">
           {{mode}} Session Results
         </div>
-        <div class="text-subtitle2">
-          Round: {{round.round}}
-        </div>
-        <div class="text-subtitle2">
-          Track: {{round.track.name}}
-        </div>
-        <div class="text-subtitle2">
-          Session: {{session + 1}} - {{round.sessions[session].sessionType}}
+        <div class="row">
+          <div class="col-xs-8">
+            <div class="text-subtitle2">
+              Round: {{round.round}}
+            </div>
+            <div class="text-subtitle2">
+              Track: {{round.track.name}}
+            </div>
+            <div class="text-subtitle2">
+              Session: {{session + 1}} - {{round.sessions[session].sessionType}}
+            </div>
+          </div>
+          <div
+            class="col-xs-4"
+            v-if="$q.screen.gt.xs"
+          >
+            <q-toggle
+              class="q-py-xs"
+              label="Race Time"
+              v-model="raceTime"
+              dense
+            />
+            <br>
+            <q-toggle
+              class="q-py-sm"
+              label="Fastest Lap"
+              v-model="fastestLap"
+              dense
+            />
+          </div>
         </div>
       </q-card-section>
       <q-card-section>
@@ -24,19 +46,21 @@
               <th width="40">Position</th>
               <th>Driver</th>
               <th v-if="$q.screen.gt.xs">Team</th>
-              <th v-if="$q.screen.gt.xs">Race Time</th>
-              <th v-if="$q.screen.gt.xs">Fastest Lap</th>
+              <th v-if="$q.screen.gt.xs && raceTime">Race Time</th>
+              <th v-if="$q.screen.gt.xs && fastestLap">Fastest Lap</th>
+              <th>Points</th>
               <th v-if="editingAllowed">Edit</th>
             </tr>
           </thead>
           <tbody v-if="loadedResults != null && loadedResults.length > 0">
-            <template v-for="result in loadedResults">
+            <template v-for="(result,i) in loadedResults">
               <tr :key="result._id" class="text-center">
                 <td width="40">{{result.position}}</td>
                 <td>{{result.user.name}}</td>
                 <td v-if="$q.screen.gt.xs">{{result.team.name}}</td>
-                <td v-if="$q.screen.gt.xs">{{result.raceTime}}</td>
-                <td v-if="$q.screen.gt.xs">{{result.fastestLap}}</td>
+                <td v-if="$q.screen.gt.xs && raceTime">{{result.raceTime}}</td>
+                <td v-if="$q.screen.gt.xs && fastestLap">{{result.fastestLap}}</td>
+                <td>{{points(i)}}</td>
                 <td v-if="editingAllowed">
                   <q-btn
                     round color="primary" icon="edit"
@@ -46,7 +70,7 @@
               </tr>
             </template>
             <tr v-if="editingAllowed">
-              <td colspan="6" class="text-center">
+              <td colspan="7" class="text-center">
                 <q-btn
                   :label="addButton" icon="add" color="primary"
                   class="full-width"  @click="addResult()"
@@ -107,6 +131,8 @@ export default {
       loadingResults: false,
       loadedResults: [],
       addResultDialog: false,
+      raceTime: false,
+      fastestLap: false,
       editingResult: {
         position: 1,
       },
@@ -154,6 +180,10 @@ export default {
     // Closes the dialog
     close() {
       this.$emit('close');
+    },
+
+    points(i) {
+      return this.round.sessions[this.session].pointsTable.values[i];
     },
   },
   computed: {
