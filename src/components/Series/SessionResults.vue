@@ -16,7 +16,7 @@
               Track: {{round.track.name}}
             </div>
             <div class="text-subtitle2">
-              Session: {{session + 1}} - {{round.sessions[session].sessionType}}
+              Session: {{session.sessionNumber + 1}} - {{session.sessionType}}
             </div>
           </div>
           <div
@@ -121,7 +121,7 @@ export default {
     addResultDialog: () => import('components/Series/AddResult.vue'),
   },
   props: {
-    session: Number,
+    session: Object,
     round: Object,
     visibility: Boolean,
   },
@@ -146,7 +146,7 @@ export default {
     async loadResults() {
       this.loadingResults = true;
       await this.$axios
-        .get(`/results/session/${this.round.sessions[this.session]._id}`)
+        .get(`/results/session/${this.session._id}`)
         .then((response) => {
           this.loadedResults = response.data;
         })
@@ -183,7 +183,7 @@ export default {
     },
 
     points(i) {
-      return this.round.sessions[this.session].pointsTable.values[i];
+      return this.session.pointsTable.values[i];
     },
   },
   computed: {

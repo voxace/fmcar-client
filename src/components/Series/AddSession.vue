@@ -146,7 +146,7 @@
           v-if="editing"
           flat label="Delete"
           text-color="red"
-          @click="deleteRound"
+          @click="deleteSession"
         />
         <q-btn
           flat label="Save"
@@ -168,7 +168,8 @@ export default {
   props: {
     editing: Boolean,
     round: Object,
-    session: Object,
+    editingSession: Object,
+    numSessions: Number,
     series: Object,
     visibility: Boolean,
   },
@@ -182,6 +183,9 @@ export default {
       selectedTrack: null,
       weatherOptions: [],
       addSessionModel: {
+        series: null,
+        season: null,
+        round: null,
         date: null,
         time: null,
         weather: null,
@@ -203,10 +207,10 @@ export default {
           this.addSessionModel.weather = this.editingSession.weather;
           this.addSessionModel.laps = this.editingSession.laps;
           this.addSessionModel.sessionType = this.editingSession.sessionType;
-          this.addSessionModel.pointsTable = this.editingSession.pointsTable;
+          this.addSessionModel.pointsTable = this.editingSession.pointsTable._id;
           this.$forceUpdate();
         } else {
-          this.addSessionModel.sessionNumber = this.round.sessions.length + 1;
+          this.addSessionModel.sessionNumber = this.numSessions + 1;
         }
         this.getWeatherOptions();
       });
@@ -251,10 +255,11 @@ export default {
 
     // Updates the round
     async editSession() {
-      this.addSessionModel.series = this.series._id;
-      this.addSessionModel.season = this.season._id;
+      this.addSessionModel.series = this.round.series;
+      this.addSessionModel.season = this.round.season;
+      this.addSessionModel.round = this.round._id;
       await this.$axios
-        .patch(`/round/${this.editingSession._id}`, { model: this.addSessionModel })
+        .patch(`/session/${this.editingSession._id}`, { model: this.addSessionModel })
         .then(() => {
           this.$q.notify({
             color: 'green-4',
@@ -263,7 +268,7 @@ export default {
             message: 'Session updated successfully!',
           });
           this.close();
-          this.$emit('roundAdded');
+          this.$emit('sessionAdded');
         })
         .catch((error) => {
           console.log(`Error: ${error}`);
@@ -278,11 +283,12 @@ export default {
 
     // Creates a new round
     async addSession() {
-      this.addSessionModel.series = this.series._id;
-      this.addSessionModel.season = this.season._id;
-      this.addSessionModel.round = this.roundNumber;
+      this.addSessionModel.series = this.round.series;
+      this.addSessionModel.season = this.round.season;
+      this.addSessionModel.round = this.round._id;
+      console.log(this.addSessionModel);
       await this.$axios
-        .post('/round', { model: this.addSessionModel })
+        .post('/session', { model: this.addSessionModel })
         .then(() => {
           this.$q.notify({
             color: 'green-4',
@@ -291,7 +297,7 @@ export default {
             message: 'Session added successfully!',
           });
           this.close();
-          this.$emit('roundAdded');
+          this.$emit('sessionAdded');
         })
         .catch((error) => {
           console.log(`Error: ${error}`);
@@ -307,7 +313,7 @@ export default {
     // Deletes the round
     async deleteSession() {
       await this.$axios
-        .delete(`/round/${this.editingSession._id}`)
+        .delete(`/session/${this.editingSession._id}`)
         .then(() => {
           this.$q.notify({
             color: 'green-4',
