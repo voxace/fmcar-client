@@ -68,7 +68,7 @@
                       />
                     </td>
                   </tr>
-                  <tr class="sessions-thead">
+                  <tr class="sessions-thead" v-if="editingAllowed">
                     <td colspan="8" class="sessions-add">
                       <q-btn
                         color="primary" icon="add" class="full-width"
