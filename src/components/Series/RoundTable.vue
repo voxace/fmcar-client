@@ -11,7 +11,7 @@
     </thead>
     <tbody v-if="loadedSeason != null && loadedSeason.length > 0">
       <template v-for="round in loadedSeason">
-        <tr :key="round._id" class="cursor-pointer" @click="toggleSession(round._id)">
+        <tr :key="round._id" class="cursor-pointer" @click="toggleRound(round._id)">
           <td class="text-center">{{round.round}}</td>
           <td>{{round.track.name}}</td>
           <td v-if="$q.screen.gt.xs">{{round.roundType}}</td>
@@ -30,11 +30,11 @@
         >
           <tr
             class="bg-grey-1 session-row"
-            v-if="sessionToggle == round._id"
+            v-if="roundToggle == round._id"
           >
             <td colspan="7" class="text-center no-padding-row">
               <q-markup-table seperator="cell" dense flat square class="bg-grey-1">
-                <thead>
+                <thead v-if="round.sessions.length > 0">
                   <tr class="sessions-thead">
                     <th width="40">Session</th>
                     <th>Type</th>
@@ -58,6 +58,14 @@
                     <td v-if="$q.screen.gt.xs && editingAllowed">{{ session.pointsTable.type }}</td>
                     <td>{{ session.weather }}</td>
                   </tr>
+                  <tr class="sessions-thead">
+                    <td colspan="7" class="sessions-add">
+                      <q-btn
+                        color="primary" icon="add" class="full-width"
+                        @click="addSession(round)" label="Add Session" flat
+                      />
+                    </td>
+                  </tr>
                 </tbody>
               </q-markup-table>
             </td>
@@ -70,11 +78,17 @@
         <td colspan="5" class="text-center">No data found. Add a round...</td>
       </tr>
     </tbody>
-    <!-- ADD TEAM DIALOG -->
+    <!-- SESSION RESULTS -->
     <session-results
-      v-if="sessionDialog" :visibility="sessionDialog"
+      v-if="sessionResultsDialog" :visibility="sessionResultsDialog"
       :session="selectedSession" :round="selectedRound"
-      @close="sessionDialog = false"
+      @close="sessionResultsDialog = false"
+    />
+    <!-- ADD SESSION -->
+    <add-session-dialog
+      v-if="addSessionDialog" :visibility="addSessionDialog"
+      :session="editingSession" :round="selectedRound"
+      :series="series" @close="addSessionDialog = false"
     />
   </q-markup-table>
 </template>
@@ -89,6 +103,9 @@
 .sessions-thead:hover {
   background-color: transparent !important;
 }
+.sessions-add {
+  border-bottom: 0 !important;
+}
 </style>
 
 <script>
@@ -96,14 +113,19 @@ export default {
   name: 'RoundTable',
   components: {
     sessionResults: () => import('components/Series/SessionResults.vue'),
+    addSessionDialog: () => import('components/Series/AddSession.vue'),
   },
   props: {
+    series: Object,
     loadedSeason: Array,
   },
   data() {
     return {
-      sessionToggle: null,
-      sessionDialog: false,
+      roundToggle: null,
+      sessionResultsDialog: false,
+      addSessionDialog: false,
+      editingSession: null,
+      editing: false,
       selectedSession: 0,
       selectedRound: null,
     };
@@ -112,17 +134,29 @@ export default {
     editRound(round) {
       this.$emit('editRound', round);
     },
-    toggleSession(id) {
-      if (this.sessionToggle === id) {
-        this.sessionToggle = null;
+    toggleRound(id) {
+      if (this.roundToggle === id) {
+        this.roundToggle = null;
       } else {
-        this.sessionToggle = id;
+        this.roundToggle = id;
       }
+    },
+    addSession(round) {
+      this.editingSession = null;
+      this.editing = false;
+      this.selectedRound = round;
+      this.addSessionDialog = true;
+    },
+    editSession(round, session) {
+      this.editingSession = session;
+      this.editing = true;
+      this.selectedRound = round;
+      this.addSessionDialog = true;
     },
     viewResults(round, session) {
       this.selectedSession = session;
       this.selectedRound = round;
-      this.sessionDialog = true;
+      this.sessionResultsDialog = true;
     },
   },
   computed: {

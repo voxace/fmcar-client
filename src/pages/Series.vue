@@ -227,6 +227,7 @@
             <div v-if="loadedSeason != null" class="col-xs-12 q-py-md">
               <round-table
                 :loadedSeason="loadedSeason.rounds"
+                :series="selectedSeries"
                 @editRound="editRound"
               />
             </div>
@@ -374,7 +375,6 @@ export default {
       selectedSeries: null,
       selectedSeason: null,
       loadedSeriesList: [],
-      loadedSeries: null,
       loadedSeason: null,
       addRoundDialog: false,
       addSeriesDialog: false,
