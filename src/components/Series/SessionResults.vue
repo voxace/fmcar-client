@@ -16,7 +16,7 @@
               Track: {{round.track.name}}
             </div>
             <div class="text-subtitle2">
-              Session: {{session.sessionNumber + 1}} - {{session.sessionType}}
+              Session: {{session.sessionNumber}} - {{session.sessionType}}
             </div>
           </div>
           <div

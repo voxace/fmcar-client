@@ -17,7 +17,7 @@
               Track: {{round.track.name}}
             </div>
             <div class="text-subtitle2">
-              Session: {{session + 1}} - {{round.sessions[session].sessionType}}
+              Session: {{session.sessionNumber}} - {{session.sessionType}}
             </div>
           </div>
         </div>
@@ -98,7 +98,7 @@ export default {
   props: {
     editing: Boolean,
     editingResult: Object,
-    session: Number,
+    session: Object,
     round: Object,
     results: Array,
     visibility: Boolean,
@@ -205,7 +205,7 @@ export default {
       this.addResultModel.position = this.position;
       this.addResultModel.series = this.round.series;
       this.addResultModel.season = this.round.season;
-      this.addResultModel.session = this.round.sessions[this.session]._id;
+      this.addResultModel.session = this.session._id;
       await this.$axios
         .patch(`/result/${this.editingResult._id}`, { model: this.addResultModel })
         .then(() => {
@@ -232,9 +232,11 @@ export default {
     // Creates a new result
     async addResult() {
       this.addResultModel.position = this.position;
+      this.addResultModel.round = this.round._id;
       this.addResultModel.series = this.round.series;
       this.addResultModel.season = this.round.season;
-      this.addResultModel.session = this.round.sessions[this.session]._id;
+      this.addResultModel.session = this.session._id;
+      this.addResultModel.team = this.addResultModel.team._id;
       await this.$axios
         .post('/result', { model: this.addResultModel })
         .then(() => {
