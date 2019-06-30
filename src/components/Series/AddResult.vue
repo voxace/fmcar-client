@@ -8,7 +8,7 @@
         <div class="row">
           <div class="col-xs-9">
             <div class="text-h6">
-              {{mode}} Position {{position}} Result
+              {{mode}} Position {{addResultModel.position}} Result
             </div>
             <div class="text-subtitle2">
               Round: {{round.round}}
@@ -26,7 +26,20 @@
       <q-card-section>
 
         <div class="row">
-          <div class="col-xs-6 q-pr-xs">
+          <!-- POSITION -->
+          <div class="col-xs-2 q-pr-xs">
+            <q-input
+              outlined v-model="addResultModel.position"
+              type="number" label="Round" :dense="$q.screen.lt.sm"
+              :rules="[
+                val => val != null &&  val != '' || 'Enter a number',
+                val => isInt(val) || 'Enter a whole number',
+                val => val >= 0 || 'Must be 0 or larger',
+                val => val <= 99 || 'Must be 99 or smaller'
+              ]"
+            />
+          </div>
+          <div class="col-xs-5 q-px-xs">
             <!-- DRIVER -->
             <q-select
               outlined use-input v-model="selectedUser"
@@ -45,7 +58,7 @@
               </template>
             </q-select>
           </div>
-          <div class="col-xs-6 q-pl-xs">
+          <div class="col-xs-5 q-pl-xs">
             <!-- TEAM -->
             <q-select
               :options="loadedTeam"
@@ -64,6 +77,12 @@
               </template>
             </q-select>
           </div>
+          <!--
+            TODO:
+            - penalty toggle
+            - race time, fastest lap
+            - sort sessions by number, not automatic
+          -->
         </div>
 
       </q-card-section>
@@ -112,7 +131,6 @@ export default {
       loadingTeam: false,
       loadingUsers: false,
       selectedUser: null,
-      position: null,
       addResultModel: {
         user: null,
         team: null,
@@ -124,19 +142,19 @@ export default {
     };
   },
   mounted() {
-    this.calcPosition();
     this.loadUserList()
       .then(() => {
         if (this.editing === true) {
           this.selectedUser = this.editingResult.user;
+          this.addResultModel.position = this.editingResult.position;
           this.$forceUpdate();
         }
-        this.addResultModel.position = this.editingResult.position;
         this.calcRemainingDrivers();
       });
   },
   methods: {
 
+    // Calculates remaining drivers for driver options
     calcRemainingDrivers() {
       const resultUserIDs = this.results.map(result => result.user._id);
       const filteredResults = this.loadedUsers.filter(user => resultUserIDs.indexOf(user._id) < 0);
@@ -202,7 +220,6 @@ export default {
 
     // Updates the result
     async editResult() {
-      this.addResultModel.position = this.position;
       this.addResultModel.series = this.round.series;
       this.addResultModel.season = this.round.season;
       this.addResultModel.session = this.session._id;
@@ -231,7 +248,6 @@ export default {
 
     // Creates a new result
     async addResult() {
-      this.addResultModel.position = this.position;
       this.addResultModel.round = this.round._id;
       this.addResultModel.series = this.round.series;
       this.addResultModel.season = this.round.season;
@@ -288,11 +304,6 @@ export default {
     // Checks to see if the number is an integer
     isInt(n) {
       return n % 1 === 0;
-    },
-
-    // Calculate current position
-    calcPosition() {
-      this.position = this.editingResult.position;
     },
 
     // Closes the dialog

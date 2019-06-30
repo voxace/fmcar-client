@@ -51,10 +51,10 @@
                 </thead>
                 <tbody>
                   <tr
-                    v-for="(session, i) in loadedSessions"
+                    v-for="session in loadedSessions"
                     :key="session._id" class="cursor-pointer" @click="viewResults(round, session)"
                   >
-                    <td>{{ i + 1 }}</td>
+                    <td>{{ session.sessionNumber }}</td>
                     <td>{{ session.sessionType }}</td>
                     <td>{{ session.date }}</td>
                     <td>{{ session.time }}</td>

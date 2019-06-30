@@ -72,7 +72,7 @@
             <tr v-if="editingAllowed">
               <td colspan="7" class="text-center">
                 <q-btn
-                  :label="addButton" icon="add" color="primary"
+                  label="Add Result" icon="add" color="primary"
                   class="full-width"  @click="addResult()"
                 />
               </td>
@@ -87,7 +87,7 @@
           <tr v-if="editingAllowed">
             <td colspan="6" class="text-center">
               <q-btn
-                :label="addButton" icon="add" color="primary"
+                label="Add Result" icon="add" color="primary"
                 class="full-width"  @click="addResult()"
               />
             </td>
@@ -166,9 +166,6 @@ export default {
     // Launches the add result dialog
     addResult() {
       this.editing = false;
-      this.editingResult = {
-        position: this.loadedResults.length + 1,
-      };
       this.addResultDialog = true;
     },
 
@@ -196,12 +193,6 @@ export default {
     },
     editingAllowed() {
       return this.$store.getters.editingAllowed;
-    },
-    addButton() {
-      if (this.loadedResults != null) {
-        return `Add Position ${this.loadedResults.length + 1}`;
-      }
-      return 'Add Position 1';
     },
   },
 };
