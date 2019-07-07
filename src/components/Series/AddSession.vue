@@ -90,9 +90,8 @@
           <div class="col-xs-12 col-sm-6" v-bind:class="{ 'q-pr-xs': $q.screen.gt.xs }">
             <q-select
               outlined v-model="addSessionModel.pointsTable" label="Points Table"
-              :options="availablePointsTables" :dense="$q.screen.lt.sm"
+              :options="availablePointsTables" :dense="$q.screen.lt.sm" clearable
               option-value="_id" option-label="type" emit-value map-options
-              :rules="[ val => val && val.length > 0 || 'Select a points table']"
               :disable="loadingPointsTables" :disabled="loadingPointsTables"
             >
               <template v-slot:append v-if="loadingPointsTables">
@@ -112,7 +111,7 @@
           >
             <q-select
               label="Weather"
-              outlined v-model="addSessionModel.weather"
+              outlined v-model="addSessionModel.weather" clearable
               :options="weatherOptions" :dense="$q.screen.lt.sm"
             >
               <template v-slot:append v-if="loadingTrack">
@@ -371,8 +370,9 @@ export default {
   computed: {
     // Validate form
     addSessionValidation() {
-      return this.addSessionModel.sessionNumber != null && this.addSessionModel.sessionNumber > 0
-        && this.addSessionModel.sessionType != null && this.addSessionModel.pointsTable != null;
+      return this.addSessionModel.sessionNumber != null
+        && this.addSessionModel.sessionNumber > 0
+        && this.addSessionModel.sessionType != null;
     },
 
     // Get session number for tab labels

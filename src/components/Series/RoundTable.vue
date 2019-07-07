@@ -6,6 +6,7 @@
         <th class="text-left">Track</th>
         <th class="text-left" v-if="$q.screen.gt.xs">Type</th>
         <th class="text-left" v-if="$q.screen.gt.xs">Configuration</th>
+        <th class="text-center" width="50">Results</th>
         <th class="text-center" width="50" v-if="editingAllowed">Edit</th>
       </tr>
     </thead>
@@ -16,10 +17,16 @@
           <td>{{round.track.name}}</td>
           <td v-if="$q.screen.gt.xs">{{round.roundType}}</td>
           <td v-if="$q.screen.gt.xs">{{round.configuration}}</td>
+          <td class="text-center">
+            <q-btn
+              round color="primary" icon="view_list"
+              size="sm" @click.stop="viewRoundResults(round)"
+            />
+          </td>
           <td v-if="editingAllowed">
             <q-btn
               round color="primary" icon="edit"
-              size="xs" @click.stop="editRound(round)"
+              size="sm" @click.stop="editRound(round)"
             />
           </td>
         </tr>
@@ -44,9 +51,12 @@
                     <th>Date</th>
                     <th>Time</th>
                     <th>Laps</th>
-                    <th v-if="$q.screen.gt.xs && editingAllowed">Points Table</th>
+                    <th v-if="$q.screen.gt.xs && editingAllowed">
+                      Points Table
+                    </th>
                     <th>Weather</th>
-                    <th v-if="editingAllowed">Edit</th>
+                    <th class="text-center" width="50">Results</th>
+                    <th class="text-center" width="50" v-if="editingAllowed">Edit</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -59,8 +69,19 @@
                     <td>{{ session.date }}</td>
                     <td>{{ session.time }}</td>
                     <td>{{ session.laps }}</td>
-                    <td v-if="$q.screen.gt.xs && editingAllowed">{{ session.pointsTable.type }}</td>
+                    <td v-if="$q.screen.gt.xs && editingAllowed">
+                      <span v-if="session.pointsTable != null">
+                        {{ session.pointsTable.type }}
+                      </span>
+                      <span v-else> - </span>
+                    </td>
                     <td>{{ session.weather }}</td>
+                    <td class="text-center">
+                      <q-btn
+                        round color="primary" icon="view_list"
+                        size="xs" style="padding-top: 1px;"
+                      />
+                    </td>
                     <td v-if="editingAllowed">
                       <q-btn
                         round color="primary" icon="edit"
@@ -91,6 +112,11 @@
         <td colspan="5" class="text-center">No data found. Add a round...</td>
       </tr>
     </tbody>
+    <!-- ROUND RESULTS -->
+    <round-results
+      v-if="roundResultsDialog" :visibility="roundResultsDialog"
+      :round="selectedRound" @close="roundResultsDialog = false"
+    />
     <!-- SESSION RESULTS -->
     <session-results
       v-if="sessionResultsDialog" :visibility="sessionResultsDialog"
@@ -128,6 +154,7 @@ export default {
   name: 'RoundTable',
   components: {
     sessionResults: () => import('components/Series/SessionResults.vue'),
+    roundResults: () => import('components/Series/RoundResults.vue'),
     addSessionDialog: () => import('components/Series/AddSession.vue'),
   },
   props: {
@@ -139,6 +166,7 @@ export default {
       roundToggle: null,
       sessionsLoading: false,
       sessionResultsDialog: false,
+      roundResultsDialog: false,
       addSessionDialog: false,
       loadedSessions: [],
       editingSession: null,
@@ -188,6 +216,10 @@ export default {
       this.selectedSession = session;
       this.selectedRound = round;
       this.sessionResultsDialog = true;
+    },
+    viewRoundResults(round) {
+      this.selectedRound = round;
+      this.roundResultsDialog = true;
     },
     sessionAdded() {
       this.loadSessions(this.selectedRound._id);
