@@ -4,8 +4,8 @@
       <div class="text-subtitle2 text-center leaderboard">LEADERBOARD</div>
     </q-card-section>
     <q-card-section class="scroll height-1000">
-      <q-markup-table flat>
-        <thead class="bg-primary text-white text-center">
+      <q-markup-table flat v-if="!loadingResults">
+        <thead class="text-center">
             <tr>
               <th width="40">Position</th>
               <th>Driver</th>
@@ -35,9 +35,20 @@
             </tr>
           </tbody>
       </q-markup-table>
+      <div v-else class="leaderboard-spinner">
+        <q-spinner color="primary" size="5em" />
+      </div>
     </q-card-section>
   </q-card>
 </template>
+
+<style scoped>
+.leaderboard-spinner {
+  text-align: center;
+  padding: 80px 0px;
+}
+</style>
+
 
 <script>
 /* eslint-disable no-underscore-dangle */
