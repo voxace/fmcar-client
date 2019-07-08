@@ -285,7 +285,6 @@ export default {
       this.addSessionModel.series = this.round.series;
       this.addSessionModel.season = this.round.season;
       this.addSessionModel.round = this.round._id;
-      console.log(this.addSessionModel);
       await this.$axios
         .post('/session', { model: this.addSessionModel })
         .then(() => {

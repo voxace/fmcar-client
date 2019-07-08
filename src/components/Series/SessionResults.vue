@@ -56,7 +56,21 @@
             <template v-for="(result,i) in loadedResults">
               <tr :key="result._id" class="text-center">
                 <td width="40">{{result.position}}</td>
-                <td>{{result.user.name}}</td>
+                <td v-if="!result.penalty">{{result.user.name}}</td>
+                <td v-else>
+                  {{result.user.name}}
+                  <q-icon
+                    name="warning" size="17px" color="red" class="q-pl-sm q-pb-xs"
+                  >
+                    <q-tooltip
+                      anchor="center middle" self="center left"
+                      content-class="bg-red" content-style="font-size: 13px"
+                      transition-show="scale" transition-hide="scale"
+                    >
+                      <strong>Penalty:</strong> {{result.penalty}}
+                    </q-tooltip>
+                  </q-icon>
+                </td>
                 <td v-if="$q.screen.gt.xs">{{result.team.name}}</td>
                 <td v-if="$q.screen.gt.xs && raceTime">{{result.raceTime}}</td>
                 <td v-if="$q.screen.gt.xs && fastestLap">{{result.fastestLap}}</td>

@@ -77,12 +77,39 @@
               </template>
             </q-select>
           </div>
-          <!--
-            TODO:
-            - penalty toggle
-            - race time, fastest lap
-            - sort sessions by number, not automatic
-          -->
+          <!-- RACE TIME -->
+          <div class="col-xs-6 q-pr-xs">
+            <q-input
+              outlined v-model="addResultModel.raceTime"
+              label="Race Time" :dense="$q.screen.lt.sm"
+              mask="#:##:##" reverse-fill-mask hint="Format: h:mm:ss"
+            />
+          </div>
+          <!-- FASTEST LAP -->
+          <div class="col-xs-6 q-pl-xs">
+            <q-input
+              outlined v-model="addResultModel.fastestLap"
+              label="Fastest Lap" :dense="$q.screen.lt.sm"
+              mask="#:##" reverse-fill-mask hint="Format: m:ss"
+            />
+          </div>
+          <!-- TOGGLE -->
+          <div class="col-xs-2 q-pr-xs q-pt-md">
+            <q-toggle
+              class="q-py-md"
+              label="Penalty"
+              v-model="penalty"
+              dense
+            />
+          </div>
+          <!-- PENALTY -->
+          <div class="col-xs-10 q-pl-xs q-pt-md">
+            <q-input
+              v-if="penalty"
+              outlined v-model="addResultModel.penalty"
+              label="Penalty" :dense="$q.screen.lt.sm"
+            />
+          </div>
         </div>
 
       </q-card-section>
@@ -138,10 +165,16 @@ export default {
         series: null,
         season: null,
         position: null,
+        fastestLap: null,
+        raceTime: null,
+        penalty: null,
       },
     };
   },
   mounted() {
+    this.addResultModel.raceTime = this.editingResult.raceTime;
+    this.addResultModel.fastestLap = this.editingResult.fastestLap;
+    this.addResultModel.penalty = this.editingResult.penalty;
     this.loadUserList()
       .then(() => {
         if (this.editing === true) {
@@ -172,7 +205,6 @@ export default {
         .then((response) => {
           this.addResultModel.team = response.data;
           this.loadedTeam = [response.data];
-          console.log(this.loadedTeam);
         })
         .catch((error) => {
           console.log(`Error: ${error}`);
@@ -332,6 +364,22 @@ export default {
         return this.season.results.length + 1;
       }
       return this.editingResult.result;
+    },
+
+    penalty: {
+    // getter
+      get() {
+        return this.addResultModel.penalty != null;
+      },
+      // setter
+      set(state) {
+        if (state === true && this.addResultModel.penalty == null) {
+          this.addResultModel.penalty = '';
+        }
+        if (state === false) {
+          this.addResultModel.penalty = null;
+        }
+      },
     },
   },
   watch: {
