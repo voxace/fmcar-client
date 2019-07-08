@@ -1,7 +1,15 @@
 <template>
   <q-card flat bordered>
-    <q-card-section class="bg-primary text-white q-py-sm q-mb-md">
-      <div class="text-subtitle2 text-center leaderboard">LEADERBOARD</div>
+    <q-card-section class="bg-primary text-white q-py-sm q-mb-md row">
+      <div class="col-xs-11 text-subtitle2 text-center leaderboard">
+        LEADERBOARD
+      </div>
+      <div class="col-xs-1 text-right">
+        <q-btn
+          flat round color="white" size="sm" icon="zoom_out_map"
+          @click="visibility = true"
+        />
+      </div>
     </q-card-section>
     <q-card-section class="scroll height-1000">
       <q-markup-table flat v-if="!loadingResults">
@@ -17,7 +25,7 @@
           </thead>
           <tbody v-if="loadedResults != null && loadedResults.length > 0">
             <template v-for="(result, i) in loadedResults">
-              <tr :key="result._id" class="text-center">
+              <tr :key="result._id.user" class="text-center">
                 <td width="40">{{i+1}}</td>
                 <td>{{result._id.user}}</td>
                 <td>{{result._id.number}}</td>
@@ -39,10 +47,20 @@
         <q-spinner color="primary" size="5em" />
       </div>
     </q-card-section>
+    <q-dialog v-model="visibility">
+      <season-results-expanded v-if="visibility" :loadedResults="loadedResults" />
+    </q-dialog>
   </q-card>
 </template>
 
 <style scoped>
+.leaderboard {
+  padding: 5px;
+  padding-left: 8%;
+}
+.height-1000 {
+  max-height: 1000px;
+}
 .leaderboard-spinner {
   text-align: center;
   padding: 80px 0px;
@@ -53,15 +71,18 @@
 <script>
 /* eslint-disable no-underscore-dangle */
 export default {
-  name: 'roundResultsDialog',
+  name: 'seasonResultsTable',
+  components: {
+    seasonResultsExpanded: () => import('components/Series/SeasonResultsExpanded.vue'),
+  },
   props: {
-    season: Object,
-    visibility: Boolean,
+    season: String,
   },
   data() {
     return {
       loadingResults: false,
       loadedResults: [],
+      visibility: false,
     };
   },
   mounted() {

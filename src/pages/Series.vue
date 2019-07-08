@@ -266,10 +266,7 @@
   </q-page>
 </template>
 
-<style>
-.leaderboard {
-  padding: 5px;
-}
+<style scoped>
 .height-1000 {
   max-height: 1000px;
 }
