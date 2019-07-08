@@ -264,8 +264,8 @@ export default {
             icon: 'fas fa-check-circle',
             message: 'Result updated successfully!',
           });
-          this.close();
           this.$emit('resultAdded');
+          this.close();
         })
         .catch((error) => {
           console.log(`Error: ${error}`);
@@ -294,8 +294,8 @@ export default {
             icon: 'fas fa-check-circle',
             message: 'Result added successfully!',
           });
-          this.close();
           this.$emit('resultAdded');
+          this.close();
         })
         .catch((error) => {
           console.log(`Error: ${error}`);

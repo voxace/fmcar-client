@@ -194,7 +194,10 @@ export default {
     },
 
     points(i) {
-      return this.session.pointsTable.values[i];
+      if (this.session.pointsTable) {
+        return this.session.pointsTable.values[i];
+      }
+      return '-';
     },
   },
   computed: {
