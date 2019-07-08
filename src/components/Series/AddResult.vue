@@ -30,7 +30,7 @@
           <div class="col-xs-2 q-pr-xs">
             <q-input
               outlined v-model="addResultModel.position"
-              type="number" label="Round" :dense="$q.screen.lt.sm"
+              type="number" label="Pos" :dense="$q.screen.lt.sm"
               :rules="[
                 val => val != null &&  val != '' || 'Enter a number',
                 val => isInt(val) || 'Enter a whole number',
