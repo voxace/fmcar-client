@@ -149,75 +149,7 @@
                 class="col-xs-12 col-md-6"
                 v-bind:class="{ 'q-pl-sm': $q.screen.gt.sm, 'q-pt-sm': $q.screen.lt.md }"
               >
-                <q-card flat bordered>
-                  <q-card-section class="bg-primary text-white q-py-sm q-mb-md">
-                    <div class="text-subtitle2 text-center leaderboard">LEADERBOARD</div>
-                  </q-card-section>
-                  <q-card-section class="scroll height-1000">
-                    <q-markup-table flat>
-                      <thead class="text-center">
-                        <tr>
-                          <th>Position</th>
-                          <th>Number</th>
-                          <th>Driver</th>
-                          <th>Gamertag</th>
-                          <th>Car</th>
-                          <th>Points</th>
-                        </tr>
-                      </thead>
-                      <tbody class="text-center">
-                        <tr>
-                          <td>1</td>
-                          <td>1</td>
-                          <td>Geoff Tate</td>
-                          <td>SevenSidedDie</td>
-                          <td>Ford Falcon</td>
-                          <td>576</td>
-                        </tr>
-                        <tr>
-                          <td>2</td>
-                          <td>51</td>
-                          <td>Stefan McCartain</td>
-                          <td>Kingbowlermk2</td>
-                          <td>Ford Falcon</td>
-                          <td>558</td>
-                        </tr>
-                        <tr>
-                          <td>3</td>
-                          <td>777</td>
-                          <td>David Hawkins</td>
-                          <td>Sipheren07</td>
-                          <td>Ford Falcon</td>
-                          <td>456</td>
-                        </tr>
-                        <tr>
-                          <td>4</td>
-                          <td>360</td>
-                          <td>Alistair Taylor</td>
-                          <td>Dektra</td>
-                          <td>Ford Falcon</td>
-                          <td>444</td>
-                        </tr>
-                        <tr>
-                          <td>5</td>
-                          <td>75</td>
-                          <td>Mitchell Nemec</td>
-                          <td>Envy The Best</td>
-                          <td>Ford Falcon</td>
-                          <td>390</td>
-                        </tr>
-                        <tr>
-                          <td>6</td>
-                          <td>9</td>
-                          <td>Evan Sanders</td>
-                          <td>MOPVR</td>
-                          <td>Holden Commodore</td>
-                          <td>390</td>
-                        </tr>
-                      </tbody>
-                    </q-markup-table>
-                  </q-card-section>
-                </q-card>
+                <season-results :season="selectedSeason" />
               </div>
             </div>
           </q-tab-panel>
@@ -356,6 +288,7 @@ export default {
     addTeamDialog: () => import('components/Series/AddTeam.vue'),
     roundTable: () => import('components/Series/RoundTable.vue'),
     teamsTable: () => import('components/Series/TeamsTable.vue'),
+    seasonResults: () => import('components/Series/SeasonResults.vue'),
   },
   meta: {
     title: 'Series',

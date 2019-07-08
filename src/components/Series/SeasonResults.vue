@@ -1,29 +1,16 @@
 <template>
-  <q-dialog
-    v-model="visibility" persistent
-  >
-    <q-card style="width: 900px; max-width: 90vw;">
-      <q-card-section>
-        <div class="text-h6">
-          View Round Results
-        </div>
-        <div class="row">
-          <div class="col-xs-8">
-            <div class="text-subtitle2">
-              Round: {{round.round}}
-            </div>
-            <div class="text-subtitle2">
-              Track: {{round.track.name}}
-            </div>
-          </div>
-        </div>
-      </q-card-section>
-      <q-card-section>
-        <q-markup-table seperator="cell" flat bordered>
-          <thead class="bg-primary text-white text-center">
+  <q-card flat bordered>
+    <q-card-section class="bg-primary text-white q-py-sm q-mb-md">
+      <div class="text-subtitle2 text-center leaderboard">LEADERBOARD</div>
+    </q-card-section>
+    <q-card-section class="scroll height-1000">
+      <q-markup-table flat>
+        <thead class="bg-primary text-white text-center">
             <tr>
               <th width="40">Position</th>
               <th>Driver</th>
+              <th width="50">Number</th>
+              <th>Gamertag</th>
               <th>Team</th>
               <th>Total</th>
             </tr>
@@ -32,9 +19,11 @@
             <template v-for="(result, i) in loadedResults">
               <tr :key="result._id" class="text-center">
                 <td width="40">{{i+1}}</td>
-                <td>{{result._id}}</td>
-                <td>{{result.team}}</td>
-                <td>{{result.totalAmount}}</td>
+                <td>{{result._id.user}}</td>
+                <td>{{result._id.number}}</td>
+                <td>{{result._id.gamertag}}</td>
+                <td>{{result._id.team}}</td>
+                <td>{{result.seasonTotal}}</td>
               </tr>
             </template>
           </tbody>
@@ -45,16 +34,9 @@
               </td>
             </tr>
           </tbody>
-        </q-markup-table>
-      </q-card-section>
-      <q-card-actions align="right" class="text-primary">
-        <q-btn
-          flat label="Close"
-          @click.stop="close"
-        />
-      </q-card-actions>
-    </q-card>
-  </q-dialog>
+      </q-markup-table>
+    </q-card-section>
+  </q-card>
 </template>
 
 <script>
@@ -62,14 +44,13 @@
 export default {
   name: 'roundResultsDialog',
   props: {
-    round: Object,
+    season: Object,
     visibility: Boolean,
   },
   data() {
     return {
       loadingResults: false,
       loadedResults: [],
-      addResultDialog: false,
     };
   },
   mounted() {
@@ -80,7 +61,7 @@ export default {
     async loadResults() {
       this.loadingResults = true;
       await this.$axios
-        .get(`/results/round/${this.round._id}`)
+        .get(`/results/season/${this.season}`)
         .then((response) => {
           this.loadedResults = response.data;
         })
