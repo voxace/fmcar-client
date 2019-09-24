@@ -268,12 +268,12 @@
           <q-tab-panel name="banner">
             <div class="row">
               <!-- BANNER IMAGE -->
-              <div v-if="editingSeries.banner != null" class="col-xs-12">
+              <div v-if="addSeries.banner != null" class="col-xs-12">
                 <q-img
                   class="rounded-borders cursor-pointer"
-                  :src="getUrl(editingSeries.banner)"
+                  :src="getUrl(addSeries.banner)"
                   :ratio="40/10" contain
-                  @click="editingSeries.banner = null; bannerUpload = 'delete'"
+                  @click="addSeries.banner = null; bannerUpload = 'delete'"
                 >
                   <q-tooltip
                     class="round"
@@ -304,12 +304,12 @@
           <q-tab-panel name="logo">
             <div class="row">
               <!-- BANNER IMAGE -->
-              <div v-if="editingSeries.logo != null" class="col-xs-12">
+              <div v-if="addSeriesModel.logo != null" class="col-xs-12">
                 <q-img
                   class="rounded-borders cursor-pointer"
-                  :src="getUrl(editingSeries.logo)"
+                  :src="getUrl(addSeriesModel.logo)"
                   :ratio="16/9" contain
-                  @click="editingSeries.logo = null; logoUpload = 'delete'"
+                  @click="addSeriesModel.logo = null; logoUpload = 'delete'"
                 >
                   <q-tooltip
                     class="round"
@@ -383,7 +383,10 @@ export default {
   },
   props: {
     editing: Boolean,
-    editingSeries: Object,
+    editingSeries: {
+      type: Object,
+      required: false,
+    },
     visibility: Boolean,
   },
   data() {
