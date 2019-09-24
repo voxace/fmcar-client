@@ -91,8 +91,13 @@ export default {
             this.close();
             this.$emit('seasonAdded', response.data);
           })
-          .catch((error) => {
-            console.log(`Error: ${error}`);
+          .catch(() => {
+            this.$q.notify({
+              color: 'red-4',
+              textColor: 'white',
+              icon: 'fas fa-cross-circle',
+              message: 'Error adding season!',
+            });
           });
       } else {
         await this.$axios
@@ -111,8 +116,13 @@ export default {
             this.close();
             this.$emit('seasonAdded', response.data);
           })
-          .catch((error) => {
-            console.log(`Error: ${error}`);
+          .catch(() => {
+            this.$q.notify({
+              color: 'red-4',
+              textColor: 'white',
+              icon: 'fas fa-cross-circle',
+              message: 'Error adding season!',
+            });
           });
       }
     },
@@ -129,8 +139,7 @@ export default {
           this.close();
           this.$emit('seasonDeleted');
         })
-        .catch((error) => {
-          console.log(`Error: ${error}`);
+        .catch(() => {
           this.$q.notify({
             color: 'red-4',
             textColor: 'white',

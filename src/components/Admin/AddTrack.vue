@@ -273,8 +273,7 @@ export default {
           this.close();
           this.$emit('trackAdded');
         })
-        .catch((error) => {
-          console.log(`Error: ${error}`);
+        .catch(() => {
           this.$q.notify({
             color: 'red-4',
             textColor: 'white',
@@ -298,8 +297,7 @@ export default {
           this.close();
           this.$emit('trackAdded');
         })
-        .catch((error) => {
-          console.log(`Error: ${error}`);
+        .catch(() => {
           this.$q.notify({
             color: 'red-4',
             textColor: 'white',

@@ -550,8 +550,13 @@ export default {
         .then((response) => {
           this.loadedGames = response.data;
         })
-        .catch((error) => {
-          console.log(`Error: ${error}`);
+        .catch(() => {
+          this.$q.notify({
+            color: 'red-4',
+            textColor: 'white',
+            icon: 'fas fa-cross-circle',
+            message: 'Error loading games list!',
+          });
         });
       this.loadingGames = false;
     },
@@ -564,8 +569,13 @@ export default {
         .then((response) => {
           this.loadedPointsTables = response.data;
         })
-        .catch((error) => {
-          console.log(`Error: ${error}`);
+        .catch(() => {
+          this.$q.notify({
+            color: 'red-4',
+            textColor: 'white',
+            icon: 'fas fa-cross-circle',
+            message: 'Error loading points tables!',
+          });
         });
       this.loadingPointsTables = false;
     },
@@ -584,7 +594,6 @@ export default {
       await this.$axios
         .patch(`/series/${this.editingSeries._id}`, { model: this.addSeriesModel })
         .then((response) => {
-          console.log(response);
           this.$q.notify({
             color: 'green-4',
             textColor: 'white',
@@ -594,8 +603,7 @@ export default {
           this.$emit('seriesEdited', response.data);
           this.close();
         })
-        .catch((error) => {
-          console.log(`Error: ${error}`);
+        .catch(() => {
           this.$q.notify({
             color: 'red-4',
             textColor: 'white',
@@ -619,8 +627,7 @@ export default {
           this.$emit('seriesAdded', response.data);
           this.close();
         })
-        .catch((error) => {
-          console.log(`Error: ${error}`);
+        .catch(() => {
           this.$q.notify({
             color: 'red-4',
             textColor: 'white',
@@ -644,8 +651,7 @@ export default {
           this.close();
           this.$emit('seriesDeleted');
         })
-        .catch((error) => {
-          console.log(`Error: ${error}`);
+        .catch(() => {
           this.$q.notify({
             color: 'red-4',
             textColor: 'white',

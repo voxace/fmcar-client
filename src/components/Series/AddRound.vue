@@ -185,8 +185,13 @@ export default {
         .then((response) => {
           this.loadedTracks = response.data;
         })
-        .catch((error) => {
-          console.log(`Error: ${error}`);
+        .catch(() => {
+          this.$q.notify({
+            color: 'red-4',
+            textColor: 'white',
+            icon: 'fas fa-cross-circle',
+            message: 'Error loading track list!',
+          });
         });
       this.loadingTrack = false;
     },
@@ -216,8 +221,7 @@ export default {
           this.close();
           this.$emit('roundAdded');
         })
-        .catch((error) => {
-          console.log(`Error: ${error}`);
+        .catch(() => {
           this.$q.notify({
             color: 'red-4',
             textColor: 'white',
@@ -243,8 +247,7 @@ export default {
           this.close();
           this.$emit('roundAdded');
         })
-        .catch((error) => {
-          console.log(`Error: ${error}`);
+        .catch(() => {
           this.$q.notify({
             color: 'red-4',
             textColor: 'white',
@@ -268,8 +271,7 @@ export default {
           this.close();
           this.$emit('roundAdded');
         })
-        .catch((error) => {
-          console.log(`Error: ${error}`);
+        .catch(() => {
           this.$q.notify({
             color: 'red-4',
             textColor: 'white',

@@ -147,8 +147,7 @@ export default {
           this.$emit('tableAdded');
           this.close();
         })
-        .catch((error) => {
-          console.log(`Error: ${error}`);
+        .catch(() => {
           this.$q.notify({
             color: 'red-4',
             textColor: 'white',
@@ -171,8 +170,7 @@ export default {
           });
           this.close();
         })
-        .catch((error) => {
-          console.log(`Error: ${error}`);
+        .catch(() => {
           this.$q.notify({
             color: 'red-4',
             textColor: 'white',

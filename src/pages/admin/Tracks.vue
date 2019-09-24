@@ -98,8 +98,13 @@ export default {
         .then((response) => {
           this.loadedTracks = response.data;
         })
-        .catch((error) => {
-          console.log(`Error: ${error}`);
+        .catch(() => {
+          this.$q.notify({
+            color: 'red-4',
+            textColor: 'white',
+            icon: 'fas fa-cross-circle',
+            message: 'Error loading tracks list!',
+          });
         });
       this.loadingTracks = false;
     },
@@ -124,8 +129,7 @@ export default {
           });
           this.loadTracksList();
         })
-        .catch((error) => {
-          console.log(`Error: ${error}`);
+        .catch(() => {
           this.$q.notify({
             color: 'red-4',
             textColor: 'white',

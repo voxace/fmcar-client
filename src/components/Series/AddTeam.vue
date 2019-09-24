@@ -387,8 +387,13 @@ export default {
         .then((response) => {
           this.driverNumbers = response.data;
         })
-        .catch((error) => {
-          console.log(`Error: ${error}`);
+        .catch(() => {
+          this.$q.notify({
+            color: 'red-4',
+            textColor: 'white',
+            icon: 'fas fa-cross-circle',
+            message: 'Error loading driver numbers!',
+          });
         });
       this.loadingNumbers = false;
     },
@@ -402,8 +407,13 @@ export default {
         .then((response) => {
           this.loadedTeams = response.data;
         })
-        .catch((error) => {
-          console.log(`Error: ${error}`);
+        .catch(() => {
+          this.$q.notify({
+            color: 'red-4',
+            textColor: 'white',
+            icon: 'fas fa-cross-circle',
+            message: 'Error loading team list!',
+          });
         });
       this.loadingTeams = false;
     },
@@ -417,8 +427,13 @@ export default {
         .then((response) => {
           this.loadedUsers = response.data;
         })
-        .catch((error) => {
-          console.log(`Error: ${error}`);
+        .catch(() => {
+          this.$q.notify({
+            color: 'red-4',
+            textColor: 'white',
+            icon: 'fas fa-cross-circle',
+            message: 'Error loading user list!',
+          });
         });
       this.loadingUsers = false;
     },
@@ -458,8 +473,7 @@ export default {
           this.close();
           this.$emit('teamAdded');
         })
-        .catch((error) => {
-          console.log(`Error: ${error}`);
+        .catch(() => {
           this.$q.notify({
             color: 'red-4',
             textColor: 'white',
@@ -485,8 +499,7 @@ export default {
           this.close();
           this.$emit('teamAdded');
         })
-        .catch((error) => {
-          console.log(`Error: ${error}`);
+        .catch(() => {
           this.$q.notify({
             color: 'red-4',
             textColor: 'white',
@@ -510,8 +523,7 @@ export default {
           this.close();
           this.$emit('teamAdded');
         })
-        .catch((error) => {
-          console.log(`Error: ${error}`);
+        .catch(() => {
           this.$q.notify({
             color: 'red-4',
             textColor: 'white',
@@ -543,7 +555,6 @@ export default {
                       this.loadedCars.push(carChoice);
                     }
                   } else {
-                    console.log('No cars selected yet...');
                     this.loadedCars.push(carChoice);
                   }
                 }
@@ -556,8 +567,13 @@ export default {
             }
           });
         })
-        .catch((error) => {
-          console.log(`Error: ${error}`);
+        .catch(() => {
+          this.$q.notify({
+            color: 'red-4',
+            textColor: 'white',
+            icon: 'fas fa-cross-circle',
+            message: 'Error calculating available cars!',
+          });
         });
       this.loadingCars = false;
     },

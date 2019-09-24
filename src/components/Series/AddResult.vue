@@ -206,8 +206,13 @@ export default {
           this.addResultModel.team = response.data;
           this.loadedTeam = [response.data];
         })
-        .catch((error) => {
-          console.log(`Error: ${error}`);
+        .catch(() => {
+          this.$q.notify({
+            color: 'red-4',
+            textColor: 'white',
+            icon: 'fas fa-cross-circle',
+            message: 'Error loading team!',
+          });
         });
       this.loadingTeam = false;
     },
@@ -220,8 +225,13 @@ export default {
         .then((response) => {
           this.loadedUsers = response.data;
         })
-        .catch((error) => {
-          console.log(`Error: ${error}`);
+        .catch(() => {
+          this.$q.notify({
+            color: 'red-4',
+            textColor: 'white',
+            icon: 'fas fa-cross-circle',
+            message: 'Error loading user list!',
+          });
         });
       this.loadingUsers = false;
     },
@@ -267,8 +277,7 @@ export default {
           this.$emit('resultAdded');
           this.close();
         })
-        .catch((error) => {
-          console.log(`Error: ${error}`);
+        .catch(() => {
           this.$q.notify({
             color: 'red-4',
             textColor: 'white',
@@ -297,8 +306,7 @@ export default {
           this.$emit('resultAdded');
           this.close();
         })
-        .catch((error) => {
-          console.log(`Error: ${error}`);
+        .catch(() => {
           this.$q.notify({
             color: 'red-4',
             textColor: 'white',
@@ -322,8 +330,7 @@ export default {
           this.close();
           this.$emit('resultAdded');
         })
-        .catch((error) => {
-          console.log(`Error: ${error}`);
+        .catch(() => {
           this.$q.notify({
             color: 'red-4',
             textColor: 'white',

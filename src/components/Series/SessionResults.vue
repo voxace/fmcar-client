@@ -164,8 +164,13 @@ export default {
         .then((response) => {
           this.loadedResults = response.data;
         })
-        .catch((error) => {
-          console.log(`Error: ${error}`);
+        .catch(() => {
+          this.$q.notify({
+            color: 'red-4',
+            textColor: 'white',
+            icon: 'fas fa-cross-circle',
+            message: 'Error loading results!',
+          });
         });
       this.loadingResults = false;
     },

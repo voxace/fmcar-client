@@ -195,8 +195,7 @@ export default {
           this.$q.cookies.set('fmcar-user', response.data.user, { expires: 3, path: '/' });
           this.$q.cookies.set('fmcar-token', response.data.token, { expires: 3, path: '/' });
         })
-        .catch((err) => {
-          console.log(err);
+        .catch(() => {
           this.$q.notify({
             message: 'Incorrect Email Address or Password!',
             color: 'red',

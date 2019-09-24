@@ -178,8 +178,7 @@ export default {
           this.close();
           this.$emit('gameAdded');
         })
-        .catch((error) => {
-          console.log(`Error: ${error}`);
+        .catch(() => {
           this.$q.notify({
             color: 'red-4',
             textColor: 'white',
@@ -206,8 +205,7 @@ export default {
           this.close();
           this.$emit('gameAdded');
         })
-        .catch((error) => {
-          console.log(`Error: ${error}`);
+        .catch(() => {
           this.$q.notify({
             color: 'red-4',
             textColor: 'white',
@@ -231,8 +229,13 @@ export default {
             this.$forceUpdate();
           }
         })
-        .catch((error) => {
-          console.log(`Error: ${error}`);
+        .catch(() => {
+          this.$q.notify({
+            color: 'red-4',
+            textColor: 'white',
+            icon: 'fas fa-cross-circle',
+            message: 'Error loading track list!',
+          });
         });
       this.loadingTrack = false;
     },

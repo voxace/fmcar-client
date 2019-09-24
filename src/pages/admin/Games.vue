@@ -96,8 +96,13 @@ export default {
         .then((response) => {
           this.loadedGames = response.data;
         })
-        .catch((error) => {
-          console.log(`Error: ${error}`);
+        .catch(() => {
+          this.$q.notify({
+            color: 'red-4',
+            textColor: 'white',
+            icon: 'fas fa-cross-circle',
+            message: 'Error loading games list!',
+          });
         });
       this.loadingGames = false;
     },
@@ -122,8 +127,7 @@ export default {
           });
           this.loadGamesList();
         })
-        .catch((error) => {
-          console.log(`Error: ${error}`);
+        .catch(() => {
           this.$q.notify({
             color: 'red-4',
             textColor: 'white',

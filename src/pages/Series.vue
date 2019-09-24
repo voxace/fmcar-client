@@ -343,8 +343,13 @@ export default {
         .then((response) => {
           this.loadedSeriesList = response.data;
         })
-        .catch((error) => {
-          console.log(`Error: ${error}`);
+        .catch(() => {
+          this.$q.notify({
+            color: 'red-4',
+            textColor: 'white',
+            icon: 'fas fa-cross-circle',
+            message: 'Error updating series list!',
+          });
         });
       this.seriesLoading = false;
     },
@@ -355,8 +360,13 @@ export default {
         .then((response) => {
           this.loadedSeason = response.data;
         })
-        .catch((error) => {
-          console.log(`Error: ${error}`);
+        .catch(() => {
+          this.$q.notify({
+            color: 'red-4',
+            textColor: 'white',
+            icon: 'fas fa-cross-circle',
+            message: 'Error loading season data!',
+          });
         });
       this.$q.loading.hide();
     },
