@@ -16,11 +16,11 @@
       >
         <td class="text-left">{{team.name}}</td>
         <td class="text-left">
-          {{team.driver_a.name}}
+          <span v-if="team.driver_a">{{team.driver_a.name}}</span>
           <br/><span v-if="team.driver_b">{{team.driver_b.name}}</span>
         </td>
         <td class="text-left">
-          {{team.driver_a.gamertag}}
+          <span v-if="team.driver_a">{{team.driver_a.gamertag}}</span>
           <br/><span v-if="team.driver_b">{{team.driver_b.gamertag}}</span>
         </td>
         <td class="text-left">{{team.car}}</td>

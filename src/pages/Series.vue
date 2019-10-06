@@ -121,6 +121,7 @@
                   <q-tab-panels v-model="tab2" animated class="scroll height-1000">
                     <q-tab-panel name="info">
                       <div class="row">
+                        <!-- BANNER -->
                         <div class="col-xs-12">
                           <q-img
                             v-if="selectedSeries.banner"
@@ -128,6 +129,31 @@
                             :ratio="6" contain
                           />
                         </div>
+                        <!-- IF NOT REGISTERED -->
+                        <div class="col-xs-12" v-if="getUsersTeam === 'no-team'">
+                          <div
+                            class="text-center q-my-sm"
+                          >
+                            {{ $store.state.user.name }},
+                            you are not yet part of a team for this season:
+                          </div>
+                          <q-btn
+                            color="primary"
+                            icon="how_to_reg"
+                            class="full-width q-mb-lg"
+                            label="REGISTER NOW"
+                          />
+                        </div>
+                        <!-- IF REGISTERED -->
+                        <div class="col-xs-12" v-else>
+                          <div
+                            class="text-center q-my-sm"
+                          >
+                            Welcome, {{ $store.state.user.name }}.
+                            Team: {{ getUsersTeam }}
+                          </div>
+                        </div>
+                        <!-- DESCRIPTION -->
                         <div class="col-xs-12 q-py-sm q-px-sm">
                           <span v-html="selectedSeries.description"></span>
                         </div>
@@ -477,6 +503,19 @@ export default {
     },
     editingAllowed() {
       return this.$store.getters.editingAllowed;
+    },
+    getUsersTeam() {
+      const userId = this.$store.state.user._id;
+      let usersTeam = 'no-team';
+      if (this.loadedSeason) {
+        this.loadedSeason.teams.forEach((element) => {
+          if ((element.driver_a && element.driver_a._id === userId)
+          || (element.driver_b && element.driver_b._id === userId)) {
+            usersTeam = element.name;
+          }
+        });
+      }
+      return usersTeam;
     },
   },
   watch: {

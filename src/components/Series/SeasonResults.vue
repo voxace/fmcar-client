@@ -113,5 +113,10 @@ export default {
       this.$emit('close');
     },
   },
+  watch: {
+    season() {
+      this.loadResults();
+    },
+  },
 };
 </script>
