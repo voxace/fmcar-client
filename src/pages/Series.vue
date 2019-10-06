@@ -133,9 +133,7 @@
                       <div class="row" v-if="$store.state.user">
                         <!-- IF NOT REGISTERED -->
                         <div class="col-xs-12" v-if="getUsersTeam === 'no-team'">
-                          <div
-                            class="text-center q-my-sm"
-                          >
+                          <div class="text-center q-my-sm">
                             {{ $store.state.user.name }},
                             you are not yet part of a team for this season:
                           </div>
@@ -148,11 +146,17 @@
                         </div>
                         <!-- IF REGISTERED -->
                         <div class="col-xs-12" v-else>
-                          <div
-                            class="text-center q-my-sm"
-                          >
+                          <div class="text-center q-my-sm">
                             Welcome, {{ $store.state.user.name }}.
                             Team: {{ getUsersTeam }}
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row" v-else>
+                        <div class="col-xs-12">
+                          <div class="text-center q-my-sm">
+                            You are currently not logged in.
+                            Login to register for an event or check your results.
                           </div>
                         </div>
                       </div>
