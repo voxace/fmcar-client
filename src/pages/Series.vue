@@ -129,6 +129,8 @@
                             :ratio="6" contain
                           />
                         </div>
+                      </div>
+                      <div class="row" v-if="$store.state.user">
                         <!-- IF NOT REGISTERED -->
                         <div class="col-xs-12" v-if="getUsersTeam === 'no-team'">
                           <div
@@ -153,6 +155,8 @@
                             Team: {{ getUsersTeam }}
                           </div>
                         </div>
+                      </div>
+                      <div class="row">
                         <!-- DESCRIPTION -->
                         <div class="col-xs-12 q-py-sm q-px-sm">
                           <span v-html="selectedSeries.description"></span>
