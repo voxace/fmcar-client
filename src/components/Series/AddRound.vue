@@ -323,7 +323,7 @@ export default {
         return this.loadedTracks;
       }
       // Filters loaded tracks by the object id of the tracks in the series
-      return this.loadedTracks.filter(o => !this.series.game.tracks.find(o2 => o._id === o2));
+      return this.loadedTracks.filter(o => this.series.game.tracks.find(o2 => o._id === o2));
     },
   },
 };
