@@ -6,16 +6,25 @@
       <div class="col-xs-12 col-sm-3 q-px-sm">
         <!-- YEAR -->
         <q-select
-          outlined v-model="selectedYear" :options="$store.state.years"
-          label="Year" v-bind:class="{ 'q-py-xs': $q.screen.lt.sm }"
+          outlined
+          v-model="selectedYear"
+          :options="$store.state.years"
+          label="Year"
+          v-bind:class="{ 'q-py-xs': $q.screen.lt.sm }"
         />
       </div>
       <div class="col-xs-12 col-sm-6 q-px-sm">
         <!-- SERIES -->
         <q-select
-          outlined v-model="selectedSeries" :options="loadedSeriesList"
-          option-label="name" option-value="_id" label="Series" map-options
-          :disable="selectedYear == null" :disabled="selectedYear == null"
+          outlined
+          v-model="selectedSeries"
+          :options="loadedSeriesList"
+          option-label="name"
+          option-value="_id"
+          label="Series"
+          map-options
+          :disable="selectedYear == null"
+          :disabled="selectedYear == null"
           v-bind:class="{ 'q-py-xs': $q.screen.lt.sm }"
         >
           <template v-slot:no-option>
@@ -25,7 +34,10 @@
               </q-item-section>
             </q-item>
           </template>
-          <template v-slot:append v-if="seriesLoading">
+          <template
+            v-slot:append
+            v-if="seriesLoading"
+          >
             <q-avatar>
               <q-spinner
                 color="primary"
@@ -33,12 +45,18 @@
               />
             </q-avatar>
           </template>
-          <template v-slot:after v-if="editingAllowed">
+          <template
+            v-slot:after
+            v-if="editingAllowed"
+          >
             <q-avatar>
               <q-btn
-                round color="primary" icon="edit"
+                round
+                color="primary"
+                icon="edit"
                 :disabled="selectedSeries == null"
-                size="xs" @click="editSeries()"
+                size="xs"
+                @click="editSeries()"
               />
             </q-avatar>
           </template>
@@ -47,10 +65,17 @@
       <div class="col-xs-12 col-sm-3 q-px-sm">
         <!-- SEASON -->
         <q-select
-          outlined v-model="selectedSeason" :options="seasonList"
-          option-label="season" option-value="_id" map-options emit-value
-          label="Season" v-bind:class="{ 'q-py-xs': $q.screen.lt.sm }"
-          :disable="selectedSeries == null" :disabled="selectedSeries == null"
+          outlined
+          v-model="selectedSeason"
+          :options="seasonList"
+          option-label="season"
+          option-value="_id"
+          map-options
+          emit-value
+          label="Season"
+          v-bind:class="{ 'q-py-xs': $q.screen.lt.sm }"
+          :disable="selectedSeries == null"
+          :disabled="selectedSeries == null"
         >
           <template v-slot:no-option>
             <q-item>
@@ -59,7 +84,10 @@
               </q-item-section>
             </q-item>
           </template>
-          <template v-slot:append v-if="seriesLoading">
+          <template
+            v-slot:append
+            v-if="seriesLoading"
+          >
             <q-avatar>
               <q-spinner
                 color="primary"
@@ -67,12 +95,18 @@
               />
             </q-avatar>
           </template>
-          <template v-slot:after v-if="editingAllowed">
+          <template
+            v-slot:after
+            v-if="editingAllowed"
+          >
             <q-avatar>
               <q-btn
-                round color="primary" icon="edit"
+                round
+                color="primary"
+                icon="edit"
                 :disabled="selectedSeason == null"
-                size="xs" @click="editSeason()"
+                size="xs"
+                @click="editSeason()"
               />
             </q-avatar>
           </template>
@@ -81,7 +115,10 @@
     </div>
 
     <!-- INFO/ROUNDS/TEAMS TABS -->
-    <div class="row" v-if="selectedSeason != null">
+    <div
+      class="row"
+      v-if="selectedSeason != null"
+    >
       <div class="col-xs-12 q-pt-md">
         <q-tabs
           v-model="tab"
@@ -91,92 +128,38 @@
           indicator-color="primary"
           align="justify"
         >
-          <q-tab name="Info" label="Info" />
-          <q-tab name="Rounds" label="Rounds" />
-          <q-tab name="Teams" label="Teams" />
+          <q-tab
+            name="Info"
+            label="Info"
+          />
+          <q-tab
+            name="Rounds"
+            label="Rounds"
+          />
+          <q-tab
+            name="Teams"
+            label="Teams"
+          />
         </q-tabs>
         <q-separator />
-        <q-tab-panels v-model="tab" animated>
+        <q-tab-panels
+          v-model="tab"
+          animated
+        >
 
           <!-- SERIES INFO -->
           <q-tab-panel name="Info">
 
-            <!-- GENERAL INFO AND REGS -->
-            <div v-if="selectedSeries != null" class="row q-py-md">
-              <div
-                class="col-xs-12 col-md-6"
-                v-bind:class="{ 'q-pr-sm': $q.screen.gt.sm }"
-              >
-                <q-card flat bordered>
-                  <q-tabs
-                    v-model="tab2"
-                    class="bg-primary text-white q-mb-md"
-                    active-color="white"
-                    indicator-color="blue-10"
-                    align="justify"
-                  >
-                    <q-tab name="info" label="General Information" />
-                    <q-tab name="regs" label="Regulations" />
-                  </q-tabs>
-                  <q-tab-panels v-model="tab2" animated class="scroll height-1000">
-                    <q-tab-panel name="info">
-                      <div class="row">
-                        <!-- BANNER -->
-                        <div class="col-xs-12">
-                          <q-img
-                            v-if="selectedSeries.banner"
-                            :src="getUrl(selectedSeries.banner)"
-                            :ratio="6" contain
-                          />
-                        </div>
-                      </div>
-                      <div class="row" v-if="$store.state.user">
-                        <!-- IF NOT REGISTERED -->
-                        <div class="col-xs-12" v-if="getUsersTeam === 'no-team'">
-                          <div class="text-center q-my-sm">
-                            {{ $store.state.user.name }},
-                            you are not yet part of a team for this season:
-                          </div>
-                          <q-btn
-                            color="primary"
-                            icon="how_to_reg"
-                            class="full-width q-mb-lg"
-                            label="REGISTER NOW"
-                          />
-                        </div>
-                        <!-- IF REGISTERED -->
-                        <div class="col-xs-12" v-else>
-                          <div class="text-center q-my-sm">
-                            Welcome, {{ $store.state.user.name }}.
-                            Team: {{ getUsersTeam }}
-                          </div>
-                        </div>
-                      </div>
-                      <div class="row" v-else>
-                        <div class="col-xs-12">
-                          <div class="text-center q-my-sm">
-                            You are currently not logged in.
-                            Login to register for an event or check your results.
-                          </div>
-                        </div>
-                      </div>
-                      <div class="row">
-                        <!-- DESCRIPTION -->
-                        <div class="col-xs-12 q-py-sm q-px-sm">
-                          <span v-html="selectedSeries.description"></span>
-                        </div>
-                      </div>
-                    </q-tab-panel>
-                    <q-tab-panel name="regs">
-                      <div class="row">
-                        <div class="col-xs-12 q-px-sm">
-                          <span v-html="selectedSeries.regs"></span>
-                        </div>
-                      </div>
-                    </q-tab-panel>
-                  </q-tab-panels>
-                </q-card>
-              </div>
+            <div
+              v-if="selectedSeries != null"
+              class="row q-py-md"
+            >
+              <!-- GENERAL INFO AND REGS -->
+              <info-regs
+                :selectedSeries="selectedSeries"
+                :getUsersTeam="getUsersTeam"
+                @register="register"
+              />
 
               <!-- LEADERBOARD -->
               <div
@@ -190,7 +173,10 @@
 
           <!-- ROUNDS TABLE -->
           <q-tab-panel name="Rounds">
-            <div v-if="loadedSeason != null" class="col-xs-12 q-py-md">
+            <div
+              v-if="loadedSeason != null"
+              class="col-xs-12 q-py-md"
+            >
               <round-table
                 :loadedSeason="loadedSeason.rounds"
                 :series="selectedSeries"
@@ -201,7 +187,10 @@
 
           <!-- TEAMS TABLE -->
           <q-tab-panel name="Teams">
-            <div v-if="loadedSeason != null" class="col-xs-12 q-py-md">
+            <div
+              v-if="loadedSeason != null"
+              class="col-xs-12 q-py-md"
+            >
               <teams-table
                 :loadedSeason="loadedSeason.teams"
                 @editTeam="editTeam"
@@ -212,20 +201,34 @@
       </div>
     </div>
 
-    <div v-else class="absolute-center text-subtitle1 text-grey-8">
+    <div
+      v-else
+      class="absolute-center text-subtitle1 text-grey-8"
+    >
       Please select a series to continue...
     </div>
 
     <!-- FLOATING BUTTON -->
-    <q-page-sticky v-if="editingAllowed" position="bottom-right" :offset="[18, 18]">
+    <q-page-sticky
+      v-if="editingAllowed"
+      position="bottom-right"
+      :offset="[18, 18]"
+    >
       <q-fab
         icon="add"
         direction="up"
         color="positive"
       >
         <!-- ADD SERIES -->
-        <q-fab-action @click="addSeries" color="primary" icon="event_note" >
-          <q-tooltip anchor="center left" self="center right" >
+        <q-fab-action
+          @click="addSeries"
+          color="primary"
+          icon="event_note"
+        >
+          <q-tooltip
+            anchor="center left"
+            self="center right"
+          >
             Add Series
           </q-tooltip>
         </q-fab-action>
@@ -233,9 +236,13 @@
         <q-fab-action
           v-if="selectedSeries"
           @click="addSeason"
-          color="primary" icon="event"
+          color="primary"
+          icon="event"
         >
-          <q-tooltip anchor="center left" self="center right" >
+          <q-tooltip
+            anchor="center left"
+            self="center right"
+          >
             Add Season
           </q-tooltip>
         </q-fab-action>
@@ -243,9 +250,13 @@
         <q-fab-action
           v-if="selectedSeries && selectedSeason && tab=='Rounds'"
           @click="addRound"
-          color="primary" icon="directions_car"
+          color="primary"
+          icon="directions_car"
         >
-          <q-tooltip anchor="center left" self="center right" >
+          <q-tooltip
+            anchor="center left"
+            self="center right"
+          >
             Add Round
           </q-tooltip>
         </q-fab-action>
@@ -253,9 +264,13 @@
         <q-fab-action
           v-if="selectedSeries && selectedSeason && tab=='Teams'"
           @click="addTeam"
-          color="primary" icon="people"
+          color="primary"
+          icon="people"
         >
-          <q-tooltip anchor="center left" self="center right" >
+          <q-tooltip
+            anchor="center left"
+            self="center right"
+          >
             Add Team
           </q-tooltip>
         </q-fab-action>
@@ -264,37 +279,67 @@
 
     <!-- ADD SERIES DIALOG -->
     <add-series-dialog
-      v-if="addSeriesDialog" :visibility="addSeriesDialog"
-      :editing="editing" :editingSeries="selectedSeries"
-      @close="addSeriesDialog = false" @seriesAdded="seriesAdded"
+      v-if="addSeriesDialog"
+      :visibility="addSeriesDialog"
+      :editing="editing"
+      :editingSeries="selectedSeries"
+      @close="addSeriesDialog = false"
+      @seriesAdded="seriesAdded"
       @seriesEdited="seriesEdited"
     />
 
     <!-- ADD SEASON DIALOG -->
     <add-season-dialog
       v-if="selectedSeries && loadedSeason && addSeasonDialog"
-      :editing="editing" :editingSeason="loadedSeason"
-      :series="selectedSeries" :visibility="addSeasonDialog"
-      @close="addSeasonDialog = false" @seasonAdded="seasonAdded"
+      :editing="editing"
+      :editingSeason="loadedSeason"
+      :series="selectedSeries"
+      :visibility="addSeasonDialog"
+      @close="addSeasonDialog = false"
+      @seasonAdded="seasonAdded"
       @seasonDeleted="seasonDeleted"
     />
 
     <!-- ADD ROUND DIALOG -->
     <add-round-dialog
       v-if="loadedSeason && selectedSeries && addRoundDialog"
-      :editing="editing" :editingRound="editingRound"
-      :series="selectedSeries" :season="loadedSeason"
+      :editing="editing"
+      :editingRound="editingRound"
+      :series="selectedSeries"
+      :season="loadedSeason"
       :visibility="addRoundDialog"
-      @close="addRoundDialog = false" @roundAdded="roundAdded"
+      @close="addRoundDialog = false"
+      @roundAdded="roundAdded"
     />
 
     <!-- ADD TEAM DIALOG -->
     <add-team-dialog
       v-if="selectedSeries && selectedSeason && addTeamDialog"
-      :editing="editing" :editingTeam="editingTeam"
-      :series="selectedSeries" :season="loadedSeason"
+      :editing="editing"
+      :editingTeam="editingTeam"
+      :series="selectedSeries"
+      :season="loadedSeason"
       :visibility="addTeamDialog"
-      @close="addTeamDialog = false" @teamAdded="teamAdded"
+      @close="addTeamDialog = false"
+      @teamAdded="teamAdded"
+    />
+
+    <register-dialog
+      v-if="selectedSeries && selectedSeason && registerDialog"
+      :visibility="registerDialog"
+      :series="selectedSeries"
+      :season="loadedSeason"
+      @close="registerDialog = false"
+      @create="createTeam"
+      @join="joinTeam"
+    />
+
+    <create-team-dialog
+      v-if="selectedSeries && selectedSeason && createTeamDialog"
+      :visibility="createTeamDialog"
+      :series="selectedSeries"
+      :season="loadedSeason"
+      @close="createTeamDialog = false"
     />
 
   </q-page>
@@ -320,6 +365,9 @@ export default {
     roundTable: () => import('components/Series/RoundTable.vue'),
     teamsTable: () => import('components/Series/TeamsTable.vue'),
     seasonResults: () => import('components/Series/SeasonResults.vue'),
+    infoRegs: () => import('components/Series/InfoRegs.vue'),
+    registerDialog: () => import('components/Series/Register.vue'),
+    createTeamDialog: () => import('components/Series/CreateTeam.vue'),
   },
   meta: {
     title: 'Series',
@@ -334,7 +382,6 @@ export default {
     return {
       seriesLoading: false,
       tab: 'Info',
-      tab2: 'info',
       selectedYear: null,
       selectedSeries: null,
       selectedSeason: null,
@@ -344,6 +391,9 @@ export default {
       addSeriesDialog: false,
       addSeasonDialog: false,
       addTeamDialog: false,
+      registerDialog: false,
+      createTeamDialog: false,
+      joinTeamDialog: false,
       editingRound: {
         pointsTable: null,
         track: null,
@@ -501,6 +551,17 @@ export default {
           'series', '/series');
       }
     },
+    register() {
+      this.registerDialog = true;
+    },
+    createTeam() {
+      this.registerDialog = false;
+      this.createTeamDialog = true;
+    },
+    joinTeam() {
+      this.registerDialog = false;
+      this.joinTeamDialog = true;
+    },
   },
   computed: {
     seasonList() {
@@ -518,7 +579,7 @@ export default {
       if (this.loadedSeason) {
         this.loadedSeason.teams.forEach((element) => {
           if ((element.driver_a && element.driver_a._id === userId)
-          || (element.driver_b && element.driver_b._id === userId)) {
+            || (element.driver_b && element.driver_b._id === userId)) {
             usersTeam = element.name;
           }
         });
